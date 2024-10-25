@@ -4,7 +4,7 @@ test('given: valid values for customer; when: creating customer; then: customer 
     // GIVEN
     const id: undefined | number = 522567;
     const password: string =  "five-tw0-tw0-five-six-seven";
-    const securityQuestion: string = "What is your favorite color?";
+    const securityQuestion: string = "What is your favorite color?";//really??
     const username: string = "leopold522";
     const firstName: string = "Leopold";
     const lastName: string = "Stravinsky";
