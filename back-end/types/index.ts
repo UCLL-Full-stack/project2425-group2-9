@@ -1,5 +1,6 @@
-<<<<<<< Updated upstream
+
 // R: Name the interfaces with capital first letter!
+
 
 interface ProductInput {
     name?: string;
@@ -10,27 +11,11 @@ interface ProductInput {
     imagePath?: string;
 }
 
-interface CartInput {
-    Id?: number | undefined;
-    totalPrice: number;
-=======
-import { Products } from "../model/product";
-
-interface productInput{
-    name:string;
-    price:number;
-    unit:string;
-    stock:number;
-    description:string;
-    imagePath:string;
-}
-
-interface cartInputs{
+interface CartInputs{
     id?:number | undefined;
     totalPrice:number;
-    customerId?:number | undefined
-    creationDate?:Date
->>>>>>> Stashed changes
+    customerId?:number | undefined,
+    creationDate?:Date,
 }
 
 interface CustomerInput {
@@ -47,36 +32,22 @@ interface OrderInput {
     cartId: number;
     date: Date;
 }
-interface cartContainsProduct{
-    cartId: number; // Foreign key to Cart
-    productId: number; // Foreign key to Product
-    quantity: number;//Q& am sure but are we suppose to have a separate interface for the relationship between cart and product???
+interface CartContainsProductInput{
+    cartId: number|undefined; // Foreign key to Cart
+    productName: string; // Foreign key to Product
+    quantity: number;//Q& am not sure but are we suppose to have a separate interface for the relationship between cart and product???
 }
 
-<<<<<<< Updated upstream
 interface DeleteCartItemInput {
     customer: CustomerInput;
     product: ProductInput;
 }
 
-interface CartContainsProduct {
-    cartId: number,
-    productName: string
-}
-
-export {
+export{
     ProductInput,
-    CartInput,
+    CartInputs,
     CustomerInput,
     OrderInput,
-    DeleteCartItemInput,
-    CartContainsProduct
-=======
-export{
-    productInput,
-    cartInputs,
-    customerInput,
-    orderInput,
-    cartContainsProduct
->>>>>>> Stashed changes
+    CartContainsProductInput,
+    DeleteCartItemInput
 }

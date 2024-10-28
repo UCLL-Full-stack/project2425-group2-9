@@ -24,7 +24,9 @@ const deleteCartItem = async (customerId: number, productName: string): Promise<
     if (!cart) throw new Error("Cart is null");
 
     // DELETE 
-    cartContainsProductDb.deleteCartItemByCartIdAndProductName(cart.getId(), product.getName());
+    const cartId = cart.getId();
+    if (cartId === undefined) throw new Error("Cart ID is undefined.");
+    cartContainsProductDb.deleteCartItemByCartIdAndProductName(cartId, product.getName());
 
     return "Cart item deleted successfully.";
     // return product.getName();

@@ -1,6 +1,7 @@
 import { Product } from "../model/product";
 
-// Q& Is it an issue if the descriptions are somehow unappropriate?
+// Q& Is it an issue if the descriptions are somehow unappropriated?
+//i dont think it matters if they are but we should make them descriptive enough
 
 // Source of all images: https://pngimg.com/
 const resourceImagePath: String = "../resources/images/";
@@ -83,11 +84,29 @@ const getAllProducts = (): Product[] => {
     console.log(products);
     return products;
 }
-
+const saveNewProduct = (newProduct:Product):Product|null=>{
+    const productName =products.some(p=>{
+        return p.getName() === newProduct.getName()
+    })
+    if (!productName) {
+        products.push(newProduct)
+        return newProduct
+    }
+    return null 
+}
 const getProductByName = (name: string): Product | null => {
     return products.find((product) => product.getName() === name) || null;
 }
-
+const getOrSaveProductByName = (name: string, newProduct: Product): Product => {
+    let product = getProductByName(name);
+    if (!product) {
+        product = saveNewProduct(newProduct);
+        if (!product) {
+            throw new Error("Failed to save new product");
+        }
+    }
+    return product;
+}
 const deleteProductByName = (name: string): string => {
     for (let i = 0; i < products.length; i++) {
         if (products[i].getName() === name) {
@@ -101,5 +120,7 @@ const deleteProductByName = (name: string): string => {
 export default {
     getAllProducts,
     getProductByName,
-    deleteProductByName
+    saveNewProduct,
+    deleteProductByName,
+    getOrSaveProductByName
 };

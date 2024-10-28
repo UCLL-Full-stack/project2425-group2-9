@@ -7,6 +7,7 @@ import { productRouter } from './controller/product.routes';
 import express, { Request, Response, NextFunction } from 'express';
 import { customerRouter } from './controller/customer.routes';
 import customerService from './service/customer.service';
+import { cartRouter } from './controller/cart.routes';
 
 const app = express();
 dotenv.config();
@@ -18,6 +19,8 @@ app.use(bodyParser.json());
 
 app.use('/products', productRouter);
 app.use('/customers', customerRouter);
+// app.use('/carts/create',cartRouter)
+app.use('/carts', cartRouter)
 
 
 app.get('/status', (req, res) => {

@@ -2,26 +2,18 @@ import { Cart } from '../../model/cart';
 const id: number = 8872523;
     const totalPrice: number = 50;
     const customerId: number = 522567;
+   
 
 // Q&A Do we have to write given when then with colons and semi-colons? A: Doesn't matter as long as it's clear.
 test('given: valid values; when: creating a cart; then: cart is created with those values.', () => {
     // GIVEN 
     // WHEN
-<<<<<<< Updated upstream
-    const cart: Cart = new Cart({ id, totalPrice: total_price, customerId: customer_id });
-
-    // THEN
-    expect(cart.getId()).toEqual(id);
-    expect(cart.getTotalPrice()).toEqual(total_price);
-    expect(cart.getCustomerId()).toEqual(customer_id);
-=======
     const cart: Cart = new Cart({ id, totalPrice, customerId });
 
     // THEN
     expect(cart.getId()).toEqual(id);
     expect(cart.getTotalPrice()).toEqual(totalPrice);
     expect(cart.getCustomerId()).toEqual(customerId);
->>>>>>> Stashed changes
 
 });
 
@@ -36,7 +28,7 @@ test('given: cart with total price; when: updating total price; then: total pric
 
 test('given: cart with customer ID; when: updating customer ID; then: customer ID is updated', () => {
     // GIVEN
-    const cart: Cart = new Cart({ id, totalPrice, customerId });
+    const cart: Cart = new Cart({ id, totalPrice, customerId});
     // WHEN
     cart.setCustomerId(999999);
     // THEN
@@ -44,7 +36,7 @@ test('given: cart with customer ID; when: updating customer ID; then: customer I
 });
 test("given: cart id is undefined, when: creating a cart, then an id is assigned to cart",()=>{
     //given
-    const cart = new Cart({totalPrice,customerId})
+    const cart = new Cart({totalPrice, customerId})
     //when
     cart.setId(23000)
     //then
