@@ -4,7 +4,7 @@ import { Product } from "../model/product";
 //i dont think it matters if they are but we should make them descriptive enough
 
 // Source of all images: https://pngimg.com/
-const resourceImagePath: String = "../resources/images/";
+const resourceImagePath: String = "/images/"; // refers to "front-end/public/images".
 const products = [
     new Product({
         name: "Bread",
