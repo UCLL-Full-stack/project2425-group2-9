@@ -1,4 +1,6 @@
+
 // R: Name the interfaces with capital first letter!
+
 
 interface ProductInput {
     name?: string;
@@ -9,9 +11,11 @@ interface ProductInput {
     imagePath?: string;
 }
 
-interface CartInput {
-    Id?: number | undefined;
-    totalPrice: number;
+interface CartInputs{
+    id?:number | undefined;
+    totalPrice?:number;
+    customerId?:number | undefined,
+    creationDate?:Date,
 }
 
 interface CustomerInput {
@@ -28,22 +32,22 @@ interface OrderInput {
     cartId: number;
     date: Date;
 }
+interface CartContainsProductInput{
+    cartId?: number|undefined; // Foreign key to Cart
+    productName?: string; // Foreign key to Product
+    quantity: number;//Q& am not sure but are we suppose to have a separate interface for the relationship between cart and product???
+}
 
 interface DeleteCartItemInput {
     customerId: number;
     productName: string;
 }
 
-interface CartContainsProduct {
-    cartId: number,
-    productName: string
-}
-
-export {
+export{
     ProductInput,
-    CartInput,
+    CartInputs,
     CustomerInput,
     OrderInput,
-    DeleteCartItemInput,
-    CartContainsProduct
+    CartContainsProductInput,
+    DeleteCartItemInput
 }

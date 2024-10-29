@@ -1,39 +1,61 @@
-export class Cart {
-    private id!: number;
-    private totalPrice!: number;
-    private customerId!: number;
-    // Q&A Is it not better to use setters immediately in the constructor? A: https://stackoverflow.com/questions/61690611/typescript-not-recognising-initialising-via-a-setter
-    //I also thought of the same thing. I thing we could
+import { CartInputs, ProductInput } from "../types";
+import { Product } from "./product";
 
-    constructor(cart: { id: number, totalPrice: number, customerId: number }) {
-        this.setId(cart.id);
-        this.setTotalPrice(cart.totalPrice);
-        this.setCustomerId(cart.customerId);
+export class Cart {
+    private id?: undefined | number;
+    private totalPrice: number = 0;
+    private customerId?: number|undefined; 
+
+    // Q& Is it not better to use setters immediately in the constructor?
+    //I also thought of the same thing. I thing we could
+    //do we need any extra logic for setId methods in the classes?
+
+    constructor( { id,totalPrice,customerId}: CartInputs) {
+        this.setId(id);
+        this.setCustomerId(customerId);
+        if (totalPrice !== undefined) {
+            this.setTotalPrice(totalPrice);
+        }
     }
 
-    getId(): number {
+    getId(): number | undefined{
         return this.id;
     }
 
-    setId(id: number): void {
+    setId(id: number|undefined): void {
         this.id = id;
     }
 
     getTotalPrice(): number {
-        return this.totalPrice;
+        return this.totalPrice
     }
 
     setTotalPrice(totalPrice: number): void {
         this.totalPrice = totalPrice;
     }
 
-    getCustomerId(): number {
+    getCustomerId(): number|undefined {
         return this.customerId;
     }
 
-    setCustomerId(customerId: number): void {
+    setCustomerId(customerId: number | undefined): void {
         this.customerId = customerId;
     }
-
-
+    //  getProducts():Product[]|undefined{
+    //     return this.products
+    // }
+    //  setProducts(newProducts: Product[]): void {
+    //      if (!newProducts) {
+    //          return;
+    //     }
+    //     if (!this.products) {
+    //         this.products = [];
+    //     }
+    //      newProducts.forEach(newProduct => {
+    //         const productName = this.products?.find(product => product.getName() === newProduct.getName());
+    //        if (!productName) {
+    //             this.products?.push(newProduct);
+    //          }
+    //     });
+    // }
 }
