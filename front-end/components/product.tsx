@@ -8,8 +8,8 @@ type Props = {
 };
 
 const Product: React.FC<Props> = ({ products }: Props) => {
-    const addToCart = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const productInfo = e.target.parentElement?.children;
+    const addToCart = async (e: React.MouseEvent<HTMLButtonElement>) => {
+        const productInfo = e.currentTarget.parentElement?.children;
 
 
         if (!productInfo) {throw new Error("Product info null.")};
