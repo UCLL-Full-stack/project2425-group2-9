@@ -39,8 +39,8 @@ interface CartContainsProductInput{
 }
 
 interface DeleteCartItemInput {
-    customer: CustomerInput;
-    product: ProductInput;
+    customerId: number;
+    productName: string;
 }
 
 export{
