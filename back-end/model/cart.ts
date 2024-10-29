@@ -13,7 +13,9 @@ export class Cart {
     constructor( { id,totalPrice,customerId}: CartInputs) {
         this.setId(id);
         this.setCustomerId(customerId);
-        this.setTotalPrice(totalPrice) 
+        if (totalPrice !== undefined) {
+            this.setTotalPrice(totalPrice);
+        }
     }
 
     getId(): number | undefined{

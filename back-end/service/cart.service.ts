@@ -8,26 +8,27 @@ import customerDb from "../repository/customer.db";
 import productDb from "../repository/product.db";
 //Q& should all methods in the service be asynchronous?
 const createNewCart = async(newCustomerId:number|undefined):Promise<Cart|null> =>{
-    const customer = customerDb.getCustomerById(newCustomerId);
-    // If customer exists AND customer does not have a cart.
-    if (!customer) throw new Error(`Customer is falsy in service. Value: ${customer}`);
+    const customer = await customerDb.getCustomerById(newCustomerId);
+    if (!customer) throw new Error(`No customer found with id ${newCustomerId}`);
     const hasCart = cartDb.getCartByCustomerId(customer.getId());
     if (hasCart) throw new Error(`Customer has a cart.`);
     // True && False => False
     if (customer && !hasCart){//Q& customer does not have a cart
-        customer.setId(newCustomerId);
+        customer.setId(newCustomerId);//Q& i don't know why the endpoint does not work without this line - customer already exist with an ID so setter should not be called.
         const newCart = new Cart({
-            id: cartDb.returnAllCartsAvailable().length + 1,
+            id: (cartDb.returnAllCartsAvailable()?.length ?? 0) + 1,//returnAllCartsAvailable is used only if cart does exist for a customer 
             totalPrice: 0,
             customerId: customer.getId(),
         });
-        cartDb.saveCart(newCart);
+        await cartDb.saveCart(newCart);
         return newCart;
     }
     return null;
 }
  
-const addProductToCart = async(customerData:Customer,product:Product):Promise<Cart|null>=>{
+const addProductToCart = async(customerData:Customer|undefined,product:Product|undefined):Promise<Cart|null>=>{
+    if ((!customerData)) throw new Error("customer not found")
+        if (!product) throw new Error("product not found")
     const existingCart: Cart | null = await cartDb.getCartByCustomerId(customerData.getId())
     if (existingCart){
         try{
@@ -44,8 +45,8 @@ const addProductToCart = async(customerData:Customer,product:Product):Promise<Ca
              if (cartItem){
                 cartItem.setQuantity(cartItem.getQuantity()+1)
              }else{
-                const newCartItem = new CartContainsProduct({ cartId, productName: existingProduct.getName(), quantity:0 });
-                cartContainsProductDb.addOrUpdateProduct(newCartItem)
+                const newCartItem = new CartContainsProduct({ cartId, productName: existingProduct.getName(), quantity:1});
+                cartContainsProductDb.addOrUpdateProduct(newCartItem);
              } 
              return existingCart
         }catch(e){

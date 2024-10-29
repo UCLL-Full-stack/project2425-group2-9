@@ -9,7 +9,7 @@ const carts: Cart[] = [
 ];
 //you need to save the cart after creating it
 
-const saveCart = (cart:Cart):void=>{
+const saveCart = (cart:Cart):Cart|undefined=>{
      const existingCart = carts.findIndex((c)=>{
         cart.getId()=== c.getId()
      })
@@ -18,13 +18,15 @@ const saveCart = (cart:Cart):void=>{
      }else{
         carts.push(cart)
      }
+     return cart
 }
+
 
 const getCartByCustomerId = (customerId: number|undefined): Cart | null => {
     return carts.find((cart) => cart.getCustomerId() === customerId) || null;
 }
 //get cart
-const returnAllCartsAvailable = ():Cart[]=>{
+const returnAllCartsAvailable = ():Cart[]|null=>{
     return carts
 }
 

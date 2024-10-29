@@ -10,12 +10,17 @@ const cartContainsProduct: CartContainsProduct[] = [
 const getCartItemNamesByCartId = (id: number): string[] => {
     const itemNames: string[] = [];
     for (let item of cartContainsProduct) {
-        if (item.getCartId() === id) itemNames.push(item.getProductName());
+        if (item.getCartId() === id) {
+            const productName = item.getProductName();
+            if (productName) {
+                itemNames.push(productName);
+            }
+        }
     }
     return itemNames;
 };
 
-const getCartByCartIdAndProductName = (cardId:number|undefined,productName:string):CartContainsProduct =>{
+const getCartByCartIdAndProductName = (cardId:number|undefined,productName:string|undefined):CartContainsProduct |undefined=>{
     const nameAndIdCheck = cartContainsProduct.find((e)=>{
         e.getCartId()=== cardId && e.getProductName() === productName
     })
