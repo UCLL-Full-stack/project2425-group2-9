@@ -33,7 +33,9 @@ const customerRouter = express.Router();
  */
 customerRouter.delete('/:id/cart/:productName', async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const result: string = await customerService.deleteCartItem(Number(req.params.id), String(req.params.productName));
+        const customerId: number = Number(req.params.id);
+        const productName: string = String(req.params.productName);
+        const result: string = await customerService.deleteCartItem({ customerId, productName });
         res.json(result);
         // res.status(200).json(result);   // DOES NOT WORK!!!!!!!! Q&
     } catch (error) {

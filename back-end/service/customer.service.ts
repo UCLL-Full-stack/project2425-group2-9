@@ -7,27 +7,17 @@ import customerDb from "../repository/customer.db";
 import productDb from "../repository/product.db";
 import { DeleteCartItemInput } from "../types";
 
-const deleteCartItem = async (customerId: number, productName: string): Promise<string> => {
-    // VALIDATE
-    if (!customerId) throw new Error("Customer id is required.");
-    if (!productName) throw new Error("Product name is required.");
+const deleteCartItem = ({ customerId, productName }: { customerId: number, productName: string }): string => {
 
     // GET
-    // Q& So much typing is needed to suppress null.
     const customer: Customer | null = customerDb.getCustomerById(customerId);
-    if (!customer) throw new Error("Customer is null.");
-
-    const product: Product | null = productDb.getProductByName(productName);
-    if (!product) throw new Error(`Product ${productName} is null.`);
-
+    if (!customer) throw new Error(`Customer with id ${customerId} does not exist.`);
     const cart: Cart | null = cartDb.getCartByCustomerId(customer.getId());
-    if (!cart) throw new Error("Cart is null");
+    if (!cart) throw new Error(`Customer ${customer.getUsername()} does not have a cart.`);
 
     // DELETE 
-    cartContainsProductDb.deleteCartItemByCartIdAndProductName(cart.getId(), product.getName());
-
-    return "Cart item deleted successfully.";
-    // return product.getName();
+    cartContainsProductDb.deleteCartItemByCartIdAndProductName(cart.getId(), productName);
+    return `Cart item '${productName}' deleted successfully.`;
 }
 
 export default { deleteCartItem };

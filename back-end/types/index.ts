@@ -30,8 +30,8 @@ interface OrderInput {
 }
 
 interface DeleteCartItemInput {
-    customer: CustomerInput;
-    product: ProductInput;
+    customerId: number;
+    productName: string;
 }
 
 interface CartContainsProduct {
