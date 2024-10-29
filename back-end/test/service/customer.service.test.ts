@@ -51,7 +51,7 @@ afterEach(() => {
     jest.clearAllMocks();
 });
 
-test('Given customerId and productName; When deleting cart item; Then cart item is deleted and message indicating success is returned.', () => {
+test('Given customerId and productName; When deleting cart item; Then cart item is deleted and message indicating success is returned.', async () => {
     // GIVEN
     const customerId: number = 1;
     const productName: string = "Bread";
@@ -62,7 +62,7 @@ test('Given customerId and productName; When deleting cart item; Then cart item 
 
 
     // WHEN
-    const returnMessage: string = customerService.deleteCartItem({ customerId, productName });
+    const returnMessage: string = await customerService.deleteCartItem({ customerId, productName });
 
 
     // THEN
@@ -72,7 +72,7 @@ test('Given customerId and productName; When deleting cart item; Then cart item 
 });
 
 // Q& This test fails if the method in the service is async.
-test('Given customerId that does not correspond to any customer; When deleting cart item; Then error is thrown.', () => {
+test('Given customerId that does not correspond to any customer; When deleting cart item; Then error is thrown.', async () => {
     // GIVEN
     const customerId: number = 1;
     const productName: string = "Bread";
@@ -82,11 +82,12 @@ test('Given customerId that does not correspond to any customer; When deleting c
     const deleteCartItem = () => customerService.deleteCartItem({ customerId, productName });
 
     // THEN
-    expect(deleteCartItem).toThrow(`Customer with id ${customerId} does not exist.`);
+    await expect(deleteCartItem).rejects.toThrow(`Customer with id ${customerId} does not exist.`); // Q& Why rejects?
+    // source: https://stackoverflow.com/questions/47144187/can-you-write-async-tests-that-expect-tothrow
 
 });
 
-test('Given customer has no cart; When deleting cart item; Then error is thrown.', () => {
+test('Given customer has no cart; When deleting cart item; Then error is thrown.', async () => {
     // GIVEN
     const customerId: number = 2;
     const productName: string = "Bread";
@@ -97,6 +98,6 @@ test('Given customer has no cart; When deleting cart item; Then error is thrown.
     const deleteCartItem = () => customerService.deleteCartItem({ customerId, productName });
 
     // THEN
-    expect(deleteCartItem).toThrow(`Customer ${customerWithoutCart.getUsername()} does not have a cart.`);
+    await expect(deleteCartItem).rejects.toThrow(`Customer ${customerWithoutCart.getUsername()} does not have a cart.`);
 });
 
