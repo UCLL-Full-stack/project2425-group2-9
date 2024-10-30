@@ -19,8 +19,6 @@ test('given: valid values; when: creating a cart; then: cart is created with tho
     expect(cart.getTotalPrice()).toEqual(totalPrice);
     expect(cart.getCustomerId()).toEqual(customerId);
 
-});
-
 test('given: cart with total price; when: updating total price; then: total price is updated', () => {
     // GIVEN
     const cart: Cart = new Cart({ id, totalPrice, customerId });
