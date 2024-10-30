@@ -7,7 +7,7 @@ import customerDb from "../repository/customer.db";
 import productDb from "../repository/product.db";
 import { DeleteCartItemInput } from "../types";
 
-const deleteCartItem = ({ customerId, productName }: { customerId: number, productName: string }): string => {
+const deleteCartItem = async ({ customerId, productName }: { customerId: number, productName: string }): Promise<string> => {
 
     // GET
     const customer: Customer | null = customerDb.getCustomerById(customerId);

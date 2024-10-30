@@ -1,3 +1,4 @@
+import { throws } from "assert";
 import { Cart } from "../model/cart";
 import { CartContainsProduct } from "../model/cartContainsProduct";
 import { Customer } from "../model/customer";
@@ -41,14 +42,22 @@ const addProductToCart = async(customerData:Customer|undefined,product:Product|u
                 throw new Error("product does not exist")
              }
              const cartItem = await cartContainsProductDb.getCartByCartIdAndProductName(cartId,existingProduct.getName())
-             if (!cartItem) throw new Error("no card found")
              if (cartItem){
                 cartItem.setQuantity(cartItem.getQuantity()+1)
-             }else{
-                const newCartItem = new CartContainsProduct({ cartId, productName: existingProduct.getName(), quantity:1});
-                cartContainsProductDb.addOrUpdateProduct(newCartItem);
-             } 
-             return existingCart
+                await cartContainsProductDb.addOrUpdateProduct(cartItem)
+             }else{//if product does not exist in cart, add it with  default quantity of 1
+                const newProduct = new CartContainsProduct({
+                cartId:existingCart.getId(),
+                productName:existingProduct.getName(),
+                quantity:1})
+                await cartContainsProductDb.addOrUpdateProduct(newProduct)
+             }
+               
+            // if (!cartItem) throw new Error("item not found")
+            //     const totalPriceOfExistingProduct = cartItem?.getQuantity()*existingProduct.getPrice()
+            //const totalTalPriceOfCart = existingCart.getTotalPrice + totalPriceOfExistingProduct ->Q& by default total price of cart is 0???
+            await cartDb.saveCart(existingCart)
+            return existingCart
         }catch(e){
             console.error(e)
         }   
@@ -60,7 +69,7 @@ const addProductToCart = async(customerData:Customer|undefined,product:Product|u
         if (!newProduct) throw new Error("product was not added")
         const newCart =await createNewCart(customerData.getId())
         if (!newCart) throw new Error("no customer found")
-            const newCartItem = new CartContainsProduct({ cartId: newCart.getId(), productName: newProduct.getName(), quantity: 0 });
+            const newCartItem = new CartContainsProduct({ cartId: newCart.getId(), productName: newProduct.getName(), quantity: 1 });
             await cartContainsProductDb.addOrUpdateProduct(newCartItem);
         return newCart
     }

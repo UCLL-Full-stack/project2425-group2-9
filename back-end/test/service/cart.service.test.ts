@@ -70,7 +70,7 @@ const products:Product[]= [
     
 ]
 const cartContainsProduct:CartContainsProduct[] = [new CartContainsProduct({cartId:1,productName:"Bread",quantity:2}),
-    new CartContainsProduct({cartId:1,quantity:1})
+    new CartContainsProduct({cartId:1,productName:"Laptop",quantity:1})
 ]
 //mock setup for createNewCart method
 let createNewCart:jest.Mock
@@ -142,11 +142,12 @@ test ("given: customer does not exist, when: creating new cart, then: error is t
     expect(mockCustomerDbGetCustomerById).toHaveBeenCalledWith(idOfNonExistenceCustomer)
 
 })
-test ("given: product is already in cart, when: adding products to cart, then: products quantity is incremented",async()=>{
+test ("given: customer exist and has a  cart but product is already in cart, when: adding products to cart, then: products quantity is incremented",async()=>{
     //given
     cartDb.getCartByCustomerId = mockCartDbGetCartByCustomerId.mockReturnValue(cart[0])
     productDb.getProductByName = mockProductDbGetProductByName.mockReturnValue(products[0])
     cartContainsProductDb.getCartByCartIdAndProductName = mockCartContainsProductGetCartByCartIdAndProductName.mockReturnValue(cartContainsProduct[0])
+cartContainsProductDb.addOrUpdateProduct = mockCartContainsProductAddOrUpdateProduct.mockReturnValue(new CartContainsProduct({cartId:cart[0].getId(),productName:products[0].getName(),quantity:1}))
 
     //when
     const addtocart = await cartService.addProductToCart(customer1,products[0])
@@ -154,22 +155,22 @@ test ("given: product is already in cart, when: adding products to cart, then: p
     expect(mockCartContainsProductGetCartByCartIdAndProductName).toHaveBeenCalledWith(cart[0].getId(),products[0].getName())
     expect(mockCartDbGetCartByCustomerId).toHaveBeenCalledWith(customer1.getId())
     expect(mockProductDbGetProductByName).toHaveBeenCalledWith(products[0].getName())
+    expect(mockCartContainsProductAddOrUpdateProduct).toHaveBeenCalledWith(expect.objectContaining({cartId:cart[0].getId(),productName:products[0].getName(),quantity:3}))
     expect(addtocart).toEqual(cart[0])
 
 })
-test("given: product is not in cart, when: adding product to card, then: product is added to card",async()=>{
-    // Given
+test("given: customer exist and has a cart but selected product is not in cart, when: adding product to cart, then: product is added to cart",async()=>{
+    // Given 
     cartDb.getCartByCustomerId = mockCartDbGetCartByCustomerId.mockReturnValue(cart[0]);
-    productDb.getProductByName = mockProductDbGetProductByName.mockReturnValue(products[1]);
+    productDb.getProductByName = mockProductDbGetProductByName.mockReturnValue(products[2]);
     cartContainsProductDb.getCartByCartIdAndProductName = mockCartContainsProductGetCartByCartIdAndProductName.mockReturnValue(null); // Product not in cart
-    cartContainsProductDb.addOrUpdateProduct = mockCartContainsProductAddOrUpdateProduct.mockReturnValue(expect.any(CartContainsProduct));
-
+    cartContainsProductDb.addOrUpdateProduct = mockCartContainsProductAddOrUpdateProduct.mockReturnValue(new CartContainsProduct({ cartId: cart[0].getId(), productName: products[2].getName(), quantity: 1 }));
     // When
-    const addToCart = await cartService.addProductToCart(customer1, products[1])
+    const addToCart = await cartService.addProductToCart(customer1, products[2])
     // Then
     expect(mockCartDbGetCartByCustomerId).toHaveBeenCalledWith(customer1.getId());
-    expect(mockProductDbGetProductByName).toHaveBeenCalledWith(products[1].getName());
-    expect(mockCartContainsProductGetCartByCartIdAndProductName).toHaveBeenCalledWith(cart[0].getId(), products[1].getName());
-    // expect(mockCartContainsProductAddOrUpdateProduct).toHaveBeenCalledWith(expect.any(CartContainsProduct));
-    // expect(addToCart).toEqual(cart[0])
+    expect(mockProductDbGetProductByName).toHaveBeenCalledWith(products[2].getName());
+    expect(mockCartContainsProductGetCartByCartIdAndProductName).toHaveBeenCalledWith(cart[0].getId(), products[2].getName());
+    expect(mockCartContainsProductAddOrUpdateProduct).toHaveBeenCalledWith(expect.objectContaining({cartId:cart[0].getId(),productName:products[2].getName(),quantity:1}));
+    expect(addToCart).toEqual(cart[0])
 });

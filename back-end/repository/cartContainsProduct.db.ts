@@ -25,7 +25,7 @@ const getCartByCartIdAndProductName = (cardId:number|undefined,productName:strin
         e.getCartId()=== cardId && e.getProductName() === productName
     })
     if (!nameAndIdCheck){
-        throw new Error("cart does not exist")
+        throw new Error("product  does not exist in cart")
     }
     return nameAndIdCheck
 }

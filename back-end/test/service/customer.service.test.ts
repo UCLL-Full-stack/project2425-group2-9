@@ -51,7 +51,7 @@ afterEach(() => {
     jest.clearAllMocks();
 });
 
-test('Given customerId and productName; When deleting cart item; Then cart item is deleted and message indicating success is returned.', () => {
+test('Given customerId and productName; When deleting cart item; Then cart item is deleted and message indicating success is returned.', async() => {
     // GIVEN
     const customerId: number = 1;
     const productName: string = "Bread";
@@ -62,7 +62,7 @@ test('Given customerId and productName; When deleting cart item; Then cart item 
 
 
     // WHEN
-    const returnMessage: string = customerService.deleteCartItem({ customerId, productName });
+    const returnMessage: string = await customerService.deleteCartItem({ customerId, productName });
 
 
     // THEN

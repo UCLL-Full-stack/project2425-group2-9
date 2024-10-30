@@ -202,7 +202,7 @@ cartRouter.post('/addtocart',async(req:Request,res:Response,next:NextFunction)=>
        if (!id || !password || !securityQuestion || !username || !firstName || !lastName || !phone)
         return res.status(400).json({message:"customers fields are required"})
        const {name,price,unit,stock,description,imagePath} = product
-       if (!name|| !price || !stock || !description || !imagePath)
+       if (!name|| !price ||!unit|| !stock || !description || !imagePath)
         return res.status(404).json({message:"product field id required"})
        const addProductOrUpdate = cartService.addProductToCart(customer,product)
        if (!addProductOrUpdate)

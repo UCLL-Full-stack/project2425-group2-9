@@ -11,7 +11,9 @@ const Product: React.FC<Props> = ({ products }: Props) => {
     const addToCart = async (e: React.MouseEvent<HTMLButtonElement>) => {
         const productInfo = e.currentTarget.parentElement?.children;
 
+        // Increase and quiantity accordinhly.
 
+        // Unhide hidden info of the product.
         if (!productInfo) {throw new Error("Product info null.")};
         for (let info of productInfo) {
             if (info.getAttribute("hidden") === "") {
