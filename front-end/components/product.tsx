@@ -17,6 +17,7 @@ const Product: React.FC<Props> = ({ products }: Props) => {
             const existingItem = prevItems.find(item => item.productName === product.name);
             if (existingItem) {
                 return prevItems.map(item =>
+                    // Rather use if. If have no clue what is going on.
                     item.productName === product.name ? { ...item, quantity: (item.quantity??0) + 1 } : item
                 );
             } else {
@@ -25,29 +26,51 @@ const Product: React.FC<Props> = ({ products }: Props) => {
         });
     };
 
+    // Functions that is called on click of 'Add to cart' button.
     const addItemToCart = async (e: React.MouseEvent<HTMLButtonElement>) => {
         const productInfo = e.currentTarget.parentElement?.children;
-    
+
         if (!productInfo) {
             throw new Error("Product info null.");
         }
     
+        // Unhide hidden product info.
         for (let info of productInfo) {
             if (info.getAttribute("hidden") === "") {
                 info.removeAttribute("hidden");
             }
         }
-    
+
+        // Increase the quantity.
+        const quantityParagraph = productInfo[productInfo.length - 1];
+        // Last child is the span element that contains the quantity number.
+
+        const test = document.querySelector('header p')
+        if (test) {
+            test.textContent = test.textContent + "O";
+        }
+        
+        
+        // let currentQuantity = quantityParagraph.lastChild?.textContent;
+        const quantitySpanElement = quantityParagraph.lastChild;
+        if (quantitySpanElement) {
+            const currentQuantity: number = Number(quantitySpanElement.textContent);
+            const increasedQuantity: number = currentQuantity + 1;
+            quantitySpanElement.textContent = String(increasedQuantity);
+        }
+
         // Get the product name
         const productName = e.currentTarget.parentElement?.children[0].textContent ?? '';
-        console.log("Fetching product:", productName);
+        // console.log("Fetching product:", productName);
     
+        // Get the product from the database.
         try {
-            const response = await ProductService.getProductByName(productName);
+            const response = await ProductService.getProductByName(productName); // Q& Is this uppercase?
             if (!response.ok) {
                 throw new Error(`Error fetching product: ${response.statusText}`);
             }
             const product: Product = await response.json();
+            // Add the product to cart.
             addToCart(product);
         } catch (error) {
             console.error("Failed to fetch product:", error);
@@ -91,7 +114,8 @@ const Product: React.FC<Props> = ({ products }: Props) => {
                         <p>{product.price} $ / {product.unit}</p>
                         <button onClick={(e) => addItemToCart(e)}>Add to cart</button>
                         <p hidden >Stock: {product.stock}</p>
-                        <p hidden >Quantity: 0</p>
+                        {/* Quantity Increases without accessing actual value in the database. */}
+                        <p hidden>Quantity: <span>0</span></p>
                     </div>
                 </article>
             ))}

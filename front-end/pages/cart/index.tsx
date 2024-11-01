@@ -5,9 +5,9 @@ import type { Product } from "@/types";
 
 const Cart: React.FC = () => {
     const [products, setProducts] = useState<Array<Product>>([]);
-    const fetchProducts = async (cartId: number):Promise<void> => {
+    const fetchProductsByCartId = async (cartId: number): Promise<void> => {
         try {
-            const response = await ProductService.fetchAllCarts(cartId);
+            const response = await ProductService.fetchAllCarts(cartId); // TODO name is misleading. Endpoint doesn't work.
             const result = await response.json();
             setProducts(result);
         } catch (error) {
@@ -16,7 +16,7 @@ const Cart: React.FC = () => {
     };
 
     useEffect(() => {
-        fetchProducts(1);
+        fetchProductsByCartId(1);
     }, []);
 
     return (

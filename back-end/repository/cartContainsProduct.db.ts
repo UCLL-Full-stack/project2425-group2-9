@@ -1,10 +1,12 @@
 import { CartContainsProduct } from "../model/cartContainsProduct";
 
-
+// DO NOT MODIFY!!! IT DEPENDS ON cartDB and productDB.
 const cartContainsProduct: CartContainsProduct[] = [
-    new CartContainsProduct({ cartId: 1, productName: "Bread", quantity: 2 }),
-    new CartContainsProduct({cartId:1,productName:"Laptop",quantity:5}),
-    new CartContainsProduct({cartId:1,productName:"Mayonnaise",quantity:5})
+    new CartContainsProduct({ cartId: 2, productName: "Bread", quantity: 2 }),
+    new CartContainsProduct({ cartId: 2, productName: "Laptop", quantity: 5 }),
+    new CartContainsProduct({ cartId: 2, productName: "Mayonnaise", quantity: 5 }),
+    new CartContainsProduct({ cartId: 3, productName: "Mouse", quantity: 5 }),
+    new CartContainsProduct({ cartId: 3, productName: "Bananas", quantity: 5 }),
 ];
 
 const getCartItemNamesByCartId = (id: number): string[] => {
@@ -20,31 +22,31 @@ const getCartItemNamesByCartId = (id: number): string[] => {
     return itemNames;
 };
 
-const getCartByCartIdAndProductName = (cardId:number|undefined,productName:string|undefined):CartContainsProduct |undefined=>{
-    const nameAndIdCheck = cartContainsProduct.find((e)=>{
-        e.getCartId()=== cardId && e.getProductName() === productName
+const getCartByCartIdAndProductName = (cardId: number | undefined, productName: string | undefined): CartContainsProduct | undefined => {
+    const nameAndIdCheck = cartContainsProduct.find((e) => {
+        e.getCartId() === cardId && e.getProductName() === productName
     })
-    if (!nameAndIdCheck){
+    if (!nameAndIdCheck) {
         throw new Error("cart does not exist")
     }
     return nameAndIdCheck
 }
 
-const addOrUpdateProduct = (cartItem:CartContainsProduct):CartContainsProduct=>{
-    const existingCartItem = getCartByCartIdAndProductName(cartItem.getCartId(),cartItem.getProductName())
-    if (existingCartItem){
-        cartItem.setQuantity(existingCartItem.getQuantity()+cartItem.getQuantity())
-    }else{
+const addOrUpdateProduct = (cartItem: CartContainsProduct): CartContainsProduct => {
+    const existingCartItem = getCartByCartIdAndProductName(cartItem.getCartId(), cartItem.getProductName())
+    if (existingCartItem) {
+        cartItem.setQuantity(existingCartItem.getQuantity() + cartItem.getQuantity())
+    } else {
         cartContainsProduct.push(cartItem)
     }
     return cartItem
 }
 // const getCartItemByCartId, returns a list of all items with the correct cart id.
-const returnAllItemsInCart = (cartId:number|undefined):CartContainsProduct[]=>{
-    return cartContainsProduct.filter(item =>item.getCartId() === cartId)
+const returnAllItemsInCart = (cartId: number | undefined): CartContainsProduct[] => {
+    return cartContainsProduct.filter(item => item.getCartId() === cartId)
 }//now we have a list of carts that match a particular cart id
 
-const deleteCartItemByCartIdAndProductName = (cartId: number|undefined, name: string): string => {
+const deleteCartItemByCartIdAndProductName = (cartId: number | undefined, name: string): string => {
     for (let i = 0; i < cartContainsProduct.length; i++) {
         if (cartContainsProduct[i].getProductName() === name && cartContainsProduct[i].getCartId() === cartId) {
             cartContainsProduct.splice(i, 1);
@@ -53,9 +55,9 @@ const deleteCartItemByCartIdAndProductName = (cartId: number|undefined, name: st
     }
     return "Item not in cart."
 };
- const getProductsByNameInCart = (cartId:number|undefined,productName:string):CartContainsProduct[]=>{
-    return returnAllItemsInCart(cartId).filter((matchingCart)=>matchingCart.getProductName()=== productName)
- }
+const getProductsByNameInCart = (cartId: number | undefined, productName: string): CartContainsProduct[] => {
+    return returnAllItemsInCart(cartId).filter((matchingCart) => matchingCart.getProductName() === productName)
+}
 
 export default {
     getCartItemNamesByCartId,

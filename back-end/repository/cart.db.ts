@@ -1,32 +1,44 @@
 
 import { Cart } from "../model/cart";
+
+// DO NOT MODIFY!! Depends on cartContainsProductDB.
 const carts: Cart[] = [
     new Cart({
         id: 2,
+        totalPrice: 0,
+        customerId: 1,
+    }),
+    // One customer can have many carts. The most recent one is the one with id 3. The customer already made an order with cart 2.
+    new Cart({
+        id: 3,
         totalPrice: 0,
         customerId: 1,
     })
 ];
 //you need to save the cart after creating it
 
-const saveCart = (cart:Cart):Cart|undefined=>{
-     const existingCart = carts.findIndex((c)=>{
-        cart.getId()=== c.getId()
-     })
-     if (existingCart!==-1){
+const saveCart = (cart: Cart): Cart | undefined => {
+    const existingCart = carts.findIndex((c) => {
+        cart.getId() === c.getId()
+    })
+    if (existingCart !== -1) {
         carts[existingCart] = cart
-     }else{
+    } else {
         carts.push(cart)
-     }
-     return cart
+    }
+    return cart
 }
 
 
-const getCartByCustomerId = (customerId: number|undefined): Cart | null => {
+const getCartByCustomerId = (customerId: number | undefined): Cart | null => {
     return carts.find((cart) => cart.getCustomerId() === customerId) || null;
 }
-//get cart
-const returnAllCartsAvailable = ():Cart[]|null=>{
+
+const getCartById = (cartId: number) => {
+    return carts.find((cart) => cart.getId() === cartId);
+};
+
+const returnAllCartsAvailable = (): Cart[] | null => {
     return carts
 }
 
@@ -34,5 +46,6 @@ const returnAllCartsAvailable = ():Cart[]|null=>{
 export default {
     getCartByCustomerId,
     saveCart,
-    returnAllCartsAvailable
+    returnAllCartsAvailable,
+    getCartById: getCartById
 };

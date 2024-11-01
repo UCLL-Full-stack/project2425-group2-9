@@ -1,7 +1,5 @@
-import exp from "constants"
-
-const fetchAllCarts = async(cartId:number) =>{
-    return fetch(`${process.env.NEXT_PUBLIC_API_URL}/carts/${cartId}`,
+const fetchCartById = async(id: number) =>{
+    return fetch(`${process.env.NEXT_PUBLIC_API_URL}/carts/${id}`,
         {
             method:"GET",
             headers:{
@@ -11,7 +9,7 @@ const fetchAllCarts = async(cartId:number) =>{
 }
 
 const ProductService = {
-    fetchAllCarts
+    fetchAllCarts: fetchCartById
 }
 
 export default ProductService

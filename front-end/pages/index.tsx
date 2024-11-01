@@ -9,14 +9,14 @@ import ProductService from "@/services/ProductService";
 const Home: React.FC = () => {
   const [products, setProducts] = useState<Array<Product>>([]);
 
-  const getProducts = async () => {
+  const fetchProducts = async () => {
     const response = await ProductService.getAllProducts();
     const productss = await response.json();
     setProducts(productss);
   };
 
   useEffect(() => {
-    getProducts();
+    fetchProducts();
   }, []);
 
 

@@ -16,6 +16,7 @@ const Cart: React.FC<CartProps> = ({ cartItems, products, incrementQuantity, dec
         <div>
             <h2>Cart</h2>
             {cartItems.map((item, index) => {
+                // Assume that item refers to product in the cart, meanwhile product refers to product in the product database.
                 const product = getProduct(item.productName);
                 return product ? (
                     <div key={index}>

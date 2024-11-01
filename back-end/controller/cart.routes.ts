@@ -75,20 +75,20 @@ const cartRouter = express.Router();
  */
 
 // URL: /carts/create
-cartRouter.post("/create",async(req:Request,res:Response,next:NextFunction)=>{
-    try{
-        const {customerId} = req.body
-        if (!customerId){
-            return res.status(400).json({message:'customerId is needed'})//Q& am not really sure of this because we wont expect our customer to manually fill in their ID
+cartRouter.post("/create", async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { customerId } = req.body
+        if (!customerId) {
+            return res.status(400).json({ message: 'customerId is needed' })//Q& am not really sure of this because we wont expect our customer to manually fill in their ID
         }
-    const createCart = await cartService.createNewCart(customerId)
-    if (!createCart){
-        return res.status(404).json({message:'sorry... cart could not be created, try again'})
-    }
-    return res.status(201).json({message:'cart created successfully'})
-    }catch(e ){
+        const createCart = await cartService.createNewCart(customerId)
+        if (!createCart) {
+            return res.status(404).json({ message: 'sorry... cart could not be created, try again' })
+        }
+        return res.status(201).json({ message: 'cart created successfully' })
+    } catch (e) {
         const error = (e as Error)
-        res.status(400).json({status:"error",message:error.message})
+        res.status(400).json({ status: "error", message: error.message })
     }
 
 })
@@ -192,23 +192,23 @@ cartRouter.post("/create",async(req:Request,res:Response,next:NextFunction)=>{
  *                                  type: string
  *                                  example: "An error occurred"
  */
-cartRouter.post('/addtocart',async(req:Request,res:Response,next:NextFunction)=>{
-    try{
-       const {customer,product} = req.body
-       if (!customer || !product) //Q& if any field is missing
-        return res.status(404).json({message:"no customer or product found"})
-       
-       const {id,password,securityQuestion,username,firstName,lastName,phone} = customer
-       if (!id || !password || !securityQuestion || !username || !firstName || !lastName || !phone)
-        return res.status(400).json({message:"customers fields are required"})
-       const {name,price,unit,stock,description,imagePath} = product
-       if (!name|| !price || !stock || !description || !imagePath)
-        return res.status(404).json({message:"product field id required"})
-       const addProductOrUpdate = cartService.addProductToCart(customer,product)
-       if (!addProductOrUpdate)
-        return res.status(401).json({message:"sorry... products was not updated/added"})
-       return res.status(201).json({message:"products added successfully"})
-    }catch(error){
+cartRouter.post('/addtocart', async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { customer, product } = req.body
+        if (!customer || !product) //Q& if any field is missing
+            return res.status(404).json({ message: "no customer or product found" })
+
+        const { id, password, securityQuestion, username, firstName, lastName, phone } = customer
+        if (!id || !password || !securityQuestion || !username || !firstName || !lastName || !phone)
+            return res.status(400).json({ message: "customers fields are required" })
+        const { name, price, unit, stock, description, imagePath } = product
+        if (!name || !price || !stock || !description || !imagePath)
+            return res.status(404).json({ message: "product field id required" })
+        const addProductOrUpdate = cartService.addProductToCart(customer, product)
+        if (!addProductOrUpdate)
+            return res.status(401).json({ message: "sorry... products was not updated/added" })
+        return res.status(201).json({ message: "products added successfully" })
+    } catch (error) {
         next(error)
     }
 })
@@ -220,7 +220,7 @@ cartRouter.post('/addtocart',async(req:Request,res:Response,next:NextFunction)=>
  *     summary: Get a cart with all its products.
  *     parameters:
  *          - in: path
- *            name: CartId
+ *            name: cartId
  *            schema:
  *              type: number
  *              required: true
@@ -235,16 +235,17 @@ cartRouter.post('/addtocart',async(req:Request,res:Response,next:NextFunction)=>
  *               $ref: '#/components/schemas/Product'
  */
 
-cartRouter.get("/:cartId",async(req:Request,res:Response,next:NextFunction)=>{
-    try{
-        const cart:Product[]|null = await cartService.returnAllProductsInCart(Number(req.params.cartId))
+cartRouter.get("/:cartId", async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const cartId: number = Number(req.params.cartId);
+        const cart: Product[] | null = await cartService.returnAllProductsInCart(cartId);
         if (!cart)
-            res.status(404).json({message:"no cards found"})
-        res.status(202).json(cart)
-    }catch(e){
-        next(e)
+            res.status(404).json({ message: `Cart with id ${cartId} not found.` });
+        res.status(202).json(cart);
+    } catch (e) {
+        next(e);
     }
 
 
 })
-export {cartRouter}
+export { cartRouter }
