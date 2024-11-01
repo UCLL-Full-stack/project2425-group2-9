@@ -2,7 +2,7 @@
 import { Cart } from "../model/cart";
 const carts: Cart[] = [
     new Cart({
-        id: 1,
+        id: 2,
         totalPrice: 0,
         customerId: 1,
     })

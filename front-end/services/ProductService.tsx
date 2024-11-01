@@ -9,9 +9,20 @@ const getAllProducts = async () => {
         }
     );
 };
-
+const getProductByName = async(name:string|undefined)=>{
+    return fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/products/${name}`,
+        {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        }
+    );
+}
 const ProductService = {
-    getAllProducts
+    getAllProducts,
+    getProductByName
 };
 
 export default ProductService;

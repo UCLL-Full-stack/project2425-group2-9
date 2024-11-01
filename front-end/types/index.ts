@@ -23,6 +23,12 @@ export type User = {
   role?: string;
 };
 
+export type Cart ={
+    cartId?:number|undefined
+    customerId?:number|undefined
+    totalPrice?:number
+}
+
 export type Product = {
   name: string;
   price: number;
@@ -31,3 +37,10 @@ export type Product = {
   description: string;
   imagePath: string;
 };
+
+export type CartItem = {
+  cartId:number|undefined
+  productName:string
+  quantity:number|undefined
+
+}
