@@ -27,6 +27,7 @@ import { Customer } from '../model/customer'; // Add this line to import the Cus
 import cartService from '../service/cart.service';
 import { Product } from '../model/product';
 import { Cart } from '../model/cart';
+import { CartContainsProduct } from '../model/cartContainsProduct';
 
 const cartRouter = express.Router();
 
@@ -198,15 +199,19 @@ cartRouter.post('/addtocart', async (req: Request, res: Response, next: NextFunc
         if (!customer || !product) //Q& if any field is missing
             return res.status(404).json({ message: "no customer or product found" })
 
-        const { id, password, securityQuestion, username, firstName, lastName, phone } = customer
-        if (!id || !password || !securityQuestion || !username || !firstName || !lastName || !phone)
+        const { id, password, securityQuestion, userName, firstName, lastName, phone } = customer
+        if (!id || !password || !securityQuestion || !userName || !firstName || !lastName || !phone)
+
             return res.status(400).json({ message: "customers fields are required" })
+
         const { name, price, unit, stock, description, imagePath } = product
         if (!name || !price || !stock || !description || !imagePath)
             return res.status(404).json({ message: "product field id required" })
+
         const addProductOrUpdate = cartService.addProductToCart(customer, product)
         if (!addProductOrUpdate)
             return res.status(401).json({ message: "sorry... products was not updated/added" })
+
         return res.status(201).json({ message: "products added successfully" })
     } catch (error) {
         next(error)
@@ -238,7 +243,8 @@ cartRouter.post('/addtocart', async (req: Request, res: Response, next: NextFunc
 cartRouter.get("/:cartId", async (req: Request, res: Response, next: NextFunction) => {
     try {
         const cartId: number = Number(req.params.cartId);
-        const cart: Product[] | null = await cartService.returnAllProductsInCart(cartId);
+        const cart: CartContainsProduct[] | null = await cartService.getCartContainsProductByCartId(cartId);
+        // const cart: Product[] | null = await cartService.returnAllProductsInCart(cartId);
         if (!cart)
             res.status(404).json({ message: `Cart with id ${cartId} not found.` });
         res.status(202).json(cart);

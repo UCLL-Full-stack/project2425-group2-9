@@ -1,8 +1,8 @@
 import Image from 'next/image'
 import { useState } from 'react';
-import type { Product,CartItem } from '../types';
-import Cart from './cart';
+import type { Product } from '../types';
 import ProductService from '@/services/ProductService';
+import CartItem from './cartItem';
 
 
 type Props = {
@@ -119,7 +119,7 @@ const Product: React.FC<Props> = ({ products }: Props) => {
                     </div>
                 </article>
             ))}
-            <Cart 
+            <CartItem 
             cartItems={cartItems}
             products={products}
             incrementQuantity={incrementQuantity}

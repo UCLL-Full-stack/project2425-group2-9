@@ -15,9 +15,17 @@ const Home: React.FC = () => {
     setProducts(productss);
   };
 
+    // Highlight current tab in header.
+    const highlightCurrentTabInMenu = () => {
+      const cartTabElement = document.querySelector("header nav a:nth-child(1)");
+      if (cartTabElement) cartTabElement.setAttribute("style", "background-color: green;");
+  };
+
   useEffect(() => {
     fetchProducts();
+    highlightCurrentTabInMenu();
   }, []);
+
 
 
   return (

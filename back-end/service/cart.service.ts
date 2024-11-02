@@ -7,7 +7,7 @@ import cartContainsProductDb from "../repository/cartContainsProduct.db";
 import customerDb from "../repository/customer.db";
 import productDb from "../repository/product.db";
 //Q& should all methods in the service be asynchronous?
-const createNewCart = async (newCustomerId: number | undefined): Promise<Cart | null> => {
+const createNewCart = async (newCustomerId: number): Promise<Cart | null> => {
     const customer = await customerDb.getCustomerById(newCustomerId);
     if (!customer) throw new Error(`No customer found with id ${newCustomerId}`);
     const hasCart = cartDb.getCartByCustomerId(customer.getId());
@@ -26,7 +26,7 @@ const createNewCart = async (newCustomerId: number | undefined): Promise<Cart | 
     return null;
 }
 
-const addProductToCart = async (customerData: Customer | undefined, product: Product | undefined): Promise<Cart | null> => {
+const addProductToCart = async (customerData: Customer, product: Product | undefined): Promise<Cart | null> => {
     if ((!customerData)) throw new Error("customer not found")
     if (!product) throw new Error("product not found")
     const existingCart: Cart | null = await cartDb.getCartByCustomerId(customerData.getId())
@@ -36,6 +36,9 @@ const addProductToCart = async (customerData: Customer | undefined, product: Pro
             if (cartId === undefined) {
                 throw new Error("Cart ID is undefined");
             }
+
+            // TODO: Check if the user exists!
+
             const existingProduct = await productDb.getProductByName(product.getName())
             if (!existingProduct) {
                 throw new Error("product does not exist")
@@ -61,6 +64,8 @@ const addProductToCart = async (customerData: Customer | undefined, product: Pro
         const newCart = await createNewCart(customerData.getId())
         if (!newCart) throw new Error("no customer found")
         const newCartItem = new CartContainsProduct({ cartId: newCart.getId(), productName: newProduct.getName(), quantity: 0 });
+
+
         await cartContainsProductDb.addOrUpdateProduct(newCartItem);
         return newCart
     }
@@ -103,4 +108,12 @@ const returnAllProductsInCart = async (cartId: number): Promise<Product[] | null
     return null
 
 }
-export default { createNewCart, getCartInformation, addProductToCart, returnAllProductsInCart }
+
+const getCartContainsProductByCartId = async (id: number): Promise<Array<CartContainsProduct>> => {
+    return cartContainsProductDb.returnAllItemsInCart(id);
+};
+
+
+
+
+export default { createNewCart, getCartInformation, addProductToCart, returnAllProductsInCart, getCartContainsProductByCartId }

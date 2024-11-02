@@ -64,5 +64,6 @@ export default {
     deleteCartItemByCartIdAndProductName,
     getCartByCartIdAndProductName,
     addOrUpdateProduct,
-    getProductsByNameInCart
+    getProductsByNameInCart,
+    returnAllItemsInCart
 }

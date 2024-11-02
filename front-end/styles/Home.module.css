@@ -35,6 +35,23 @@
   margin: 15px 0;
 }
 
+.main {
+  background-color: slategrey;
+
+  padding: 25px 0;
+}
+
+
+/* TODO: Selecting with ID does not work. */
+.main button:first-child {
+  color: red;
+
+  width: 150px;
+  margin: 0 auto 35px auto;
+
+  display: block;
+}
+
 @media only screen and (max-width: 1000px) {
   .products {
     display: flex;

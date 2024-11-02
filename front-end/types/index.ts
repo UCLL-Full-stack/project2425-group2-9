@@ -23,10 +23,10 @@ export type User = {
   role?: string;
 };
 
-export type Cart ={
-    cartId?:number|undefined
-    customerId?:number|undefined
-    totalPrice?:number
+export type Cart = {
+  cartId?: number | undefined
+  customerId?: number | undefined
+  totalPrice?: number
 }
 
 export type Product = {
@@ -39,8 +39,7 @@ export type Product = {
 };
 
 export type CartItem = {
-  cartId:number|undefined
-  productName:string
-  quantity:number|undefined
-
+  cartId: number,
+  productName: string,
+  quantity: number
 }

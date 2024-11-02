@@ -21,7 +21,7 @@ const customers: Customer[] = [
     })
 ];
 
-const getCustomerById = (id: number|undefined): Customer | null => {
+const getCustomerById = (id: number | undefined): Customer | null => {
     return customers.find((customer) => customer.getId() === id) || null;
 }
 

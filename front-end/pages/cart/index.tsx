@@ -1,49 +1,88 @@
-import React, { useState, useEffect } from 'react';
 import Header from "@/components/header";
-import ProductService from "@/services/CartService";
-import type { Product } from "@/types";
+import Product from "@/components/product";
+import ProductService from "@/services/ProductService";
+import styles from "../../styles/home.module.css";
+import { useState, useEffect } from "react";
+import CartService from "@/services/CartService";
+import CartItem from "@/components/cartItem";
 
 const Cart: React.FC = () => {
+    const [cartItems, setCartItems] = useState<Array<CartItem>>([]);
     const [products, setProducts] = useState<Array<Product>>([]);
-    const fetchProductsByCartId = async (cartId: number): Promise<void> => {
-        try {
-            const response = await ProductService.fetchAllCarts(cartId); // TODO name is misleading. Endpoint doesn't work.
-            const result = await response.json();
-            setProducts(result);
-        } catch (error) {
-            console.error("Failed to fetch products", error);
-        }
+
+    const fetchCartById = async (cartId: number) => {
+        const response = await CartService.fetchCartItemsByCartId(cartId);
+        const cartItemss = await response.json();
+        setCartItems(cartItemss);
+    };
+
+    const fetchProducts = async () => {
+      const response = await ProductService.getAllProducts();
+      const productss = await response.json();
+      setProducts(productss);
+    };
+
+    const updateProduct = async () => {
+        CartService.updateOrAddCartItem();
+    };
+  
+    useEffect(() => {
+    }, []);
+  
+    const incrementQuantity = (productName: string) => {
+        setCartItems(prevItems =>
+            prevItems.map(item =>
+                item.productName === productName ? { ...item, quantity: (item.quantity ?? 0) + 1 } : item
+            )
+        );
+        // updateProduct();
+    };
+
+    const decrementQuantity = (name: string) => {
+        setCartItems(prevItems =>
+            prevItems.map(item =>
+                item.productName === name ? { ...item, quantity: (item.quantity ? item.quantity - 1: 0) } : item
+            )
+        );
+    };
+
+    const clearCart = () => {
+        setCartItems([]);
     };
 
     useEffect(() => {
-        fetchProductsByCartId(1);
+      fetchProducts();
+      fetchCartById(3); // TODO: Cart id should not be hardcoded!
+      highlightCurrentTabInMenu();
     }, []);
+
+    // Highlight current tab in header.
+    const highlightCurrentTabInMenu = () => {
+        const cartTabElement = document.querySelector("header nav a:nth-child(2)");
+        if (cartTabElement) cartTabElement.setAttribute("style", "background-color: green;");
+    };
 
     return (
         <>
             <Header />
-            <table>
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Price</th>
-                        <th>Unit</th>
-                        <th>Stock</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {products.map((product) => (
-                        <tr key={product.name}>
-                            <td>{product.name}</td>
-                            <td>{product.price}</td>
-                            <td>{product.unit}</td>
-                            <td>{product.stock}</td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
+            <main className={styles.main}>
+                <button onClick={clearCart} >Clear Cart</button>
+                <section className={styles.products}>
+                {
+                    cartItems &&
+                    (<CartItem 
+                    cartItems={cartItems}
+                    products={products}
+                    incrementQuantity={incrementQuantity}
+                    decrementQuantity={decrementQuantity}
+                    clearCart={clearCart}
+                    />)
+                }
+                </section>
+            </main>  
         </>
     );
+
 };
 
 export default Cart;
