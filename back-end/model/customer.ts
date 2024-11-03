@@ -1,5 +1,5 @@
 export class Customer {
-    private id?: number| undefined;
+    private id: number;
     private password: string;
     private securityQuestion: string;
     private username: string;
@@ -26,10 +26,10 @@ export class Customer {
         this.phone = customer.phone;
     }
 
-    getId(): number|undefined {
+    getId(): number {
         return this.id;
     }
-    setId(newId:number |undefined):void {
+    setId(newId: number): void {
         this.id = newId
     }
     getPassword(): string {

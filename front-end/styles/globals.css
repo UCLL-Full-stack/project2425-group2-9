@@ -51,3 +51,8 @@ button {
     padding: 0.5rem 1rem;
     font-weight: bold;
 }
+
+nav a {
+    width: 150px;
+    text-align: center;
+}

@@ -2,27 +2,27 @@ import { CartInputs, ProductInput } from "../types";
 import { Product } from "./product";
 
 export class Cart {
-    private id?: undefined | number;
+    private id!: number;
     private totalPrice: number = 0;
-    private customerId?: number|undefined; 
+    private customerId!: number;
 
     // Q& Is it not better to use setters immediately in the constructor?
     //I also thought of the same thing. I thing we could
     //do we need any extra logic for setId methods in the classes?
 
-    constructor( { id,totalPrice,customerId}: CartInputs) {
-        this.setId(id);
-        this.setCustomerId(customerId);
-        if (totalPrice !== undefined) {
-            this.setTotalPrice(totalPrice);
+    constructor(cart: { id: number, totalPrice: number, customerId: number }) {
+        this.setId(cart.id);
+        this.setCustomerId(cart.customerId);
+        if (cart.totalPrice !== undefined) {
+            this.setTotalPrice(cart.totalPrice);
         }
     }
 
-    getId(): number | undefined{
+    getId(): number {
         return this.id;
     }
 
-    setId(id: number|undefined): void {
+    setId(id: number): void {
         this.id = id;
     }
 
@@ -34,11 +34,11 @@ export class Cart {
         this.totalPrice = totalPrice;
     }
 
-    getCustomerId(): number|undefined {
+    getCustomerId(): number {
         return this.customerId;
     }
 
-    setCustomerId(customerId: number | undefined): void {
+    setCustomerId(customerId: number): void {
         this.customerId = customerId;
     }
     //  getProducts():Product[]|undefined{

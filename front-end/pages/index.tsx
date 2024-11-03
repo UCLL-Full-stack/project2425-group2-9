@@ -5,19 +5,28 @@ import Product from "@/components/product";
 import { Lecturer } from "@/types";
 import { useState, useEffect } from "react";
 import ProductService from "@/services/ProductService";
+import CustomerService from "@/services/CustomerSevice";
 
 const Home: React.FC = () => {
   const [products, setProducts] = useState<Array<Product>>([]);
 
-  const getProducts = async () => {
+  const fetchProducts = async () => {
     const response = await ProductService.getAllProducts();
     const productss = await response.json();
     setProducts(productss);
   };
 
+    // Highlight current tab in header.
+    const highlightCurrentTabInMenu = () => {
+      const cartTabElement = document.querySelector("header nav a:nth-child(1)");
+      if (cartTabElement) cartTabElement.setAttribute("style", "background-color: green;");
+  };
+
   useEffect(() => {
-    getProducts();
+    fetchProducts();
+    highlightCurrentTabInMenu();
   }, []);
+
 
 
   return (

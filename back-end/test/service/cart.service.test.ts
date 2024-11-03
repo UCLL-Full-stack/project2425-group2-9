@@ -160,16 +160,16 @@ test ("given: product is already in cart, when: adding products to cart, then: p
 test("given: product is not in cart, when: adding product to card, then: product is added to card",async()=>{
     // Given
     cartDb.getCartByCustomerId = mockCartDbGetCartByCustomerId.mockReturnValue(cart[0]);
-    productDb.getProductByName = mockProductDbGetProductByName.mockReturnValue(products[1]);
+    productDb.getProductByName = mockProductDbGetProductByName.mockReturnValue(products[2]);
     cartContainsProductDb.getCartByCartIdAndProductName = mockCartContainsProductGetCartByCartIdAndProductName.mockReturnValue(null); // Product not in cart
-    cartContainsProductDb.addOrUpdateProduct = mockCartContainsProductAddOrUpdateProduct.mockReturnValue(expect.any(CartContainsProduct));
+    cartContainsProductDb.addOrUpdateProduct = mockCartContainsProductAddOrUpdateProduct.mockReturnValue(new CartContainsProduct({cartId:cart[0].getId(),productName:products[2].getName(),quantity:1}));
 
     // When
-    const addToCart = await cartService.addProductToCart(customer1, products[1])
+    const addToCart = await cartService.addProductToCart(customer1, products[2])
     // Then
     expect(mockCartDbGetCartByCustomerId).toHaveBeenCalledWith(customer1.getId());
-    expect(mockProductDbGetProductByName).toHaveBeenCalledWith(products[1].getName());
-    expect(mockCartContainsProductGetCartByCartIdAndProductName).toHaveBeenCalledWith(cart[0].getId(), products[1].getName());
-    // expect(mockCartContainsProductAddOrUpdateProduct).toHaveBeenCalledWith(expect.any(CartContainsProduct));
-    // expect(addToCart).toEqual(cart[0])
+    expect(mockProductDbGetProductByName).toHaveBeenCalledWith(products[2].getName());
+    expect(mockCartContainsProductGetCartByCartIdAndProductName).toHaveBeenCalledWith(cart[0].getId(), products[2].getName());
+     expect(mockCartContainsProductAddOrUpdateProduct).toHaveBeenCalledWith(expect.objectContaining({cartId:cart[0].getId(),productName:products[2].getName(),quantity:1}));
+     expect(addToCart).toEqual(cart[0])
 });
