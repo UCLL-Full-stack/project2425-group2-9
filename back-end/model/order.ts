@@ -1,26 +1,26 @@
 import { OrderInput } from "../types";
 
 export class Order {
-    private cartId!: number;
-    private date!: Date;
+    private cartId: number;
+    private date: Date;
 
     constructor(order: { cartId: number, date: Date }) {
-        this.setCartId(order.cartId);
-        this.setDate(order.date);
+        this.validate(order);
+
+        this.cartId = order.cartId;
+        this.date = order.date;
     }
 
-    public getCartId(): number | undefined {
+    validate(order: { date: Date }) {
+        if (!order.date) throw new Error("Date is required.");
+    }
+
+    getCartId(): number | undefined {
         return this.cartId
     }
-    setCartId(cartId: number) {
-        this.cartId = cartId;
-    }
 
-    public getDate(): Date {
+    getDate(): Date {
         return this.date
-    }
-    setDate(date: Date) {
-        this.date = date;
     }
 
     equals(newOrder: Order) {

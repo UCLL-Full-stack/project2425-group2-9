@@ -30,12 +30,12 @@ beforeEach(() => {
 });
 
 // Q& How should we write the given part of the test name if there are required NO PARAMETERS for the function.
-test('Given there are products; When getting all products; Then all products are returned.', () => {
+test('Given there are products; When getting all products; Then all products are returned.', async () => {
     // GIVEN
     productDb.getAllProducts = mockProductDbGetAllProducts.mockReturnValue(products);
 
     // WHEN
-    const receivedProducts: Product[] = productService.getAllProducts();
+    const receivedProducts: Product[] = await productService.getAllProducts();
 
     // THEN
     expect(mockProductDbGetAllProducts).toHaveBeenCalledTimes(1);

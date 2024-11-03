@@ -1,15 +1,13 @@
 import { Cart } from '../../model/cart';
+
 const id: number = 8872523;
-    const totalPrice: number = 50;
-    const customerId: number = 522567;
-   
+const totalPrice: number = 50;
+const customerId: number = 522567;
 
 // Q&A Do we have to write given when then with colons and semi-colons? A: Doesn't matter as long as it's clear.
-test('given: valid values; when: creating a cart; then: cart is created with those values.', () => {
+test('Given valid values; When creating a cart; Then cart is created with those values.', () => {
     // GIVEN 
-    const id: number = 8872523;
-    const totalPrice: number = 50;
-    const customerId: number = 522567;
+    // Values at the top of this file.
 
     // WHEN
     const cart: Cart = new Cart({ id, totalPrice: totalPrice, customerId: customerId });
@@ -17,32 +15,16 @@ test('given: valid values; when: creating a cart; then: cart is created with tho
     // THEN
     expect(cart.getId()).toEqual(id);
     expect(cart.getTotalPrice()).toEqual(totalPrice);
-        expect(cart.getCustomerId()).toEqual(customerId);
-    });
-
-test('given: cart with total price; when: updating total price; then: total price is updated', () => {
-    // GIVEN
-    const cart: Cart = new Cart({ id, totalPrice, customerId });
-    // WHEN
-    cart.setTotalPrice(100);
-    // THEN
-    expect(cart.getTotalPrice()).toEqual(100);
+    expect(cart.getCustomerId()).toEqual(customerId);
 });
 
-test('given: cart with customer ID; when: updating customer ID; then: customer ID is updated', () => {
+test('Given cart with negative total price; When creating a cart; Then error is thrown.', () => {
     // GIVEN
-    const cart: Cart = new Cart({ id, totalPrice, customerId});
+    // Values at the top of this file.
+
     // WHEN
-    cart.setCustomerId(999999);
+    const createCart = () => new Cart({ id, totalPrice: -50, customerId });
+
     // THEN
-    expect(cart.getCustomerId()).toEqual(999999);
+    expect(createCart).toThrow("Total price must be non-negative.");
 });
-test("given: cart id is undefined, when: creating a cart, then an id is assigned to cart",()=>{
-    //given
-    const cart = new Cart({totalPrice, customerId})
-    //when
-    cart.setId(23000)
-    //then
-    expect(cart.getId()).toEqual(23000)
-    
-})
