@@ -43,13 +43,13 @@ test('Given there are products; When getting all products; Then all products are
     expect(receivedProducts).toEqual(products);
 });
 
-test('Given product exists; When getting product by name; Then product with that name is returned.', () => {
+test('Given product exists; When getting product by name; Then product with that name is returned.', async () => {
     // GIVEN
     const productName: string = "Bread";
     productDb.getProductByName = mockProductDbGetProductByName.mockReturnValue(products[0]); // at index 0, there is Bread!
 
     // WHEN
-    const receivedProduct = productService.getProductByName(productName);
+    const receivedProduct = await productService.getProductByName(productName);
 
     // THEN
     expect(mockProductDbGetProductByName).toHaveBeenCalledTimes(1);
@@ -66,5 +66,5 @@ test('Given product does not exist; When getting product by name; Then error is 
     const getProductByName = () => productService.getProductByName(productName);
 
     // THEN
-    expect(getProductByName).toThrow(`Product "${productName}" does not exist.`);
+    expect(getProductByName).rejects.toThrow(`Product "${productName}" does not exist.`);
 });

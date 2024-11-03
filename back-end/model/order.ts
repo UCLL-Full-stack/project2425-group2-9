@@ -1,4 +1,3 @@
-import { OrderInput } from "../types";
 
 export class Order {
     private cartId: number;
