@@ -5,6 +5,7 @@ import styles from "../../styles/home.module.css";
 import { useState, useEffect } from "react";
 import CartService from "@/services/CartService";
 import CartItem from "@/components/cartItem";
+import CustomerService from "@/services/CustomerSevice";
 
 const Cart: React.FC = () => {
     const [cartItems, setCartItems] = useState<Array<CartItem>>([]);
@@ -23,11 +24,8 @@ const Cart: React.FC = () => {
     };
 
     const updateProduct = async () => {
-        CartService.updateOrAddCartItem();
+        // CartService.updateOrAddCartItem();
     };
-  
-    useEffect(() => {
-    }, []);
   
     const incrementQuantity = (productName: string) => {
         setCartItems(prevItems =>
@@ -47,20 +45,25 @@ const Cart: React.FC = () => {
     };
 
     const clearCart = () => {
-        setCartItems([]);
-    };
+        // setCartItems([]);
+        CustomerService.clearCart(1); // TODO: should not be hardcoded.
+        fetchCartById(3); // TODO: Cart id should not be hardcoded!
 
-    useEffect(() => {
-      fetchProducts();
-      fetchCartById(3); // TODO: Cart id should not be hardcoded!
-      highlightCurrentTabInMenu();
-    }, []);
+    };
 
     // Highlight current tab in header.
     const highlightCurrentTabInMenu = () => {
         const cartTabElement = document.querySelector("header nav a:nth-child(2)");
         if (cartTabElement) cartTabElement.setAttribute("style", "background-color: green;");
     };
+
+    useEffect(() => {
+      fetchProducts();
+      fetchCartById(3); // TODO: Cart id should not be hardcoded!
+      highlightCurrentTabInMenu();
+
+    }, []);
+
 
     return (
         <>
@@ -79,6 +82,7 @@ const Cart: React.FC = () => {
                     />)
                 }
                 </section>
+                <p>Buttons + and - do not work.</p>
             </main>  
         </>
     );

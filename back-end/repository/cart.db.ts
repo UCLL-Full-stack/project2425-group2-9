@@ -2,7 +2,7 @@
 import { Cart } from "../model/cart";
 
 // DO NOT MODIFY!! Depends on cartContainsProductDB.
-const carts: Cart[] = [
+const carts: Array<Cart> = [
     new Cart({
         id: 2,
         totalPrice: 0,
@@ -31,11 +31,14 @@ const saveCart = (cart: Cart): Cart | undefined => {
 
 
 const getCartByCustomerId = (customerId: number | undefined): Cart | null => {
-    return carts.find((cart) => cart.getCustomerId() === customerId) || null;
+    return carts
+        .sort((a: Cart, b: Cart) => b.getId() - a.getId()) // Sort by descending cart id.
+        .find((cart) => cart.getCustomerId() === customerId) || null;
+
 }
 
-const getCartById = (cartId: number) => {
-    return carts.find((cart) => cart.getId() === cartId);
+const getCartById = (cartId: number): Cart | null => {
+    return carts.find((cart) => cart.getId() === cartId) || null;
 };
 
 const returnAllCartsAvailable = (): Cart[] | null => {
@@ -47,5 +50,5 @@ export default {
     getCartByCustomerId,
     saveCart,
     returnAllCartsAvailable,
-    getCartById: getCartById
+    getCartById
 };

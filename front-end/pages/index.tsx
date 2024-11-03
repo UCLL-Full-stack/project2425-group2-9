@@ -5,6 +5,7 @@ import Product from "@/components/product";
 import { Lecturer } from "@/types";
 import { useState, useEffect } from "react";
 import ProductService from "@/services/ProductService";
+import CustomerService from "@/services/CustomerSevice";
 
 const Home: React.FC = () => {
   const [products, setProducts] = useState<Array<Product>>([]);
