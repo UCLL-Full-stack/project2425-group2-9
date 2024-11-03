@@ -8,6 +8,8 @@ import customerDb from "../repository/customer.db";
 import productDb from "../repository/product.db";
 import { AddToCartInput } from "../types";
 
+
+
 //Q& should all methods in the service be asynchronous?
 const createNewCart = async (newCustomerId: number): Promise<Cart | null> => {
     const customer = await customerDb.getCustomerById(newCustomerId);

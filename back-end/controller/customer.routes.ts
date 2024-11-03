@@ -43,4 +43,37 @@ customerRouter.delete('/:id/cart/:productName', async (req: Request, res: Respon
     }
 });
 
+/**
+ * @swagger
+ * /customers/{id}/cart:
+ *   delete:
+ *     summary: Delete all items (products) from a cart using customer ID.
+ *     parameters:
+ *          - in: path
+ *            name: id
+ *            schema:
+ *              type: string
+ *              required: true
+ *              description: Customer's ID.
+ *              example: 1
+ *     responses:
+ *       200:
+ *         description: Message indicating success.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: string
+ */
+customerRouter.delete('/:id/cart', async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const customerId: number = Number(req.params.id);
+        const result: string = await customerService.deleteAllCartItems(customerId);
+        res.json(result);
+        // res.status(200).json(result);   // DOES NOT WORK!!!!!!!! Q&
+    } catch (error) {
+        next(error);
+    }
+});
+
+
 export { customerRouter };

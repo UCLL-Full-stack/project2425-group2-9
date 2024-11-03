@@ -15,9 +15,23 @@ const deleteCartItem = async ({ customerId, productName }: { customerId: number,
     const cart: Cart | null = cartDb.getCartByCustomerId(customer.getId());
     if (!cart) throw new Error(`Customer ${customer.getUsername()} does not have a cart.`);
 
-    // DELETE 
+    // CONNECT & SAVE
     cartContainsProductDb.deleteCartItemByCartIdAndProductName(cart.getId(), productName);
     return `Cart item '${productName}' deleted successfully.`;
 }
 
-export default { deleteCartItem };
+const deleteAllCartItems = async (customerId: number): Promise<string> => {
+    // GET
+    if (!customerId) throw new Error("Customer ID required.");
+    const customer: Customer | null = customerDb.getCustomerById(customerId);
+    if (!customer) throw new Error("Customer does not exist.");
+
+    const cart: Cart | null = cartDb.getCartByCustomerId(customer.getId());
+    if (!cart) throw new Error("Cart does not exist.");
+
+
+    // CONNECT & SAVE
+    return await cartContainsProductDb.deleteAllCartItems(cart.getId());
+};
+
+export default { deleteCartItem, deleteAllCartItems };

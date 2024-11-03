@@ -1,7 +1,7 @@
 import { CartContainsProduct } from "../model/cartContainsProduct";
 
 // DO NOT MODIFY!!! IT DEPENDS ON cartDB and productDB.
-const cartContainsProduct: CartContainsProduct[] = [
+let cartContainsProduct: CartContainsProduct[] = [
     new CartContainsProduct({ cartId: 2, productName: "Bread", quantity: 2 }),
     new CartContainsProduct({ cartId: 2, productName: "Laptop", quantity: 5 }),
     new CartContainsProduct({ cartId: 2, productName: "Mayonnaise", quantity: 5 }),
@@ -60,15 +60,21 @@ const returnAllItemsInCart = (cartId: number | undefined): CartContainsProduct[]
     return cartContainsProduct.filter(item => item.getCartId() === cartId)
 }//now we have a list of carts that match a particular cart id
 
-const deleteCartItemByCartIdAndProductName = (cartId: number | undefined, name: string): string => {
+const deleteCartItemByCartIdAndProductName = (cartId: number | undefined, name: string): string | null => {
     for (let i = 0; i < cartContainsProduct.length; i++) {
         if (cartContainsProduct[i].getProductName() === name && cartContainsProduct[i].getCartId() === cartId) {
             cartContainsProduct.splice(i, 1);
             return "Successfully deleted item from cart.";
         }
     }
-    return "Item not in cart."
+    return null
 };
+
+const deleteAllCartItems = (cartId: number): string => {
+    cartContainsProduct = cartContainsProduct.filter((item) => item.getCartId() !== cartId);
+    return "Cart items deleted successfully."
+};
+
 const getProductsByNameInCart = (cartId: number | undefined, productName: string): CartContainsProduct[] => {
     return returnAllItemsInCart(cartId).filter((matchingCart) => matchingCart.getProductName() === productName)
 }
@@ -80,5 +86,6 @@ export default {
     // addOrUpdateProduct,
     getProductsByNameInCart,
     returnAllItemsInCart,
-    addCartItem
+    addCartItem,
+    deleteAllCartItems
 }
