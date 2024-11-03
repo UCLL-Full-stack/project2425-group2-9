@@ -35,7 +35,7 @@ const Cart: React.FC = () => {
                 item.productName === productName ? { ...item, quantity: (item.quantity ?? 0) + 1 } : item
             )
         );
-        // updateProduct();
+        updateProduct();
     };
 
     const decrementQuantity = (name: string) => {

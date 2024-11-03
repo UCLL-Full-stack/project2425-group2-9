@@ -44,7 +44,7 @@ const addProductToCart = async (customerData: Customer, product: Product | undef
                 throw new Error("product does not exist")
             }
             const cartItem = await cartContainsProductDb.getCartByCartIdAndProductName(cartId, existingProduct.getName())
-            if (!cartItem) throw new Error("no card found")
+            // if (!cartItem) throw new Error("no card found")
             if (cartItem) {
                 cartItem.setQuantity(cartItem.getQuantity() + 1)
             } else {

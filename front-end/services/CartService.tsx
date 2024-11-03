@@ -13,7 +13,7 @@ const updateOrAddCartItem = async () => {
     return await fetch(
         process.env.NEXT_PUBLIC_API_URL + "/carts/addtocart",
         {
-            method: "Post",
+            method: "POST",
             body: JSON.stringify({
                     "customer": {
                       "id": 3, // DO NOT CHANGE THIS!
