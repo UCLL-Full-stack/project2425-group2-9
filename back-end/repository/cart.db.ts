@@ -37,8 +37,8 @@ const getCartByCustomerId = (customerId: number | undefined): Cart | null => {
 
 }
 
-const getCartById = (cartId: number) => {
-    return carts.find((cart) => cart.getId() === cartId);
+const getCartById = (cartId: number): Cart | null => {
+    return carts.find((cart) => cart.getId() === cartId) || null;
 };
 
 const returnAllCartsAvailable = (): Cart[] | null => {
@@ -50,5 +50,5 @@ export default {
     getCartByCustomerId,
     saveCart,
     returnAllCartsAvailable,
-    getCartById: getCartById
+    getCartById
 };

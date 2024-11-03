@@ -28,21 +28,24 @@ const createNewCart = async (newCustomerId: number): Promise<Cart | null> => {
     return null;
 }
 
-const addProductToCart = async ({ customer: customerInput, product: productInput }: AddToCartInput): Promise<Cart> => {
-    // VALIDATE
-    if ((!customerInput)) throw new Error("Customer required.");
-    if (!productInput) throw new Error("Product required.");
+const addProductToCart = async ({ cartId, productName }: AddToCartInput): Promise<Cart> => {
+    // // VALIDATE
+    // if ((!customerInput)) throw new Error("Customer required.");
+    // if (!productInput) throw new Error("Product required.");
 
     // GET
-    if (!customerInput.id) throw new Error("Customer ID required.");
-    const customer: Customer | null = await customerDb.getCustomerById(customerInput.id);
-    if (!customer) throw new Error("Customer does not exist.");
+    // if (!cartId) throw new Error("Customer ID required.");
+    // const customer: Customer | null = await customerDb.getCustomerById(cartId);
+    // if (!customer) throw new Error("Customer does not exist.");
 
-    const cart: Cart | null = await cartDb.getCartByCustomerId(customerInput.id);
+
+    // const cart: Cart | null = await cartDb.getCartByCustomerId(cartId);
+    if (!cartId) throw new Error("Cart ID required.");
+    const cart: Cart | null = await cartDb.getCartById(cartId);
     if (!cart) throw new Error("Cart does not exist.");
 
 
-    const product: Product | null = await productDb.getProductByName(productInput.name);
+    const product: Product | null = await productDb.getProductByName(productName);
     if (!product) throw new Error("Product does not exist.");
 
     let cartItem: CartContainsProduct | null = await cartContainsProductDb.getCartByCartIdAndProductName(cart.getId(), product.getName());

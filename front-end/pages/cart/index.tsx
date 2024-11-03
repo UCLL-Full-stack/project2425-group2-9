@@ -23,7 +23,7 @@ const Cart: React.FC = () => {
     };
 
     const updateProduct = async () => {
-        CartService.updateOrAddCartItem();
+        // CartService.updateOrAddCartItem();
     };
   
     useEffect(() => {
@@ -80,6 +80,7 @@ const Cart: React.FC = () => {
                     />)
                 }
                 </section>
+                <p>Buttons + and - do not work.</p>
             </main>  
         </>
     );

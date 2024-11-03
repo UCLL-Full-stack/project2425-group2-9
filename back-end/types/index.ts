@@ -44,8 +44,8 @@ interface DeleteCartItemInput {
 }
 
 interface AddToCartInput {
-    customer: CustomerInput;
-    product: ProductInput;
+    cartId: number;
+    productName: string;
 }
 
 export {

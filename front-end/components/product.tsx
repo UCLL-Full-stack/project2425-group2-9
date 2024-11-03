@@ -3,6 +3,7 @@ import { useState } from 'react';
 import type { Product } from '../types';
 import ProductService from '@/services/ProductService';
 import CartItem from './cartItem';
+import CartService from '@/services/CartService';
 
 
 type Props = {
@@ -27,7 +28,7 @@ const Product: React.FC<Props> = ({ products }: Props) => {
     };
 
     // Functions that is called on click of 'Add to cart' button.
-    const addItemToCart = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    const addToCartBtn = async (e: React.MouseEvent<HTMLButtonElement>) => {
         const productInfo = e.currentTarget.parentElement?.children;
 
         if (!productInfo) {
@@ -63,7 +64,7 @@ const Product: React.FC<Props> = ({ products }: Props) => {
         const productName = e.currentTarget.parentElement?.children[0].textContent ?? '';
         // console.log("Fetching product:", productName);
     
-        // Get the product from the database.
+        // Get the product from the database. TODO: SHOULD BE IN THE SERVICE!
         try {
             const response = await ProductService.getProductByName(productName); // Q& Is this uppercase?
             if (!response.ok) {
@@ -75,6 +76,9 @@ const Product: React.FC<Props> = ({ products }: Props) => {
         } catch (error) {
             console.error("Failed to fetch product:", error);
         }
+
+        const cartId: number = 3; // TODO: should not be hardcoded.
+        CartService.addCartItem({ cartId, productName });
     };
 
     const incrementQuantity = (productName: string) => {
@@ -112,7 +116,7 @@ const Product: React.FC<Props> = ({ products }: Props) => {
                     <div>
                         <p>{product.name}</p>
                         <p>{product.price} $ / {product.unit}</p>
-                        <button onClick={(e) => addItemToCart(e)}>Add to cart</button>
+                        <button onClick={(e) => addToCartBtn(e)}>Add to cart</button>
                         <p hidden >Stock: {product.stock}</p>
                         {/* Quantity Increases without accessing actual value in the database. */}
                         <p hidden>Quantity: <span>0</span></p>

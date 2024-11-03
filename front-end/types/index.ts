@@ -41,6 +41,6 @@ export type Product = {
 export type CartItem = {
   cartId: number,
   productName: string,
-  quantity: number
+  quantity?: number | undefined
 }
 
