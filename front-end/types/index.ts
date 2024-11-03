@@ -43,3 +43,4 @@ export type CartItem = {
   productName: string,
   quantity: number
 }
+

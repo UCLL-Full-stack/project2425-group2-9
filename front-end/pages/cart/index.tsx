@@ -50,17 +50,18 @@ const Cart: React.FC = () => {
         setCartItems([]);
     };
 
+    // Highlight current tab in header.
+    const highlightCurrentTabInMenu = () => {
+        const cartTabElement = document.querySelector("header nav a:nth-child(2)");
+        if (cartTabElement) cartTabElement.setAttribute("style", "background-color: green;");
+    };
+
     useEffect(() => {
       fetchProducts();
       fetchCartById(3); // TODO: Cart id should not be hardcoded!
       highlightCurrentTabInMenu();
     }, []);
 
-    // Highlight current tab in header.
-    const highlightCurrentTabInMenu = () => {
-        const cartTabElement = document.querySelector("header nav a:nth-child(2)");
-        if (cartTabElement) cartTabElement.setAttribute("style", "background-color: green;");
-    };
 
     return (
         <>

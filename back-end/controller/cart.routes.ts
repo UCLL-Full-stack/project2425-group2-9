@@ -28,6 +28,7 @@ import cartService from '../service/cart.service';
 import { Product } from '../model/product';
 import { Cart } from '../model/cart';
 import { CartContainsProduct } from '../model/cartContainsProduct';
+import { AddToCartInput } from '../types';
 
 const cartRouter = express.Router();
 
@@ -194,27 +195,36 @@ cartRouter.post("/create", async (req: Request, res: Response, next: NextFunctio
  *                                  example: "An error occurred"
  */
 cartRouter.post('/addtocart', async (req: Request, res: Response, next: NextFunction) => {
+    // try {
+    //     const { customer, product } = req.body
+    //     if (!customer || !product) //Q& if any field is missing
+    //         return res.status(404).json({ message: "no customer or product found" })
+
+    //     const { id, password, securityQuestion, userName, firstName, lastName, phone } = customer
+    //     if (!id || !password || !securityQuestion || !userName || !firstName || !lastName || !phone)
+
+    //         return res.status(400).json({ message: "customers fields are required" })
+
+    //     const { name, price, unit, stock, description, imagePath } = product
+    //     if (!name || !price || !stock || !description || !imagePath)
+    //         return res.status(404).json({ message: "product field id required" })
+
+    //     const addProductOrUpdate = cartService.addProductToCart(customer, product)
+    //     if (!addProductOrUpdate)
+    //         return res.status(401).json({ message: "sorry... products was not updated/added" })
+
+    //     return res.status(201).json({ message: "products added successfully" })
+    // } catch (error) {
+    //     next(error)
+    // }
+
+
     try {
-        const { customer, product } = req.body
-        if (!customer || !product) //Q& if any field is missing
-            return res.status(404).json({ message: "no customer or product found" })
-
-        const { id, password, securityQuestion, userName, firstName, lastName, phone } = customer
-        if (!id || !password || !securityQuestion || !userName || !firstName || !lastName || !phone)
-
-            return res.status(400).json({ message: "customers fields are required" })
-
-        const { name, price, unit, stock, description, imagePath } = product
-        if (!name || !price || !stock || !description || !imagePath)
-            return res.status(404).json({ message: "product field id required" })
-
-        const addProductOrUpdate = cartService.addProductToCart(customer, product)
-        if (!addProductOrUpdate)
-            return res.status(401).json({ message: "sorry... products was not updated/added" })
-
-        return res.status(201).json({ message: "products added successfully" })
+        const addToCartBody = <AddToCartInput>req.body;
+        const result = cartService.addProductToCart(addToCartBody);
+        res.status(200).json(result);
     } catch (error) {
-        next(error)
+        next(error);
     }
 })
 

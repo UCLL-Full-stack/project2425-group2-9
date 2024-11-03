@@ -22,25 +22,39 @@ const getCartItemNamesByCartId = (id: number): string[] => {
     return itemNames;
 };
 
-const getCartByCartIdAndProductName = (cardId: number | undefined, productName: string | undefined): CartContainsProduct | undefined => {
-    const nameAndIdCheck = cartContainsProduct.find((e) => {
-        e.getCartId() === cardId && e.getProductName() === productName
-    })
-    if (!nameAndIdCheck) {
-        throw new Error("cart does not exist")
-    }
-    return nameAndIdCheck
+const getCartByCartIdAndProductName = (cartId: number, productName: string): CartContainsProduct | null => {
+    // const nameAndIdCheck = cartContainsProduct.find((e) => {
+    //     e.getCartId() === cartId && e.getProductName() === productName
+    // })
+
+    let nameAndIdCheck;
+    for (let element of cartContainsProduct) {
+        if (element.getCartId() === cartId && element.getProductName() === productName) {
+            nameAndIdCheck = element
+        }
+    };
+
+    if (!nameAndIdCheck) return null;
+
+    return nameAndIdCheck;
 }
 
-const addOrUpdateProduct = (cartItem: CartContainsProduct): CartContainsProduct => {
-    const existingCartItem = getCartByCartIdAndProductName(cartItem.getCartId(), cartItem.getProductName())
-    if (existingCartItem) {
-        cartItem.setQuantity(existingCartItem.getQuantity() + cartItem.getQuantity())
-    } else {
-        cartContainsProduct.push(cartItem)
-    }
-    return cartItem
-}
+// Cart item is product in the cart.
+const addCartItem = (cartItem: CartContainsProduct) => {
+    cartContainsProduct.push(cartItem);
+    return "Cart item added successfully."
+};
+
+// const addOrUpdateProduct = (cartItem: CartContainsProduct): CartContainsProduct => {
+//     const existingCartItem = getCartByCartIdAndProductName(cartItem.getCartId(), cartItem.getProductName())
+//     if (existingCartItem) {
+//         cartItem.setQuantity(existingCartItem.getQuantity() + cartItem.getQuantity())
+//     } else {
+//         cartContainsProduct.push(cartItem)
+//     }
+//     return cartItem
+// }
+
 // const getCartItemByCartId, returns a list of all items with the correct cart id.
 const returnAllItemsInCart = (cartId: number | undefined): CartContainsProduct[] => {
     return cartContainsProduct.filter(item => item.getCartId() === cartId)
@@ -63,7 +77,8 @@ export default {
     getCartItemNamesByCartId,
     deleteCartItemByCartIdAndProductName,
     getCartByCartIdAndProductName,
-    addOrUpdateProduct,
+    // addOrUpdateProduct,
     getProductsByNameInCart,
-    returnAllItemsInCart
+    returnAllItemsInCart,
+    addCartItem
 }

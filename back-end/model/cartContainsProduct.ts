@@ -1,29 +1,29 @@
 import { CartContainsProductInput } from "../types";
 
-export class CartContainsProduct{
-    private cartId: number | undefined; 
-    private productName: string|undefined;
-    private quantity: number=0;
+export class CartContainsProduct {
+    private cartId: number;
+    private productName: string;
+    private quantity: number = 0;
 
-    constructor({cartId,productName,quantity}:CartContainsProductInput){
-        this.cartId = cartId;
-        this.productName = productName
-        this.setQuantity(quantity)
+    constructor(cartContainsProduct: { cartId: number, productName: string, quantity: number }) {
+        this.cartId = cartContainsProduct.cartId;
+        this.productName = cartContainsProduct.productName;
+        this.setQuantity(cartContainsProduct.quantity);
     }
 
-    getCartId():number|undefined{
-        return this.cartId 
+    getCartId(): number {
+        return this.cartId
     }
-    getProductName():string|undefined{
+    getProductName(): string {
         return this.productName
     }
-    getQuantity():number{
+    getQuantity(): number {
         if (this.quantity === undefined) {
             throw new Error("Quantity is undefined");
         }
         return this.quantity;
     }
-    setQuantity(quantity:number):void{
+    setQuantity(quantity: number): void {
         this.quantity = quantity
     }
 }

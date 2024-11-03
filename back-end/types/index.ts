@@ -3,7 +3,7 @@
 
 
 interface ProductInput {
-    name?: string;
+    name: string;
     price?: number;
     unit?: string;
     stock?: number;
@@ -11,15 +11,15 @@ interface ProductInput {
     imagePath?: string;
 }
 
-interface CartInputs{
-    id?:number | undefined;
-    totalPrice?:number;
-    customerId?:number | undefined,
-    creationDate?:Date,
+interface CartInputs {
+    id: number | undefined;
+    totalPrice?: number;
+    customerId?: number | undefined,
+    creationDate?: Date,
 }
 
 interface CustomerInput {
-    id?: undefined | number;
+    id: number;
     password?: string;
     securityQuestion?: string;
     username?: string;
@@ -32,9 +32,9 @@ interface OrderInput {
     cartId: number;
     date: Date;
 }
-interface CartContainsProductInput{
-    cartId?: number|undefined; // Foreign key to Cart
-    productName?: string; // Foreign key to Product
+interface CartContainsProductInput {
+    cartId: number; // Foreign key to Cart
+    productName: string; // Foreign key to Product
     quantity: number;//Q& am not sure but are we suppose to have a separate interface for the relationship between cart and product???
 }
 
@@ -43,11 +43,17 @@ interface DeleteCartItemInput {
     productName: string;
 }
 
-export{
+interface AddToCartInput {
+    customer: CustomerInput;
+    product: ProductInput;
+}
+
+export {
     ProductInput,
     CartInputs,
     CustomerInput,
     OrderInput,
     CartContainsProductInput,
-    DeleteCartItemInput
+    DeleteCartItemInput,
+    AddToCartInput
 }
