@@ -2,15 +2,13 @@ import Header from "@/components/header";
 import Head from "next/head";
 import styles from "../styles/home.module.css";
 import Product from "@/components/product";
-import { Lecturer } from "@/types";
 import { useState, useEffect } from "react";
 import ProductService from "@/services/ProductService";
-import CustomerService from "@/services/CustomerSevice";
 
 const Home: React.FC = () => {
   const [products, setProducts] = useState<Array<Product>>([]);
 
-  const fetchProducts = async () => {
+  const getProducts = async () => {
     const response = await ProductService.getAllProducts();
     const productss = await response.json();
     setProducts(productss);
@@ -23,7 +21,7 @@ const Home: React.FC = () => {
   };
 
   useEffect(() => {
-    fetchProducts();
+    getProducts();
     highlightCurrentTabInMenu();
   }, []);
 

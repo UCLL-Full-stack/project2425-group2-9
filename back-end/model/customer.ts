@@ -1,5 +1,5 @@
 export class Customer {
-    private id: number;
+    id: number;
     private password: string;
     private securityQuestion: string;
     private username: string;
@@ -16,7 +16,8 @@ export class Customer {
         lastName: string;
         phone: number;
     }) {
-        // TODO: Use setters!.
+        this.validate(customer);
+
         this.id = customer.id;
         this.password = customer.password;
         this.securityQuestion = customer.securityQuestion;
@@ -26,56 +27,40 @@ export class Customer {
         this.phone = customer.phone;
     }
 
+    validate(customer: { password: string, securityQuestion: string, username: string, firstName: string, lastName: string, phone: number }) {
+        if (!customer.password) throw new Error("Password is required.");
+        if (!customer.securityQuestion) throw new Error("Security question is required.");
+        if (!customer.username) throw new Error("Username is required.");
+        if (!customer.firstName) throw new Error("First name is required.");
+        if (!customer.lastName) throw new Error("Last name is required.");
+        if (!customer.phone) throw new Error("Phone is required.");
+    }
+
     getId(): number {
         return this.id;
     }
-    setId(newId: number): void {
-        this.id = newId
-    }
+
     getPassword(): string {
         return this.password;
-    }
-    setPassword(password: string): void {
-        this.password = password;
     }
 
     getSecurityQuestion(): string {
         return this.securityQuestion;
     }
 
-    setSecurityQuestion(securityQuestion: string): void {
-        this.securityQuestion = securityQuestion;
-    }
-
     getUsername(): string {
         return this.username;
-    }
-
-    setUsername(username: string): void {
-        this.username = username;
     }
 
     getFirstName(): string {
         return this.firstName;
     }
 
-    setFirstName(firstName: string): void {
-        this.firstName = firstName;
-    }
-
     getLastName(): string {
         return this.lastName;
     }
 
-    setLastName(lastName: string): void {
-        this.lastName = lastName;
-    }
-
     getPhone(): number {
         return this.phone;
-    }
-
-    setPhone(phone: number): void {
-        this.phone = phone;
     }
 }
