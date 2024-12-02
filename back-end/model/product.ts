@@ -1,4 +1,4 @@
-import { ProductInput } from "../types";
+import { Product as productPrisma } from "@prisma/client";
 
 export class Product {
     private name!: string;
@@ -68,5 +68,30 @@ export class Product {
             newProduct.description === this.description &&
             newProduct.imagePath === this.imagePath
         )
+
     }
-}
+
+    static  from({
+
+        name,
+        price,
+        unit,
+        stock,
+        description,
+        imagePath
+        
+    } : productPrisma) {
+
+        return new Product({
+
+            name,
+            price,
+            unit,
+            stock,
+            description,
+            imagePath
+        })
+    }
+    }
+
+   

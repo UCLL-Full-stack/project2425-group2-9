@@ -8,17 +8,22 @@ import express, { Request, Response, NextFunction } from 'express';
 import { customerRouter } from './controller/customer.routes';
 import customerService from './service/customer.service';
 import { cartRouter } from './controller/cart.routes';
+import { ordersRoutes } from './controller/order.routes';
 
 const app = express();
 dotenv.config();
 const port = process.env.APP_PORT || 3000;
 
-
 app.use(cors({ origin: 'http://localhost:8080' }));
 app.use(bodyParser.json());
 
+//add express-jwt middleware function here
+
+// add authorization middleware function here
+
 app.use('/products', productRouter);
 app.use('/customers', customerRouter);
+app.use('/orders', ordersRoutes);
 // app.use('/carts/create',cartRouter)
 app.use('/carts', cartRouter)
 
@@ -41,6 +46,7 @@ const swaggerOpts = {
 const swaggerSpec = swaggerJSDoc(swaggerOpts);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
+//generically handles all applications correctly => no need to explicitly write this in each controller
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
     if (err.name === 'UnauthorizedError') {
         res.status(400).json({ status: 'unauthorized', message: err.message });

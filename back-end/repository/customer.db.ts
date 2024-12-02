@@ -1,30 +1,83 @@
+import { Prisma } from "@prisma/client";
 import { Customer } from "../model/customer";
+import database from "../util/database";
+import { da } from "date-fns/locale";
 
-const customers: Customer[] = [
-    new Customer({
-        id: 1,
-        password: "m@t3j-v3s3l",
-        securityQuestion: "What is the name of the best friend from childhood?", // TODO: We also need security answer. It may also be a list.
-        username: "Matej333",
-        firstName: "Matej",
-        lastName: "Vesel",
-        phone: 333444555666
-    }),
-    new Customer({
-        id: 2,
-        password: "r0l@nd-d1m3-",
-        securityQuestion: "What is the name of the best friend from childhood?", // TODO: We also need security answer. It may also be a list.
-        username: "Roland333",
-        firstName: "Roland",
-        lastName: "Ndime Sone",
-        phone: 333444555666
+
+
+const getCustomerById = async (customerId: string | undefined): Promise< Customer | null > => {
+
+    if (!customerId) throw new Error(` customer with id ${customerId} does not exist`)
+
+   try {
+
+    const customerPrisma = await database.customer.findFirst({
+        where : {
+            id : customerId
+        },
+        include : { cart : false, order :false }
     })
-];
-
-const getCustomerById = (id: number | undefined): Customer | null => {
-    return customers.find((customer) => customer.getId() === id) || null;
+     
+    if (!customerPrisma ) 
+        return null
+    return Customer.from(customerPrisma)
+   }
+    catch (error) {
+        console.log(error)
+        throw new Error("Database error. See server log for details.")
+    }
 }
 
+
+const registerCustomer  = async ( newCustomer : Customer) : Promise<Customer |null > => {
+
+   
+try {
+
+    const createCustomer =  await database.customer.create( {
+        data : {
+
+            password : newCustomer?.getPassword(),
+            securityQuestion : newCustomer?.getSecurityQuestion(),
+            username : newCustomer?.getUsername(),
+            firstName : newCustomer?.getFirstName(),
+            lastName : newCustomer?.getLastName(),
+            phone : newCustomer?.getPhone()
+
+        }
+    })
+    return Customer.from(createCustomer)
+}
+catch (error) {
+    console.error(error)
+    throw new Error("application error. see server logs for more info.")
+}
+}
+
+const findCustomerByUserName = async ( {username} : {username : string}) : Promise<Customer|null> => {
+
+    try {
+
+        const customerPrisma = await database.customer.findFirst({
+            where : {
+                username
+            }
+        })
+
+        // if (!customerPrisma) {
+        //     throw new Error(`customer with username ${username} does not exist.`)
+        // }
+        return customerPrisma ? Customer.from(customerPrisma) : null
+    }
+    catch(error){
+        console.error(error)
+        throw new Error ("application error. see server log for more info.")
+    }
+}
+
+
 export default {
-    getCustomerById
-};
+    getCustomerById,
+    registerCustomer,
+    findCustomerByUserName
+}

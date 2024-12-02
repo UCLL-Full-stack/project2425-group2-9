@@ -1,28 +1,31 @@
-import { CartInputs, ProductInput } from "../types";
-import { Product } from "./product";
+import { CartContainsProduct } from "./cartContainsProduct";
+import { Customer } from "./customer";
+import { Cart as cartPrisma } from "@prisma/client";
+import { Customer as customerPrisma } from "@prisma/client"
 
 export class Cart {
-    private id!: number;
-    private totalPrice: number = 0;
-    private customerId!: number;
+    private id?: string;
+    private totalPrice!: number;
+    private customerId?: string;
+    private customer?: Customer
 
     // Q& Is it not better to use setters immediately in the constructor?
     //I also thought of the same thing. I thing we could
     //do we need any extra logic for setId methods in the classes?
 
-    constructor(cart: { id: number, totalPrice: number, customerId: number }) {
+    constructor(cart: { id?: string, totalPrice: number, customerId?: string, customer?:Customer }) {
         this.setId(cart.id);
         this.setCustomerId(cart.customerId);
-        if (cart.totalPrice !== undefined) {
-            this.setTotalPrice(cart.totalPrice);
-        }
+        this.setTotalPrice(cart.totalPrice)
+        this.setCustomer(cart.customer)
     }
 
-    getId(): number {
+    getId(): string|undefined {
         return this.id;
     }
 
-    setId(id: number): void {
+    setId(id: string|undefined): void {
+
         this.id = id;
     }
 
@@ -31,31 +34,50 @@ export class Cart {
     }
 
     setTotalPrice(totalPrice: number): void {
-        this.totalPrice = totalPrice;
+         if (totalPrice >= 0) {
+            this.totalPrice = totalPrice
+         } else{
+            throw new Error("Total price must be greater or equal to than zero." + totalPrice
+            )
+         }
     }
 
-    getCustomerId(): number {
+    getCustomerId(): string|undefined {
         return this.customerId;
     }
 
-    setCustomerId(customerId: number): void {
+    setCustomerId(customerId?: string): void {
         this.customerId = customerId;
     }
-    //  getProducts():Product[]|undefined{
-    //     return this.products
-    // }
-    //  setProducts(newProducts: Product[]): void {
-    //      if (!newProducts) {
-    //          return;
-    //     }
-    //     if (!this.products) {
-    //         this.products = [];
-    //     }
-    //      newProducts.forEach(newProduct => {
-    //         const productName = this.products?.find(product => product.getName() === newProduct.getName());
-    //        if (!productName) {
-    //             this.products?.push(newProduct);
-    //          }
-    //     });
-    // }
+
+    public getCustomer():Customer|undefined {
+        return this.customer
+    }
+    
+    public setCustomer( customer?:Customer):void {
+
+        if (!customer) throw new Error("customer does not exist.")
+        this.customer = customer
+    }
+
+    static from({
+
+        id,
+        totalPrice,
+        customerId,
+        customerPrisma,
+
+    } : cartPrisma & { customerPrisma?:customerPrisma; }
+
+) {
+
+    return new Cart({
+
+        id,
+        totalPrice,
+        customerId: customerId ? customerId : undefined,
+        customer: customerPrisma ? Customer.from(customerPrisma) : undefined
+
+    })
+}
 }

@@ -20,5 +20,5 @@ test("given:valid product input, when: registering/storing product in the dataBa
     expect(product.getDescription()).toContain(description)
     expect(product.getImagePath()).toContain(imagePath)
     expect(product.getStock()).toBe(stock)
-    //toBe is used to test numbers while toContain is for iterables (arrays, strings, etc)
+    //toBe(strict equality) is used to test numbers while toContain is for iterables (arrays, strings, etc)
 })

@@ -1,15 +1,22 @@
 import { Product } from "../model/product";
 import productDb from "../repository/product.db";
 
-const getAllProducts = async (): Promise<Product[]> => {
+const getAllProducts = async (): Promise<Product[] | undefined> => {
     return await productDb.getAllProducts();
 }
 
 const getProductByName = async (name: string): Promise<Product> => {
-    const product: Product | null = await productDb.getProductByName(name);
+    
+    try {
+        const product: Product | null = await productDb.getProductByName(name);
     if (!product) throw new Error(`Product "${name}" does not exist.`);
     return product;
 }
+catch (error){
+    console.log(error)
+    throw new Error("Database error. See server log for details.")
+}
+    }
 
 export default {
     getAllProducts,

@@ -1,6 +1,8 @@
 
 // R: Name the interfaces with capital first letter!
 
+import { Cart } from "@prisma/client";
+
 
 interface ProductInput {
     name: string;
@@ -19,18 +21,19 @@ interface CartInputs {
 }
 
 interface CustomerInput {
-    id: number;
+    id?: number;
     password?: string;
     securityQuestion?: string;
     username?: string;
     firstName?: string;
     lastName?: string;
-    phone?: number;
+    phone?: string;
 }
 
 interface OrderInput {
-    cartId: number;
-    date: Date;
+    cartId? : string;
+    date?: Date;
+    customerId? : string
 }
 interface CartContainsProductInput {
     cartId: number; // Foreign key to Cart
@@ -44,9 +47,11 @@ interface DeleteCartItemInput {
 }
 
 interface AddToCartInput {
-    cartId: number;
+    customerId: string;
     productName: string;
 }
+
+
 
 export {
     ProductInput,
@@ -55,5 +60,6 @@ export {
     OrderInput,
     CartContainsProductInput,
     DeleteCartItemInput,
-    AddToCartInput
+    AddToCartInput,
+
 }

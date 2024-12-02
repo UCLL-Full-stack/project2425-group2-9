@@ -1,54 +1,84 @@
 
 import { Cart } from "../model/cart";
+import database from "../util/database";
 
-// DO NOT MODIFY!! Depends on cartContainsProductDB.
-const carts: Array<Cart> = [
-    new Cart({
-        id: 2,
-        totalPrice: 0,
-        customerId: 1,
-    }),
-    // One customer can have many carts. The most recent one is the one with id 3. The customer already made an order with cart 2.
-    new Cart({
-        id: 3,
-        totalPrice: 0,
-        customerId: 1,
-    })
-];
-//you need to save the cart after creating it
+// const saveCart = (cart: Cart): Cart | undefined => {
+//     const existingCart = carts.findIndex((c) => {
+//         cart.getId() === c.getId()
+//     })
+//     if (existingCart !== -1) {
+//         carts[existingCart] = cart
+//     } else {
+//         carts.push(cart)
+//     }
+//     return cart
+// }
 
-const saveCart = (cart: Cart): Cart | undefined => {
-    const existingCart = carts.findIndex((c) => {
-        cart.getId() === c.getId()
-    })
-    if (existingCart !== -1) {
-        carts[existingCart] = cart
-    } else {
-        carts.push(cart)
+//Q& do i still need the saveCart method now that am using a real database??
+const getCartByCustomerId = async (newCustomerId?: string | undefined): Promise<Cart|null> => {
+
+    if (!newCustomerId) {
+        throw new Error("customer is undefined");
     }
-    return cart
+    
+    try{
+       const cartPrisma = await database.cart.findUnique({
+        where:{
+            customerId: newCustomerId
+        },
+        include:{
+            customer:true
+        }
+       })
+       if (!cartPrisma)
+        throw new Error(` cart with customer Id ${newCustomerId} not found`)
+       return Cart.from({ ...cartPrisma, customerPrisma: cartPrisma.customer || undefined })
+    }catch(error){
+        console.log(error)
+        throw new Error("Database error. See server log for details")
+    }
+
+        
 }
 
-
-const getCartByCustomerId = (customerId: number | undefined): Cart | null => {
-    return carts
-        .sort((a: Cart, b: Cart) => b.getId() - a.getId()) // Sort by descending cart id.
-        .find((cart) => cart.getCustomerId() === customerId) || null;
-
-}
-
-const getCartById = (cartId: number): Cart | null => {
-    return carts.find((cart) => cart.getId() === cartId) || null;
+const getCartById = async (cartId: string): Promise<Cart | null> => {
+    
+     try{
+        const cartPrisma = await database.cart.findFirst({
+            where:{
+                id:cartId
+            },
+            include:{
+                customer:false 
+            }
+         })
+         if (!cartPrisma)
+            throw new Error(`cart with id ${cartId} not found.`)
+        return Cart.from(cartPrisma)
+     }catch(error){
+        console.log(error)
+        throw new Error("Database error. See server log for details")
+     }
 };
 
-const returnAllCartsAvailable = (): Cart[] | null => {
-    return carts
+const returnAllCartsAvailable = async (): Promise<Cart[] | null> => {
+   try{
+    const cartDb  = await database.cart.findMany({
+        include:{
+            customer:false
+        }
+    })
+    
+    return cartDb.map((cart) => Cart.from(cart))
+   }catch(error){
+    console.log(error)
+    throw new Error("Database error. See server log for details")
+   }
 }
 
 
 export default {
     getCartByCustomerId,
-    saveCart,
     returnAllCartsAvailable,
     getCartById
 };
