@@ -14,7 +14,7 @@ const Product: React.FC<Props> = ({ products }: Props) => {
     const [cartItems, setCartItems] = useState<Array<CartItem>>([]);
     
     const addToCart = (product: Product) => {
-        setCartItems(prevItems => {
+        setCartItems((prevItems) => {
             const existingItem = prevItems.find(item => item.productName === product.name);
             if (existingItem) {
                 return prevItems.map(item =>
@@ -43,15 +43,14 @@ const Product: React.FC<Props> = ({ products }: Props) => {
         }
 
         // Increase the quantity.
-        const quantityParagraph = productInfo[productInfo.length - 1];
+        const quantityParagraph = productInfo[productInfo.length - 1];//getting the last child
         // Last child is the span element that contains the quantity number.
 
-        const test = document.querySelector('header p')
-        if (test) {
-            test.textContent = test.textContent + "O";
-        }
-        
-        
+        // const test = document.querySelector('header p')
+        // if (test) {
+        //     test.textContent = test.textContent + "O";
+        // }
+    
         // let currentQuantity = quantityParagraph.lastChild?.textContent;
         const quantitySpanElement = quantityParagraph.lastChild;
         if (quantitySpanElement) {
@@ -81,28 +80,6 @@ const Product: React.FC<Props> = ({ products }: Props) => {
         CartService.addCartItem({ cartId, productName });
     };
 
-    const incrementQuantity = (productName: string) => {
-        setCartItems(prevItems =>
-            prevItems.map(item =>
-                item.productName === productName ? { ...item, quantity: (item.quantity ?? 0) + 1 } : item
-            )
-        );
-    };
-    const decrementQuantity = (name: string) => {
-        setCartItems(prevItems =>
-            prevItems.map(item =>
-                item.productName === name ? { ...item, quantity: Math.max(item.quantity? - 1: 1) } : item
-            )
-        );
-    };
-
-    const clearCart = () => {
-        setCartItems([]);
-    };
-        
-    
-    
-
     return (
         <>
             {products.map((product, index) => (
@@ -123,13 +100,13 @@ const Product: React.FC<Props> = ({ products }: Props) => {
                     </div>
                 </article>
             ))}
-            <CartItem 
+            {/* <CartItem 
             cartItems={cartItems}
             products={products}
             incrementQuantity={incrementQuantity}
             decrementQuantity={decrementQuantity}
             clearCart={clearCart}
-            />
+            /> */}
         </>
     );
 };
