@@ -1,8 +1,5 @@
-<<<<<<< HEAD
 import { Product as productPrisma } from "@prisma/client";
 
-=======
->>>>>>> 6913e423f295a49071dd6922709f3b637d77f35d
 export class Product {
     private name: string;
     private price: number;
