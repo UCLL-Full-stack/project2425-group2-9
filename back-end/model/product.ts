@@ -1,70 +1,66 @@
+<<<<<<< HEAD
 import { Product as productPrisma } from "@prisma/client";
 
+=======
+>>>>>>> 6913e423f295a49071dd6922709f3b637d77f35d
 export class Product {
-    private name!: string;
-    private price!: number;
-    private unit!: string;
-    private stock!: number;
-    private description!: string;
-    private imagePath!: string;
+    private name: string;
+    private price: number;
+    private unit: string;
+    private stock: number;
+    private description: string;
+    private imagePath: string;
 
     constructor(product: { name: string, price: number, unit: string, stock: number, description: string, imagePath: string }) {
-        this.setName(product.name);
-        this.setPrice(product.price);
-        this.setUnit(product.unit);
-        this.setStock(product.stock);
-        this.setDescription(product.description);
-        this.setImagePath(product.imagePath);
+        this.validate(product);
+
+        this.name = product.name;
+        this.price = product.price;
+        this.unit = product.unit;
+        this.stock = product.stock;
+        this.description = product.description;
+        this.imagePath = product.imagePath;
+    }
+
+    validate(product: { name: string, price: number, unit: string, stock: number, description: string, imagePath: string }) {
+        if (!product.name) throw new Error("Name is required.");
+        if (!product.unit) throw new Error("Unit is required.");
+        if (!product.description) throw new Error("Description is required.");
+        if (!product.imagePath) throw new Error("Image path is required.");
+
+        if (product.price <= 0) throw new Error("Price must be positive.");
+        if (product.stock < 0) throw new Error("Stock must be non-negative.");
     }
 
     getName(): string {
         return this.name
     }
-    setName(name: string): void {
-        this.name = name;
-    }
 
     getPrice(): number {
         return this.price;
-    }
-    setPrice(price: number): void {
-        this.price = price;
     }
 
     getUnit(): string {
         return this.unit
     }
-    setUnit(unit: string): void {
-        this.unit = unit;
-    }
 
     getStock(): number {
         return this.stock;
-    }
-    setStock(stock: number): void {
-        this.stock = stock;
     }
 
     getDescription(): string {
         return this.description
     }
-    setDescription(description: string): void {
-        this.description = description;
-    }
 
     getImagePath(): string {
         return this.imagePath
     }
-    setImagePath(imagePath: string): void {
-        this.imagePath = imagePath;
-    }
-
 
     equal(newProduct: Product) {
         return (
             newProduct.name === this.name &&
             newProduct.price === this.price &&
-            newProduct.unit === this.unit &&//the equals method just checks if the data types of each attribute is the same as defined in the constructor            newProduct.stock === this.stock&&
+            newProduct.unit === this.unit && // the equals method just checks if the data types of each attribute is the same as defined in the constructor            newProduct.stock === this.stock&&
             newProduct.description === this.description &&
             newProduct.imagePath === this.imagePath
         )

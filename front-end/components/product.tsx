@@ -3,7 +3,8 @@ import { useState } from 'react';
 import type { Product } from '../types';
 import ProductService from '@/services/ProductService';
 import CartItem from './cartItem';
-import CartService from '@/services/CartService';
+// import CartService from '@/services/CartService';
+import CustomerService from '@/services/CustomerSevice';
 
 
 type Props = {
@@ -76,8 +77,8 @@ const Product: React.FC<Props> = ({ products }: Props) => {
             console.error("Failed to fetch product:", error);
         }
 
-        const cartId: number = 3; // TODO: should not be hardcoded.
-        CartService.addCartItem({ cartId, productName });
+        const customerId: number = 1; // TODO: should not be hardcoded.
+        CustomerService.addCartItem(customerId, productName);
     };
 
     return (

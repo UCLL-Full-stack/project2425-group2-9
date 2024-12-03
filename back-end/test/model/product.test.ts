@@ -8,17 +8,90 @@ const description = "The iPhone 16 Pro Max features a stunning 6.9-inch Super Re
 const imagePath = "C:\Users\HOME\OneDrive\Desktop\UCLL\FULLSTACK\project2425-group2-9\back-end\images\apple_iphone-16-pro-max-256-brz_7726759_1.jpg"
 
 
-test("given:valid product input, when: registering/storing product in the dataBase , then: product is stored", () => {
+test("Given valid values; When creating product; Then product is created with those values.", () => {
+    // GIVEN
+    // Values at the top of this file.
 
-    //given valid variables
-    //when
+    // WHEN
     const product = new Product({ name, price, unit, stock, description, imagePath })
-    //then
-    expect(product.getName()).toContain(name)
+
+
+    // THEN
+    expect(product.getName()).toEqual(name)
     expect(product.getPrice()).toBe(price)
     expect(product.getUnit()).toBe(unit)
-    expect(product.getDescription()).toContain(description)
-    expect(product.getImagePath()).toContain(imagePath)
     expect(product.getStock()).toBe(stock)
+<<<<<<< HEAD
     //toBe(strict equality) is used to test numbers while toContain is for iterables (arrays, strings, etc)
 })
+=======
+    expect(product.getDescription()).toEqual(description)
+    expect(product.getImagePath()).toEqual(imagePath)
+})
+
+test("Given no product name; When creating product; Then error is thrown.", () => {
+    // GIVEN
+    // Values at the top of this file.
+
+    // WHEN
+    const createProduct = () => new Product({ name: "", price, unit, stock, description, imagePath });
+
+    // THEN
+    expect(createProduct).toThrow("Name is required.");
+});
+
+test("Given no non-positive price; When creating product; Then error is thrown.", () => {
+    // GIVEN
+    // Values at the top of this file.
+
+    // WHEN
+    const createProduct = () => new Product({ name, price: 0, unit, stock, description, imagePath });
+
+    // THEN
+    expect(createProduct).toThrow("Price must be positive.");
+});
+
+test("Given no unit; When creating product; Then error is thrown.", () => {
+    // GIVEN
+    // Values at the top of this file.
+
+    // WHEN
+    const createProduct = () => new Product({ name, price, unit: "", stock, description, imagePath });
+
+    // THEN
+    expect(createProduct).toThrow("Unit is required.");
+});
+
+test("Given negative stock; When creating product; Then error is thrown.", () => {
+    // GIVEN
+    // Values at the top of this file.
+
+    // WHEN
+    const createProduct = () => new Product({ name, price, unit, stock: -1, description, imagePath });
+
+    // THEN
+    expect(createProduct).toThrow("Stock must be non-negative.");
+});
+
+test("Given no description; When creating product; Then error is thrown.", () => {
+    // GIVEN
+    // Values at the top of this file.
+
+    // WHEN
+    const createProduct = () => new Product({ name, price, unit, stock, description: "", imagePath });
+
+    // THEN
+    expect(createProduct).toThrow("Description is required.");
+});
+
+test("Given no image path; When creating product; Then error is thrown.", () => {
+    // GIVEN
+    // Values at the top of this file.
+
+    // WHEN
+    const createProduct = () => new Product({ name, price, unit, stock, description, imagePath: "" });
+
+    // THEN
+    expect(createProduct).toThrow("Image path is required.");
+});
+>>>>>>> 6913e423f295a49071dd6922709f3b637d77f35d

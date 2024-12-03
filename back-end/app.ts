@@ -25,7 +25,7 @@ app.use('/products', productRouter);
 app.use('/customers', customerRouter);
 app.use('/orders', ordersRoutes);
 // app.use('/carts/create',cartRouter)
-app.use('/carts', cartRouter)
+// app.use('/carts', cartRouter)
 
 
 app.get('/status', (req, res) => {

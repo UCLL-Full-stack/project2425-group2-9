@@ -22,7 +22,6 @@ const customerRouter = express.Router();
  *            name: productName
  *            schema:
  *              type: string
- *              required: true
  *              description: Product's name.
  *              example: Bread
  *     responses:
@@ -65,6 +64,7 @@ customerRouter.delete('/:id/cart/:productName', async (req: Request, res: Respon
  *           application/json:
  *             schema:
  *               type: string
+ *               example: Cart items deleted successfully.
  */
 customerRouter.delete('/:id/cart', async (req: Request, res: Response, next: NextFunction) => {
     try {
