@@ -36,6 +36,8 @@ const ordersRoutes = express.Router();
  * @swagger
  * /orders/{customerId}:
  *   post:
+ *     security:
+ *       - bearerAuth: []
  *     summary: make an order using customer's id
  *     parameters:
  *       - in: path

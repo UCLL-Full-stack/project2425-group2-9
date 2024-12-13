@@ -1,64 +1,55 @@
-import { Customer as customerPrisma } from "@prisma/client";
-import { Cart as cartPrisma } from "@prisma/client";
-import { Cart } from "./cart";
+import { Customer as customerPrisma, Role } from "@prisma/client";
+// import { Role as PrismaRole } from '@prisma/client';
+
 
 
 export class Customer {
     private id?: string;
     private password!: string;
-    private securityQuestion!: string;
     private username!: string;
     private firstName!: string;
     private lastName!: string;
     private phone!: string;
+    private role?: Role;
 
     constructor(customer: {
         id?: string;
         password: string;
-        securityQuestion: string;
         username: string;
         firstName: string;
         lastName: string;
         phone: string;
+        role?: Role;
     }) {
-        // TODO: Use setters!.
         this.setId(customer.id);
         this.setPassword(customer.password);
-        this.setSecurityQuestion(customer.securityQuestion);
         this.setUsername(customer.username);
         this.setFirstName(customer.firstName);
         this.setLastName(customer.lastName);
         this.setPhone(customer.phone);
+        this.setRole(customer.role);
     }
 
-    getId(): string|undefined {
+    getId(): string | undefined {
         return this.id;
     }
-    setId(newId: string|undefined): void {
-        this.id = newId
+
+    setId(newId: string | undefined): void {
+        this.id = newId;
     }
+
     getPassword(): string {
         return this.password;
     }
+
     setPassword(password: string): void {
         if (!password?.trim()) 
-            throw new Error( "Password is required." )
+            throw new Error("Password is required.");
         else if (password.length < 8) 
-            throw new Error( "Password must contain at least 8 characters." )
+            throw new Error("Password must contain at least 8 characters.");
         else {
             this.password = password;
         }
-    }
-
-    getSecurityQuestion(): string {
-        return this.securityQuestion;
-    }
-
-    setSecurityQuestion(securityQuestion: string): void {
-        if (!securityQuestion?.trim())
-            throw new Error( "security question needs to be answered." )
-
-        this.securityQuestion = securityQuestion;
     }
 
     getUsername(): string {
@@ -66,8 +57,8 @@ export class Customer {
     }
 
     setUsername(username: string): void {
-        if ( !username?.trim() )
-            throw new Error( "Username is required." )
+        if (!username?.trim())
+            throw new Error("Username is required.");
 
         this.username = username;
     }
@@ -77,8 +68,8 @@ export class Customer {
     }
 
     setFirstName(firstName: string): void {
-        if ( !firstName?.trim() )
-            throw new Error( "First name is required." )
+        if (!firstName?.trim())
+            throw new Error("First name is required.");
 
         this.firstName = firstName;
     }
@@ -88,8 +79,8 @@ export class Customer {
     }
 
     setLastName(lastName: string): void {
-        if ( !lastName?.trim() )
-            throw new Error( "Last name is required." )
+        if (!lastName?.trim())
+            throw new Error("Last name is required.");
 
         this.lastName = lastName;
     }
@@ -99,49 +90,56 @@ export class Customer {
     }
 
     setPhone(phone: string): void {
-        // if ( !phone )
-        //     throw new Error( "Phone number is required." )
-        // else if ( phone.toString().length < 9 || phone. < 0)
-        //     throw new Error( "Please enter your correct phone number")
-        if (!phone?.trim()) {
-            throw new Error (" phone number is required")
-        }
+        if (!phone?.trim())  throw new Error("Phone number is required");
         
-        this.phone = phone
+        //max length is 12 because in situation where the customer uses a +
+        if (phone.split(" ").join("").replace('+','').length < 8  || 
+
+        phone.split(" ").join("").replace('+','').length > 12)
+             throw new Error("phone number should be between 8 and 11 characters long. example: 02 345 67 89 or +32 470 12 34 56")
+        
+        this.phone = phone;
     }
 
-    equals(customer : Customer) : Boolean {
+    getRole(): Role | undefined {
+        return this.role;
+    }
+
+    setRole(role?: Role): void {
+        if (!role)
+            role = "ADMIN"
+        this.role = role
+    }
+
+    equals(customer: Customer): boolean {
         return (
             customer.getFirstName() === this.firstName &&
             customer.getId() === this.id &&
             customer.getLastName() === this.lastName &&
             customer.getPassword() === this.password &&
             customer.getPhone() === this.phone &&
-            customer.getSecurityQuestion() === this.securityQuestion &&
-            customer.getUsername() === this.username
-        )
+            customer.getUsername() === this.username &&
+            customer.getRole() === this.role
+        );
     }
 
     static from({
-
         id,
         password,
-        securityQuestion,
         username,
         lastName,
         firstName,
         phone,
-    }:customerPrisma ) {
-
+        role
+    }: customerPrisma): Customer {
         return new Customer({
             id,
             password,
-            securityQuestion,
             username,
             lastName,
             firstName,
             phone,
-           
-        })
+            role: role as Role
+        });
     }
 }

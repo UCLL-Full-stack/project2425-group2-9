@@ -1,14 +1,52 @@
 import express, { NextFunction, Request, Response } from 'express';
 import customerService from '../service/customer.service';
-import { Customer } from '@prisma/client';
-import { CustomerInput } from '../types';
+import {  Role } from '@prisma/client';
+import { AuthenticatedRequest, CustomerInput, UploadAuth } from '../types';
+import multer from 'multer';
+import { uploadOptions } from '../util/middleware';
 
-const customerRouter = express.Router();
+/**
+ * @swagger
+ *   components:
+ *    securitySchemes:
+ *     bearerAuth:
+ *      type: http
+ *      scheme: bearer
+ *      bearerFormat: JWT
+ *    schemas:
+ *      customer:
+ *          type: object
+ *          properties:
+ *            name:
+ *              type: string
+ *              description: customers name.
+ *            username: 
+ *              type: string
+ *              description: customers name used to login if registered
+ *            password:
+ *              type: string
+ *              description: customers password
+ *            firstName:
+ *              type: string
+ *              description: customers first name
+ *            lastName:
+ *              type: string
+ *              description: last name of the customer
+ *          phone:
+ *              type: string
+ *              description: customers phone number
+ *          role:  
+ *              type: ROle
+ *              description: role of the customer(admin, guest or customer)
+ */
+const customerRouter = express.Router()
 
 /**
  * @swagger
  * /customers/{id}/cart/{productName}:
  *   delete:
+ *     security:
+ *       - bearerAuth: []
  *     summary: Delete an item (product) from a cart using customer ID and product name.
  *     parameters:
  *          - in: path
@@ -48,6 +86,8 @@ customerRouter.delete('/:id/cart/:productName', async (req: Request, res: Respon
  * @swagger
  * /customers/{id}/cart:
  *   delete:
+ *     security:
+ *       - bearerAuth: []
  *     summary: Delete all items (products) from a cart using customer ID.
  *     parameters:
  *          - in: path
@@ -95,8 +135,8 @@ customerRouter.delete('/:id/cart', async (req: Request, res: Response, next: Nex
  *                 type: string
  *               firstName:
  *                 type: string
- *               securityQuestion:
- *                 type: string
+ *               role:
+ *                 type: Role
  *               phone:
  *                 type: string
  *               username:
@@ -105,7 +145,7 @@ customerRouter.delete('/:id/cart', async (req: Request, res: Response, next: Nex
  *               password: roland123
  *               lastName: sone
  *               firstName: roland
- *               securityQuestion: when were you born
+ *               role : admin
  *               phone: 0466058946
  *               username: roland_12
  *     responses:
@@ -130,4 +170,155 @@ customerRouter.post('/signup', async (req:Request, res: Response, next: NextFunc
     }
 })
 
+
+/**
+ * @swagger
+ * /customers/login:
+ *   post:
+ *     summary: Authenticate a customer and return a JWT token.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               username:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *             example:
+ *               password: roland123
+ *               username: roland_12
+ *     responses:
+ *       200:
+ *         description: Authentication successful.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/AuthenticationResponse'
+ */
+
+customerRouter.post('/login', async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const userInput: CustomerInput = req.body;
+        const response = await customerService.authenticate(userInput);
+        return res.status(200).json(response)
+    } catch (error) {
+        next(error);
+    }
+});
+
+
+
+
+
+/**
+ * @swagger
+ * /customers:
+ *   get:
+ *     security:
+ *       - bearerAuth: []
+ *     summary: Get a list of all customers
+ *     responses:
+ *       200:
+ *         description: A list of customers.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                  $ref: '#/components/schemas/Customer'
+ */
+customerRouter.get('/', async (req: Request, res: Response, next: NextFunction) => {
+    const authReq = req as unknown as AuthenticatedRequest;
+    try {
+        const { username, role } = authReq.auth;
+        const customers = await customerService.getAllCustomers({ username, role: role as Role });
+        return res.status(200).json(customers);
+    } catch (error) {
+        next(error);
+    }
+});
+    
+/**
+ * @swagger
+ * /customers:
+ *   post:
+ *     summary: Upload a new product
+ *     security:
+ *       - bearerAuth: []
+ *     tags:
+ *       - Products
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               price:
+ *                 type: number
+ *               unit:
+ *                 type: string
+ *               stock:
+ *                 type: number
+ *               description:
+ *                 type: string
+ *               image:
+ *                 type: string
+ *                 format: binary
+ *     responses:
+ *       201:
+ *         description: Product created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 name:
+ *                   type: string
+ *                 price:
+ *                   type: number
+ *                 unit:
+ *                   type: string
+ *                 stock:
+ *                   type: number
+ *                 description:
+ *                   type: string
+ *                 imagePath:
+ *                   type: string
+ *       400:
+ *         description: Bad request
+ *       403:
+ *         description: Access denied
+ */
+customerRouter.post('/', uploadOptions.single('image'),
+ async (req : Request , res : Response, next : NextFunction) => {
+    
+    try {
+
+        const { name, price, unit, stock, description } = req.body;
+
+        if (!req.file) {
+            return res.status(400).json({ message: 'No file uploaded.' });
+        }
+        const imageUrl = `${req.protocol}://${req.get('host')}/resources/images/${req.file.filename}`;
+        const newProduct = await customerService.uploadNewProduct({
+            name,
+            price: parseFloat(price),
+            unit,
+            stock: parseInt(stock, 10),
+            description,
+            imagePath: imageUrl
+        });
+
+        res.status(201).json(newProduct);
+    }
+    catch (error) {
+        next(error);
+    }
+})
 export { customerRouter };

@@ -69,7 +69,9 @@ export class Order {
     equals(newOrder: Order) {
         return (
             newOrder.cartId === this.cartId &&
-            newOrder.date === this.date
+            newOrder.date === this.date && 
+            newOrder.cart === this.cart &&
+            newOrder.customer === this.customer
         )
     }
 
@@ -80,6 +82,7 @@ export class Order {
         date,
         cart,
         customer
+        
     } : orderPrisma & { cart:cartPrisma; customer:customerPrisma} ) {
 
         return new Order({

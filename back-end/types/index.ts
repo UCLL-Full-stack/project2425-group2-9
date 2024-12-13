@@ -1,10 +1,11 @@
 
 // R: Name the interfaces with capital first letter!
 
-import { Cart } from "@prisma/client";
+import { CartContainsProduct } from "@prisma/client";
 
-
+type Role = "CUSTOMER" | "ADMIN" | "GUEST"
 interface ProductInput {
+    id? : string;
     name: string;
     price?: number;
     unit?: string;
@@ -13,10 +14,15 @@ interface ProductInput {
     imagePath?: string;
 }
 
+interface UploadAuth extends Request{
+   
+    role : Role
+    productInput : ProductInput
+}
 interface CartInputs {
-    id: number | undefined;
+    id?: string;
     totalPrice?: number;
-    customerId?: number | undefined,
+    customerId?: string | undefined,
     creationDate?: Date,
 }
 
@@ -28,6 +34,7 @@ interface CustomerInput {
     firstName?: string;
     lastName?: string;
     phone?: string;
+    role? : Role
 }
 
 interface OrderInput {
@@ -52,6 +59,22 @@ interface AddToCartInput {
 }
 
 
+type AuthenticationResponse = {
+    token?: string;
+    username?: string;
+    role? : Role;
+    fullname?: string;
+};
+
+interface AuthenticatedRequest extends Request {
+    auth: CustomerInput;
+}
+
+interface CartDetails {
+    product : CartContainsProduct[],
+    totalPrice: number
+}
+
 
 export {
     ProductInput,
@@ -61,5 +84,10 @@ export {
     CartContainsProductInput,
     DeleteCartItemInput,
     AddToCartInput,
+    Role,
+    AuthenticationResponse,
+    AuthenticatedRequest,
+    UploadAuth,
+    CartDetails
 
 }

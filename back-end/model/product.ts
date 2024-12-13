@@ -20,12 +20,12 @@ export class Product {
     }
 
     validate(product: { name: string, price: number, unit: string, stock: number, description: string, imagePath: string }) {
-        if (!product.name) throw new Error("Name is required.");
-        if (!product.unit) throw new Error("Unit is required.");
-        if (!product.description) throw new Error("Description is required.");
-        if (!product.imagePath) throw new Error("Image path is required.");
+        if (!product.name.trim()) throw new Error("Name is required.");
+        if (!product.unit.trim()) throw new Error("Unit is required.");
+        if (!product.description.trim()) throw new Error("Description is required.");
+        if (!product.imagePath.trim()) throw new Error("Image path is required.");
 
-        if (product.price <= 0) throw new Error("Price must be positive.");
+        if (product.price < 0) throw new Error("Price must be positive.");
         if (product.stock < 0) throw new Error("Stock must be non-negative.");
     }
 
@@ -59,7 +59,8 @@ export class Product {
             newProduct.price === this.price &&
             newProduct.unit === this.unit && // the equals method just checks if the data types of each attribute is the same as defined in the constructor            newProduct.stock === this.stock&&
             newProduct.description === this.description &&
-            newProduct.imagePath === this.imagePath
+            newProduct.imagePath === this.imagePath &&
+            newProduct.stock === this.stock
         )
 
     }

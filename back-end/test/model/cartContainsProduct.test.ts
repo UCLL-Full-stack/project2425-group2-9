@@ -1,46 +1,38 @@
-<<<<<<< HEAD
-
+import { Cart } from "../../model/cart";
 import { CartContainsProduct } from "../../model/cartContainsProduct";
+import { Product } from "../../model/product";
 
-test('Given valid values; When creating cartContainsProduct object; Then the object is creating with those values.', () => {
-    // GIVEN
-    const cartId: number = 1;
-    const productName: string = "Bananas";
-    const quantity: number = 1;
-
-    // WHEN
-    const cartContainsProduct: CartContainsProduct = new CartContainsProduct({
-        cartId,
-        productName,
-        quantity
-    });
-=======
-import { CartContainsProduct } from "../../model/cartContainsProduct";
-
-const cartId: number = 1;
+const cartId: string = "some-string";
 const productName: string = "Bananas";
 const quantity: number = 0;
+const cart: Cart = new Cart({ id: "some-string", totalPrice: 0 });
+const product: Product = new Product({
+    name: "bananas",
+    price: 1.0,
+    unit: "kg",
+    stock: 100,
+    description: "Fresh bananas",
+    imagePath: "path/to/image"
+});
 
 test('Given valid values; When creating CartContainsProduct object; Then object is created with those values.', () => {
     // GIVEN 
     // Values at the top of this file.
 
     // WHEN
-    const cartContainsProduct: CartContainsProduct = new CartContainsProduct({ cartId, productName, quantity });
->>>>>>> 6913e423f295a49071dd6922709f3b637d77f35d
+    const cartContainsProduct: CartContainsProduct = new CartContainsProduct({ cartId, productName, quantity, cart, product });
 
     // THEN
     expect(cartContainsProduct.getCartId()).toBe(cartId);
     expect(cartContainsProduct.getProductName()).toBe(productName);
     expect(cartContainsProduct.getQuantity()).toBe(quantity);
+    expect(cartContainsProduct.getCart()).toEqual(cart);
+    expect(cartContainsProduct.getProduct()).toEqual(product);
 });
 
-<<<<<<< HEAD
 test("Given no product name; When creating cartContainsProduct object; Then error is thrown.", () => {
     // GIVEN
-    const cartId: number = 1;
     const productName: string = "";
-    const quantity: number = 1;
 
     // WHEN
     const createCart = () => {
@@ -49,8 +41,8 @@ test("Given no product name; When creating cartContainsProduct object; Then erro
             productName,
             quantity
         });
-        return cartContainsProduct
-    }
+        return cartContainsProduct;
+    };
 
     // THEN
     expect(createCart).toThrow('Product name is required.');
@@ -58,8 +50,6 @@ test("Given no product name; When creating cartContainsProduct object; Then erro
 
 test("Given no quantity; When creating cartContainsProduct object; Then error is thrown.", () => {
     // GIVEN
-    const cartId: number = 1;
-    const productName: string = "Bananas";
     const quantity: number = -50;
 
     // WHEN
@@ -69,12 +59,13 @@ test("Given no quantity; When creating cartContainsProduct object; Then error is
             productName,
             quantity
         });
-        return cartContainsProduct
-    }
+        return cartContainsProduct;
+    };
 
     // THEN
     expect(createCart).toThrow('Quantity must be non-negative.');
-=======
+});
+
 test('Given no product name; When creating CartContainsProduct object; Then error is thrown.', () => {
     // GIVEN 
     // Values at the top of this file.
@@ -95,6 +86,42 @@ test('Given negative quantity; When creating CartContainsProduct object; Then er
 
     // THEN
     expect(createCartContainsProduct).toThrow("Quantity must be non-negative.");
->>>>>>> 6913e423f295a49071dd6922709f3b637d77f35d
 });
 
+test("Given cart does not match the cartId of cartContainsProduct; when creating a new cartContainsProductObject; then error is thrown.", () => {
+    // GIVEN
+    const cart1 = new Cart({ id: "blHM409UUNKNK", totalPrice: 0 });
+
+    // WHEN
+    const newCartContains = () => {
+        const newCartItem = new CartContainsProduct({ cartId, productName, quantity, cart: cart1 });
+        return newCartItem;
+    };
+
+    // THEN
+    expect(newCartContains).toThrow("cart does not match cartId");
+});
+
+test("Given product does not match the given product name; When creating a new cartContainsProduct object; then an error error is thrown.", () => {
+    // GIVEN
+    const product: Product = new Product({
+        name: "apples",
+        price: 1.0,
+        unit: "kg",
+        stock: 100,
+        description: "Fresh apples",
+        imagePath: "path/to/image"
+    });
+
+    // WHEN
+    const newCartContains = () => {
+        const cartContainsProduct = new CartContainsProduct({
+            cartId, productName, quantity, cart, product
+        });
+
+        return cartContainsProduct;
+    };
+
+    // THEN
+    expect(newCartContains).toThrow("product does not match the product name");
+});

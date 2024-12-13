@@ -1,9 +1,23 @@
-import { Prisma } from "@prisma/client";
+import {  Role } from "@prisma/client";
 import { Customer } from "../model/customer";
 import database from "../util/database";
-import { da } from "date-fns/locale";
+import { CustomerInput } from "../types";
 
+//for admin
+const getAllCustomers = async () :  Promise <Customer[] | null> => {
 
+    try  {
+
+        const customerPrisma = await database.customer.findMany();
+        if (!customerPrisma) throw new Error("no customers found")
+        
+        return customerPrisma.map((customerPrisma) => Customer.from(customerPrisma))
+    }
+    catch (error) {
+        console.error(error)
+        throw new Error("Database error. See server log for details.")
+    }
+}
 
 const getCustomerById = async (customerId: string | undefined): Promise< Customer | null > => {
 
@@ -28,21 +42,20 @@ const getCustomerById = async (customerId: string | undefined): Promise< Custome
     }
 }
 
-
 const registerCustomer  = async ( newCustomer : Customer) : Promise<Customer |null > => {
 
-   
 try {
 
+    const normalizedRole = newCustomer.getRole()?.toLowerCase() as keyof typeof Role | undefined;//used to tell TypeScript that a value is one of the keys of the Role enum.
     const createCustomer =  await database.customer.create( {
         data : {
 
             password : newCustomer?.getPassword(),
-            securityQuestion : newCustomer?.getSecurityQuestion(),
             username : newCustomer?.getUsername(),
             firstName : newCustomer?.getFirstName(),
             lastName : newCustomer?.getLastName(),
-            phone : newCustomer?.getPhone()
+            phone : newCustomer?.getPhone(),
+            role : normalizedRole ? Role[normalizedRole.toUpperCase() as keyof typeof Role] : Role.GUEST  // Convert role to uppercase, default to CUSTOMER
 
         }
     })
@@ -54,20 +67,20 @@ catch (error) {
 }
 }
 
-const findCustomerByUserName = async ( {username} : {username : string}) : Promise<Customer|null> => {
+const findCustomerByUserName = async ( {username} : {username : string}) : Promise<Customer[]|null> => {
 
     try {
 
-        const customerPrisma = await database.customer.findFirst({
+        const customerPrisma = await database.customer.findMany({
             where : {
-                username
+                username : username
             }
         })
 
-        // if (!customerPrisma) {
-        //     throw new Error(`customer with username ${username} does not exist.`)
-        // }
-        return customerPrisma ? Customer.from(customerPrisma) : null
+         if (!customerPrisma) {
+             throw new Error(`customer with username ${username} does not exist.`)
+         }
+        return customerPrisma.map((customerPrisma) => Customer.from(customerPrisma))
     }
     catch(error){
         console.error(error)
@@ -76,8 +89,10 @@ const findCustomerByUserName = async ( {username} : {username : string}) : Promi
 }
 
 
+
 export default {
     getCustomerById,
     registerCustomer,
-    findCustomerByUserName
+    findCustomerByUserName,
+    getAllCustomers
 }

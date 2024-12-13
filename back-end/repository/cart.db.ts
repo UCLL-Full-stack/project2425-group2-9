@@ -1,5 +1,5 @@
-
 import { Cart } from "../model/cart";
+import { CartInputs } from "../types";
 import database from "../util/database";
 
 // const saveCart = (cart: Cart): Cart | undefined => {
@@ -15,31 +15,22 @@ import database from "../util/database";
 // }
 
 //Q& do i still need the saveCart method now that am using a real database??
-const getCartByCustomerId = async (newCustomerId?: string | undefined): Promise<Cart|null> => {
+const getCartByCustomerId = async (newCustomerId?: string): Promise<Cart | null> => {
+    if (!newCustomerId) throw new Error("Customer ID is undefined.");
 
-    if (!newCustomerId) {
-        throw new Error("customer is undefined");
-    }
-    
-    try{
-       const cartPrisma = await database.cart.findUnique({
-        where:{
-            customerId: newCustomerId
-        },
-        include:{
-            customer:true
-        }
-       })
-       if (!cartPrisma)
-        throw new Error(` cart with customer Id ${newCustomerId} not found`)
-       return Cart.from({ ...cartPrisma, customerPrisma: cartPrisma.customer || undefined })
-    }catch(error){
-        console.log(error)
-        throw new Error("Database error. See server log for details")
-    }
+    try {
+        const cartPrisma = await database.cart.findFirst({
+            where: { customerId: newCustomerId },
+            include: { customer: true , product : true}
+        });
 
-        
-}
+        if (!cartPrisma) return null;
+        return Cart.from({ ...cartPrisma, customerPrisma: cartPrisma.customer || undefined });
+    } catch (error) {
+        console.error(error);
+        throw new Error("Database error. See server log for details.");
+    }
+};
 
 const getCartById = async (cartId: string): Promise<Cart | null> => {
     
@@ -61,11 +52,12 @@ const getCartById = async (cartId: string): Promise<Cart | null> => {
      }
 };
 
+//admin
 const returnAllCartsAvailable = async (): Promise<Cart[] | null> => {
    try{
     const cartDb  = await database.cart.findMany({
         include:{
-            customer:false
+            customer:true
         }
     })
     
@@ -76,9 +68,35 @@ const returnAllCartsAvailable = async (): Promise<Cart[] | null> => {
    }
 }
 
+const createNewCartForCustomer = async (cart : Cart) : Promise<Cart> =>{
+
+    try {
+
+        const cartPrisma = await database.cart.create({
+            data : {
+                totalPrice : 0,
+                customer : {
+                    connect : {
+                        id : cart.getCustomerId()
+                    }
+                } 
+                }
+            
+        })
+
+        if (!cartPrisma) throw new Error("cart was not created.")
+
+        return Cart.from(cartPrisma)
+    }
+    catch (error){
+        console.error(error)
+        throw new Error("application error. see server logs for more information.")
+    }
+}
 
 export default {
     getCartByCustomerId,
     returnAllCartsAvailable,
-    getCartById
+    getCartById,
+    createNewCartForCustomer
 };

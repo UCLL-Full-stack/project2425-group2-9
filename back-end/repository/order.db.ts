@@ -12,9 +12,9 @@ const newOrder = async ( {cartId, customerId} :OrderInput) : Promise<String | nu
         const newOrder = await database.order.create({
         
             data : {
-                cartId : cartId,
+                cartId ,
                 date : new Date(),
-                customerId : customerId
+                customerId 
             }
         })
     

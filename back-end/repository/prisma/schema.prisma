@@ -7,53 +7,58 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+
+enum Role {
+    GUEST
+    ADMIN
+    CUSTOMER
+}
+
 model Customer {
   id               String    @id @default(uuid())
   password         String    @unique
-  securityQuestion String
   username         String    @unique
   firstName        String
   lastName         String
-  phone            String   @unique
+  phone            String    @unique
   cart             Cart[]
-  order   Order[]
+  order            Order[]
+  role             Role
 }
 
 model Cart {
   id         String       @id @default(uuid())
   totalPrice Int
-  customer   Customer? @relation(fields: [customerId], references: [id])
-  customerId String?  @unique
+  customer   Customer?    @relation(fields: [customerId], references: [id])
+  customerId String?      @unique
   order      Order?
-  product   CartContainsProduct[]
-
+  product    CartContainsProduct[]
 }
 
 model Order {
-  id     Int      @id @default(autoincrement())
-  date   DateTime 
-  cart   Cart    @relation(fields: [cartId], references: [id])
-  cartId String     @unique
-  customer    Customer    @relation(fields: [customerId], references: [id])
-  customerId    String 
+  id          Int       @id @default(autoincrement())
+  date        DateTime 
+  cart        Cart      @relation(fields: [cartId], references: [id])
+  cartId      String    @unique
+  customer    Customer  @relation(fields: [customerId], references: [id])
+  customerId  String 
 }
 
 model Product {
-  name    String    @unique
-  price   Int 
-  unit    String
-  stock   Int
-  description   String
-  imagePath   String
-  cart    CartContainsProduct[]
+  name         String    @unique
+  price        Int 
+  unit         String
+  stock        Int
+  description  String
+  imagePath    String
+  cart         CartContainsProduct[]
 }
 
- model CartContainsProduct {
-  cart    Cart?            @relation(fields: [cartId], references: [id])
-  cartId    String        
-  product   Product?       @relation(fields: [productName] , references: [name])
-  productName   String    
-  quantity    Int
+model CartContainsProduct {
+  cart         Cart?     @relation(fields: [cartId], references: [id])
+  cartId       String        
+  product      Product?  @relation(fields: [productName], references: [name])
+  productName  String    
+  quantity     Int
   @@id([cartId, productName])
-
- }
+}

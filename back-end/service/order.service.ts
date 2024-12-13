@@ -5,6 +5,8 @@ import customerDb from "../repository/customer.db"
 import orderDb from "../repository/order.db"
 import database from "../util/database"
 import { Customer } from "../model/customer"
+import cartContainsProductDb from "../repository/cartContainsProduct.db"
+import { Order } from "@prisma/client"
 const createAnOrder = async ( customerId : string) : Promise<string | null> => {
 
     if ( !customerId )
@@ -20,26 +22,19 @@ const createAnOrder = async ( customerId : string) : Promise<string | null> => {
         if (!cart)
             throw new Error(`no carts found for customer`)
 
-        const getCartFromDb = await database.cart.findUnique({
-            where : {
-                customerId : cart.getCustomerId()
-            },
-            include  : {
-                customer : false, order : false , product : true
-            }
-        }) 
-
+        const getCartFromDb = await cartDb.getCartByCustomerId(customerId)
         if (!getCartFromDb)
             throw new Error("cart not found")
-        if (getCartFromDb.product.length == 0) {
-            throw new Error("cart is empty")
-        }
 
         const placeOrder = await orderDb.newOrder({cartId, customerId})
 
-        if (!placeOrder)
-            return null
-        return "order successful"
+        if (placeOrder){
+            await cartContainsProductDb.deleteAllCartItems(cart.getId()!)
+        }else {
+            throw new Error("order was not created")
+        }
+        
+        return "order placed successful. thank you for choosing veso"
     }
     catch(error){
         console.error(error)

@@ -1,5 +1,7 @@
 import { Product } from "../model/product";
+import multer from "multer";
 import productDb from "../repository/product.db";
+import { ProductInput } from "../types";
 
 const getAllProducts = async (): Promise<Product[] | undefined> => {
     return await productDb.getAllProducts();
@@ -17,6 +19,7 @@ catch (error){
     throw new Error("Database error. See server log for details.")
 }
     }
+
 
 export default {
     getAllProducts,

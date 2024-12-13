@@ -23,7 +23,7 @@ const getAllProducts = async (): Promise<Product[] | undefined> => {
         console.log(error)
     }
 }
-const addNewProduct = async (newProduct:Product) : Promise<string | null > =>{
+const addNewProduct = async (newProduct:Product) : Promise<Product | null > =>{
     
     try {
 
@@ -40,7 +40,8 @@ const addNewProduct = async (newProduct:Product) : Promise<string | null > =>{
 
         if (!createNewProduct)
             throw new Error("product was not added to the database. please try again.")
-        return "product added successfully"
+
+        return Product.from(createNewProduct)
     }
     catch (error) {
         console.log(error)
@@ -48,35 +49,20 @@ const addNewProduct = async (newProduct:Product) : Promise<string | null > =>{
     }
 }
 const getProductByName = async (name: string): Promise<Product | null> => {
-
     try {
+        const productPrisma = await database.product.findUnique({
+            where: { name },
+            include: { cart: false }
+        });
 
-        const productPrisma = await database.product.findFirst({
-            where : {
-                name : name
-            },
-            include : {cart : false}
-        })
-
-        if (!productPrisma)
-            throw new Error("product not found")
-        return Product.from(productPrisma)
+        if (!productPrisma) return null;
+        return Product.from(productPrisma);
+    } catch (error) {
+        console.error(error);
+        throw new Error("Database error. See server log for details.");
     }
-   catch (error) {
-    console.log(error)
-    throw new Error("Database error. See server log for details.")
-   }
-}
-// const getOrSaveProductByName = (name: string, newProduct: Product): Product => {
-//     let product = getProductByName(name);
-//     if (!product) {
-//         product = saveNewProduct(newProduct);
-//         if (!product) {
-//             throw new Error("Failed to save new product");
-//         }
-//     }
-//     return product;
-// }
+};
+
 const deleteProductByName = async (name: string): Promise <string> => {
     
     try {

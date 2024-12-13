@@ -36,14 +36,16 @@ const productRouter = express.Router();
  * @swagger
  * /products:
  *   get:
+ *     security:
+ *       - bearerAuth: []
  *     summary: Get a list of all products.
  *     responses:
- *          200:
- *              description: A list of all products.
- *              content:
- *                  application/json:
- *                      schema:
- *                          $ref: '#/components/schemas/Product'
+ *       200:
+ *         description: A list of all products.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Product'
  */
 productRouter.get('/', async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -58,15 +60,17 @@ productRouter.get('/', async (req: Request, res: Response, next: NextFunction) =
  * @swagger
  * /products/{name}:
  *   get:
+ *     security:
+ *       - bearerAuth: []
  *     summary: Get a product by its name.
  *     parameters:
- *          - in: path
- *            name: name
- *            schema:
- *              type: string
- *              required: true
- *              description: The name of the product.
- *              example: Bread
+ *       - in: path
+ *         name: name
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The name of the product.
+ *         example: Bread
  *     responses:
  *       200:
  *         description: A product object.

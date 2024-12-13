@@ -1,8 +1,6 @@
-
 import { CartContainsProduct as cartContainsProductPrisma } from "@prisma/client";
 import { Cart as cartPrisma } from "@prisma/client";
 import { Product as productPrisma } from "@prisma/client";
-import { Customer as customerPrisma } from "@prisma/client";
 import { Cart } from "./cart";
 import { Product } from "./product";
 export class CartContainsProduct {
@@ -47,7 +45,9 @@ export class CartContainsProduct {
         return this.cart
     }
 
-    setCart( cart:Cart|undefined) :void {
+    setCart( cart?:Cart ) :void {
+        if (cart?.getId() !== this.getCartId())
+            throw new Error("cart does not match cartId")
         this.cart = cart
     }
 
@@ -55,8 +55,10 @@ export class CartContainsProduct {
         return this.product
     }
 
-    setProduct( product:Product|undefined ): void {
+    setProduct( product?:Product ): void {
 
+        if (product?.getName().toLocaleLowerCase() !== this.getProductName().toLocaleLowerCase())
+            throw new Error("product does not match the product name")
         this.product = product
     }
 
@@ -67,8 +69,7 @@ export class CartContainsProduct {
         quantity,
         cart,
         product
-    } : cartContainsProductPrisma & { cart?: cartPrisma; product?: productPrisma}
-) {
+    } : cartContainsProductPrisma & { cart?: cartPrisma | null; product?: productPrisma }) {
 
     return new CartContainsProduct({
         cartId,

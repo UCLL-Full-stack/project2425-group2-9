@@ -1,0 +1,7 @@
+add product from the front-end => post
+see all customers registered => get
+see all order details of every customer => get
+remove a product from the front-end => delete
+check order status => delete
+check product stock(count) => get
+change order status => put
