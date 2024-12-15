@@ -29,6 +29,7 @@ app.use(
             '/customers/login',
             '/customers/signup',
             '/status',
+            '/products'
         ],
     })
 );

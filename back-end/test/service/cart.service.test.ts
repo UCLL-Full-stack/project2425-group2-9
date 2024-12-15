@@ -1,3 +1,4 @@
+import exp from "constants";
 import { Cart } from "../../model/cart";
 import { CartContainsProduct } from "../../model/cartContainsProduct";
 import { Customer } from "../../model/customer";
@@ -7,412 +8,329 @@ import cartContainsProductDb from "../../repository/cartContainsProduct.db";
 import customerDb from "../../repository/customer.db";
 import productDb from "../../repository/product.db";
 import cartService from "../../service/cart.service";
+// import { CartDetails } from "../../types";
 
 
 // GIVEN -----------------------------------
 const customer: Customer = new Customer({
-    id: 1,
+
+    id: "some-id",
     password: "m@t3j-v3s3l",
-    securityQuestion: "What is the name of the best friend from childhood?", // TODO: We also need security answer. It may also be a list.
     username: "Matej333",
     firstName: "Matej",
     lastName: "Vesel",
-    phone: 333444555666
+    phone: "333444555666"
+
 })
 
 const customerWithoutCart: Customer = new Customer({
-    id: 2,
+
+    id: "2",
     password: "r0l@nd/nd1m3/s0n3",
-    securityQuestion: "What is the name of the best friend from childhood?", // TODO: We also need security answer. It may also be a list.
     username: "Roland333",
     firstName: "Roland",
     lastName: "Ndime Sone",
-    phone: 444555666777
+    phone: "444555666777"
+
 })
 
+const customerWithoutCart2: Customer = new Customer({
+
+    id: "2",
+    password: "r0l@nd/nd1m3/s0n3",
+    username: "Roland",
+    firstName: "Roland",
+    lastName: "Ndime Sone",
+    phone: "444555666127"
+
+})
+const product : Product[] = [
+    new Product({
+        name: "Bread",
+        price: 5,
+        unit: "piece",
+        stock: 25,
+        description: "Rye bread is a type of bread made with various proportions of flour from rye grain. It can be light or dark in color, depending on the type of flour used and the addition of coloring agents, and is typically denser than bread made from wheat flour. Compared to white bread, it is higher in fiber, darker in color, and stronger in flavor. The world's largest exporter of rye bread is Poland.",
+        imagePath: "bread.png"
+    }),
+    new Product({
+        name: "Mayonnaise",
+        price: 7,
+        unit: "piece",
+        stock: 15,
+        description: "Mayonnaise is an emulsion of oil, egg yolk, and an acid, either vinegar or lemon juice;[4] there are many variants using additional flavorings. The color varies from near-white to pale yellow, and its texture from a light cream to a thick gel.",
+        imagePath: "mayonnaise.png"
+    })
+]
 const cart: Cart = new Cart({
-    id: 1,
+    id: "1",
     totalPrice: 30,
-    customerId: 1,
+    customerId: "some-id",
+    customer : customer,
+    
 })
 
-const customerId: number = 1;
-const productName: string = "Bananas";
-const cartId: number = 3;
-
-<<<<<<< HEAD
+const cart2 :  Cart = new Cart({
+    id: "2",
+    totalPrice: 10,
+    customerId: "2",
+    customer : customerWithoutCart2,
+    
 })
-// test ("given: product is already in cart, when: adding products to cart, then: products quantity is incremented",async()=>{
-//     //given
-//     cartDb.getCartByCustomerId = mockCartDbGetCartByCustomerId.mockReturnValue(cart[0])
-//     productDb.getProductByName = mockProductDbGetProductByName.mockReturnValue(products[0])
-//     cartContainsProductDb.getCartByCartIdAndProductName = mockCartContainsProductGetCartByCartIdAndProductName.mockReturnValue(cartContainsProduct[0])
 
-//     //when
-//     const addtocart = await cartService.addProductToCart(customer1,products[0])
-//     //then
-//     expect(mockCartContainsProductGetCartByCartIdAndProductName).toHaveBeenCalledWith(cart[0].getId(),products[0].getName())
-//     expect(mockCartDbGetCartByCustomerId).toHaveBeenCalledWith(customer1.getId())
-//     expect(mockProductDbGetProductByName).toHaveBeenCalledWith(products[0].getName())
-//     expect(addtocart).toEqual(cart[0])
+const cartContainsProduct : CartContainsProduct = new CartContainsProduct({cartId : cart.getId()!,productName : product[0].getName(), quantity: 2})
 
-// })
-test("given: product is not in cart, when: adding product to card, then: product is added to card",async()=>{
-    // Given
-    cartDb.getCartByCustomerId = mockCartDbGetCartByCustomerId.mockReturnValue(cart[0]);
-    productDb.getProductByName = mockProductDbGetProductByName.mockReturnValue(products[2]);
-    cartContainsProductDb.getCartByCartIdAndProductName = mockCartContainsProductGetCartByCartIdAndProductName.mockReturnValue(null); // Product not in cart
-   // cartContainsProductDb.addOrUpdateProduct = mockCartContainsProductAddOrUpdateProduct.mockReturnValue(new CartContainsProduct({cartId:cart[0].getId(),productName:products[2].getName(),quantity:1}));
-
-    // When
-  //  const addToCart = await cartService.addProductToCart(customer1, products[2])
-    // Then
-    expect(mockCartDbGetCartByCustomerId).toHaveBeenCalledWith(customer1.getId());
-    expect(mockProductDbGetProductByName).toHaveBeenCalledWith(products[2].getName());
-    expect(mockCartContainsProductGetCartByCartIdAndProductName).toHaveBeenCalledWith(cart[0].getId(), products[2].getName());
-     expect(mockCartContainsProductAddOrUpdateProduct).toHaveBeenCalledWith(expect.objectContaining({cartId:cart[0].getId(),productName:products[2].getName(),quantity:1}));
-     //expect(addToCart).toEqual(cart[0])
-=======
 // SETUP -----------------------------------
+//class_methods related to addProductToCart method in cart.service.ts
 
-// Q& Is this correct way to do it?
-
-let mockGetProductsByCartId: jest.Mock;
-let mockGetCartItemsByCustomerId: jest.Mock;
-let mockAddProductToCart: jest.Mock;
-let mockDeleteAllCartItems: jest.Mock;
-
-let mockCartContainsProductDb_getCartByCartIdAndProductName: jest.Mock;
-let mockCartContainsProductDb_getCartItemNamesByCartId: jest.Mock;
-let mockCartContainsProductDb_returnAllItemsInCart: jest.Mock;
-let mockCartContainsProductDb_addCartItem: jest.Mock;
-let mockCartContainsProductDb_deleteAllCartItems: jest.Mock;
-let mockProductDb_getProductByName: jest.Mock;
 let mockCartDb_getCartByCustomerId: jest.Mock;
 let mockCustomerDb_getCustomerById: jest.Mock;
+let mockCartDb_createNewCartForCustomer: jest.Mock;
+let mockProductDb_getProductByName: jest.Mock;
+let mockCartContainsProduct_getCartByCartIdAndProductName: jest.Mock;
+let mockCartContainsProductDb_addCartItem: jest.Mock;
+let mockCartContainsProductDb_updateProduct: jest.Mock;
+
+
+//class_methods related to getAllCartsAvailable method 
+
+let mockCartDb_returnAllCartsAvailable : jest.Mock;
+
+//class_methods related to getCartContainsProductByCartId and getCartDetails methods in cart.service.ts
+
+let mockCartContainsProductDb_returnAllItemsInCart: jest.Mock;
+let mockCartContainsProductDb_calculateTotalPrice: jest.Mock;
 
 beforeEach(() => {
-    mockGetProductsByCartId = jest.fn();
-    mockGetCartItemsByCustomerId = jest.fn();
-    mockAddProductToCart = jest.fn();
-    mockDeleteAllCartItems = jest.fn();
-
-    mockCartContainsProductDb_getCartByCartIdAndProductName = jest.fn();
-    mockCartContainsProductDb_getCartItemNamesByCartId = jest.fn();
-    mockCartContainsProductDb_returnAllItemsInCart = jest.fn();
-    mockCartContainsProductDb_addCartItem = jest.fn();
-    mockCartContainsProductDb_deleteAllCartItems = jest.fn();
-    mockProductDb_getProductByName = jest.fn();
+    
     mockCartDb_getCartByCustomerId = jest.fn();
+    mockCartDb_createNewCartForCustomer = jest.fn();
     mockCustomerDb_getCustomerById = jest.fn();
+    mockProductDb_getProductByName = jest.fn();
+    mockCartContainsProduct_getCartByCartIdAndProductName = jest.fn();
+    mockCartContainsProductDb_addCartItem = jest.fn();
+    mockCartContainsProductDb_updateProduct = jest.fn()
+    mockCartDb_returnAllCartsAvailable =  jest.fn();
+    mockCartContainsProductDb_returnAllItemsInCart = jest.fn();
+    mockCartContainsProductDb_calculateTotalPrice = jest.fn();
 });
 
 afterEach(() => {
+
     jest.clearAllMocks();
+
 });
 
 
 // TESTS -----------------------------------
 
+test(`Given cart exists for a customer and the selected product is not in the customers cart; when adding product to cart; then a new product is added to the cart`, async () => {
+    // Given
 
-test('Given cart ID; When calling getProductsByCartId; Then a list of products from the corresponding cart are returned.', async () => {
-    // GIVEN
-    // Variables at the top of the file.
-    cartContainsProductDb.getCartItemNamesByCartId = mockCartContainsProductDb_getCartItemNamesByCartId.mockReturnValue([
-        new CartContainsProduct({ cartId: 3, productName: "Mouse", quantity: 5 }),
-        new CartContainsProduct({ cartId: 3, productName: "Bananas", quantity: 5 }),
-    ]);
-
-    productDb.getProductByName = mockProductDb_getProductByName.mockReturnValueOnce(new Product({
-        name: "Mouse",
-        price: 10,
-        unit: "piece",
-        stock: 16,
-        description: "A computer mouse (plural mice, also mouses)[nb 1] is a hand-held pointing device that detects two-dimensional motion relative to a surface. This motion is typically translated into the motion of the pointer (called a cursor) on a display, which allows a smooth control of the graphical user interface of a computer.",
-        imagePath: "mouse.png"
-    }))
-
-    productDb.getProductByName = mockProductDb_getProductByName.mockReturnValueOnce(new Product({
-        name: "Bananas",
-        price: 5,
-        unit: "bunch",
-        stock: 22,
-        description: "A banana is an elongated, edible fruit -- botanically a berry[1] -- produced by several kinds of large herbaceous flowering plants in the genus Musa. In some countries, cooking bananas are called plantains, distinguishing them from dessert bananas. The fruit is variable in size, color and firmness, but is usually elongated and curved, with soft flesh rich in, starch covered with a peel, which may have a variety of colors when ripe. It grows upward in clusters near the top of the plant. Almost all modern edible seedless (parthenocarp) cultivated bananas come from two wild species -- Musa acuminata and Musa balbisiana, or hybrids of them.",
-        imagePath: "bananas.png"
-    }))
-
-
-    // WHEN
-    const result: Product[] = await cartService.getProductsByCartId(cartId);
-
-
-    // THEN
-    expect(result[0].getName()).toEqual("Mouse");
-    expect(result[1].getName()).toEqual("Bananas");
-
-    expect(mockCartContainsProductDb_getCartItemNamesByCartId).toHaveBeenCalledTimes(1);
-    expect(mockCartContainsProductDb_getCartItemNamesByCartId).toHaveBeenCalledWith(cartId);
-
-    expect(mockProductDb_getProductByName).toHaveBeenCalledTimes(2);
-});
-
-test('Given no cart ID; When calling getProductsByCartId; Then an error is thrown.', () => {
-    // GIVEN
-    // Variables at the top of the file.
-
-    // WHEN
-    const getProductsByCartId = () => cartService.getProductsByCartId(0);
-
-    // THEN
-    expect(getProductsByCartId).rejects.toThrow("Cart ID is required.");
-});
-
-// SKIPPED: Because the logic will most likely change with the real database.
-test('Given product name does not exist in the product database; When calling getProductsByCartId; Then an error is thrown.', () => {
-    // GIVEN
-    // Variables at the top of the file.
-    cartContainsProductDb.getCartItemNamesByCartId = mockCartContainsProductDb_getCartItemNamesByCartId.mockReturnValue([
-        new CartContainsProduct({ cartId: 3, productName: "Mouse", quantity: 5 }),
-        new CartContainsProduct({ cartId: 3, productName: "Bananas", quantity: 5 }),
-    ]);
-
-    productDb.getProductByName = mockProductDb_getProductByName.mockReturnValueOnce(new Product({
-        name: "Mouse",
-        price: 10,
-        unit: "piece",
-        stock: 16,
-        description: "A computer mouse (plural mice, also mouses)[nb 1] is a hand-held pointing device that detects two-dimensional motion relative to a surface. This motion is typically translated into the motion of the pointer (called a cursor) on a display, which allows a smooth control of the graphical user interface of a computer.",
-        imagePath: "mouse.png"
-    }))
-
-    // WHEN
-    const getProductsByCartId = () => cartService.getProductsByCartId(cartId);
-
-    // THEN
-    expect(getProductsByCartId).rejects.toThrow("Product does not exist.");
-
-    expect(mockCartContainsProductDb_getCartItemNamesByCartId).toHaveBeenCalledTimes(1);
-    expect(mockCartContainsProductDb_getCartItemNamesByCartId).toHaveBeenCalledWith(cartId);
-});
-
-test('Given customer ID; When calling getCartItemsByCustomerId; Then cart items of that customer are returned.', async () => {
-    // GIVEN
-    // Variables at the top of the file.
     cartDb.getCartByCustomerId = mockCartDb_getCartByCustomerId.mockReturnValue(cart);
+    productDb.getProductByName = mockProductDb_getProductByName.mockReturnValue(product[1]);
+    cartContainsProductDb.getCartByCartIdAndProductName = mockCartContainsProduct_getCartByCartIdAndProductName.mockReturnValue(undefined)
+    cartContainsProductDb.addCartItem = mockCartContainsProductDb_addCartItem.mockReturnValue(new CartContainsProduct({cartId: cart.getId()!, productName: product[1].getName(), quantity: 1}))
 
-    cartContainsProductDb.returnAllItemsInCart = mockCartContainsProductDb_returnAllItemsInCart.mockReturnValue([
-        new CartContainsProduct({ cartId: 3, productName: "Mouse", quantity: 5 }),
-        new CartContainsProduct({ cartId: 3, productName: "Bananas", quantity: 5 })
-    ]);
+    //when
 
+    await cartService.addProductToCart({customerId: customer.getId()!, productName: product[1].getName()})
 
-    // WHEN
-    const result: CartContainsProduct[] = await cartService.getCartItemsByCustomerId(customer.getId());
+    //then
 
-
-    // THEN
-    expect(result[0].getProductName()).toEqual("Mouse");
-    expect(result[1].getProductName()).toEqual("Bananas");
-
-    expect(mockCartDb_getCartByCustomerId).toHaveBeenCalledTimes(1);
-    expect(mockCartDb_getCartByCustomerId).toHaveBeenCalledWith(1);
-
-    expect(mockCartContainsProductDb_returnAllItemsInCart).toHaveBeenCalledTimes(1);
-    expect(mockCartContainsProductDb_returnAllItemsInCart).toHaveBeenCalledWith(customer.getId());
+    expect(mockCartDb_getCartByCustomerId).toHaveBeenCalledWith(customer.getId())
+    expect(mockProductDb_getProductByName).toHaveBeenCalledWith(product[1].getName())
+    expect(mockCartContainsProduct_getCartByCartIdAndProductName).toHaveBeenCalledWith(cart.getId(), product[1].getName())
+    expect(mockCartContainsProductDb_addCartItem).toHaveBeenCalledWith({cartId : cart.getId(), productName: product[1].getName(), quantity: 1})
 
 });
 
-test('Given no customer ID; When calling getCartItemsByCustomerId; Then error is thrown.', () => {
-    // GIVEN
-    // Variables at the top of the file.
+test(`Given cart exists for a customer and the selected product is in the customer's cart; When adding product to cart; Then the product's quantity is incremented by one, and the stock is reduced by one. `, async ()=> {
 
-    // WHEN
-    const getCartItemsByCustomerId = () => cartService.getCartItemsByCustomerId(0);
+    //Given
 
-    // THEN
-    expect(getCartItemsByCustomerId).rejects.toThrow("Customer ID is required.");
-
-});
-
-test('Given customer without a cart; When calling getCartItemsByCustomerId; Then error is thrown.', async () => {
-    // GIVEN
-    // Variables at the top of the file.
-    cartDb.getCartByCustomerId = mockCartDb_getCartByCustomerId.mockReturnValue(null);
-
-    // WHEN
-    const getCartItemsByCustomerId = () => cartService.getCartItemsByCustomerId(customer.getId());
-
-    // THEN
-    expect(getCartItemsByCustomerId).rejects.toThrow("Cart does not exist.");
-});
-
-test("Given customer ID and product name; When calling addProductToCart; Then product is added to customer's cart and message indicating success is returned.", async () => {
-    // GIVEN
-    // Variables at the top of the file.
-    customerDb.getCustomerById = mockCustomerDb_getCustomerById.mockReturnValue(customer);
     cartDb.getCartByCustomerId = mockCartDb_getCartByCustomerId.mockReturnValue(cart);
-    productDb.getProductByName = mockProductDb_getProductByName.mockReturnValue(new Product({
-        name: "Bananas",
-        price: 5,
-        unit: "bunch",
-        stock: 22,
-        description: "A banana is an elongated, edible fruit -- botanically a berry[1] -- produced by several kinds of large herbaceous flowering plants in the genus Musa. In some countries, cooking bananas are called plantains, distinguishing them from dessert bananas. The fruit is variable in size, color and firmness, but is usually elongated and curved, with soft flesh rich in, starch covered with a peel, which may have a variety of colors when ripe. It grows upward in clusters near the top of the plant. Almost all modern edible seedless (parthenocarp) cultivated bananas come from two wild species -- Musa acuminata and Musa balbisiana, or hybrids of them.",
-        imagePath: "bananas.png"
-    }))
-    cartContainsProductDb.getCartByCartIdAndProductName = mockCartContainsProductDb_getCartByCartIdAndProductName.mockReturnValue(cart);
+    productDb.getProductByName = mockProductDb_getProductByName.mockReturnValue(product[0]);
+    cartContainsProductDb.getCartByCartIdAndProductName = mockCartContainsProduct_getCartByCartIdAndProductName.mockReturnValue(cartContainsProduct)
+    cartContainsProductDb.updateProduct = mockCartContainsProductDb_updateProduct.mockImplementation(
+        ((cartId , name) => new CartContainsProduct({cartId : cartId!, productName : name, quantity : cartContainsProduct.getQuantity()+1}))
+    )
 
 
-    // WHEN
-    const result: string = await cartService.addProductToCart(customer.getId(), productName);
+    //when 
+
+    await cartService.addProductToCart({customerId: customer.getId()!, productName : product[0].getName()})
+
+    //then
+
+    expect(mockCartDb_getCartByCustomerId).toHaveBeenCalledWith(customer.getId())
+    expect(mockProductDb_getProductByName).toHaveBeenCalledWith(product[0].getName())
+    expect(mockCartContainsProduct_getCartByCartIdAndProductName).toHaveBeenCalledWith(cart.getId(), product[0].getName())
+    expect(mockCartContainsProductDb_updateProduct).toHaveBeenCalledWith(  cart.getId()!, product[0].getName() )
 
 
-    // THEN
-    expect(result).toEqual("Product successfully added to cart.");
+})
 
-    expect(mockCustomerDb_getCustomerById).toHaveBeenCalledTimes(1);
-    expect(mockCustomerDb_getCustomerById).toHaveBeenCalledWith(customer.getId());
+test(`Given cart does not exist for an existing customer; When they want to add product o a cart; Then a new cart is created for the customer`, async() => {
 
-    expect(mockCartDb_getCartByCustomerId).toHaveBeenCalledTimes(1);
-    expect(mockCartDb_getCartByCustomerId).toHaveBeenCalledWith(customer.getId());
+    //Given 
+    cartDb.getCartByCustomerId = mockCartDb_getCartByCustomerId.mockReturnValue(undefined);
+    customerDb.getCustomerById = mockCustomerDb_getCustomerById.mockReturnValue(customerWithoutCart)
+    cartDb.createNewCartForCustomer = mockCartDb_createNewCartForCustomer.mockReturnValue(new Cart({ customerId: customerWithoutCart.getId(), totalPrice: product[0].getPrice(), customer: customerWithoutCart }))
 
-    expect(mockProductDb_getProductByName).toHaveBeenCalledTimes(1);
+    //when
 
-    expect(mockCartContainsProductDb_getCartByCartIdAndProductName).toHaveBeenCalledTimes(1);
-    expect(mockCartContainsProductDb_getCartByCartIdAndProductName).toHaveBeenCalledWith(cart.getId(), productName);
+    await cartService.addProductToCart({customerId : customerWithoutCart.getId()!, productName : product[0].getName()})
 
-});
+    //then
 
-test('Given no customer ID; When calling addProductToCart; Then error is thrown.', () => {
+    expect(mockCartDb_getCartByCustomerId).toHaveBeenCalledWith(customerWithoutCart.getId())
+    expect(mockCustomerDb_getCustomerById).toHaveBeenCalledWith(customerWithoutCart.getId())
+    expect(mockCartDb_createNewCartForCustomer).toHaveBeenCalledWith({customerId : customerWithoutCart.getId(), totalPrice : product[0].getPrice(), customer : customerWithoutCart})
+
+})
+
+test("Given customer wants to add a non-existing product in a cart; When adding product to cart; Then an error is thrown.", async () => {
+
+    //Given
+
+    productDb.getProductByName =  mockProductDb_getProductByName.mockReturnValue(undefined);
+
+    //when
+
+    //when and then
+
+    await expect(cartService.addProductToCart({customerId : customer.getId()!, productName : "some-name"}))
+        .rejects
+        .toThrow("Product does not exist.")
+})
+
+test("Given customer does not exist; When adding product to a cart; then error is throw.",async ()=> {
+
+    //given 
+
+    customerDb.getCustomerById = mockCustomerDb_getCustomerById.mockReturnValue(undefined)
+    productDb.getProductByName = mockProductDb_getProductByName.mockReturnValue(product[0])
+
+    // when and then
+
+    await expect(cartService.addProductToCart({customerId : "some-id", productName : product[0].getName()}))
+    .rejects
+    .toThrow("Customer does not exist.")
+    
+})
+
+test("Given cart was not created  for an existing customer; when creating a new cart for a customer; then an error is throw.", async () => {
+
+    //given
+
+    customerDb.getCustomerById = mockCustomerDb_getCustomerById.mockReturnValue(customer)
+    cartDb.createNewCartForCustomer = mockCartDb_createNewCartForCustomer.mockReturnValue(undefined)
+
+    //when and then
+
+    await expect(cartService.addProductToCart({customerId : customer.getId()!, productName : product[0].getName()}))
+    .rejects
+    .toThrow("Cart was not created.")
+})
+
+
+test("Given carts are in the dataBase; when admin wants to check all available carts and their their contents; then a list of all available carts is returned. ", async () => {
+
+    //Given
+
+    cartDb.returnAllCartsAvailable = mockCartDb_returnAllCartsAvailable.mockReturnValue([cart, cart2])
+
+    //when
+
+    await cartService.getAllCartsAvailable()
+
+    //then
+
+    expect(mockCartDb_returnAllCartsAvailable).toHaveBeenCalled()
+})
+
+test("Given no carts exists in the database; when fetching carts available; Then the right error is thrown.", async () => {
+
+    //Given
+
+    cartDb.returnAllCartsAvailable = mockCartDb_returnAllCartsAvailable.mockReturnValue([])
+
+    //when and then
+
+    await expect(cartService.getAllCartsAvailable())
+    .rejects
+    .toThrow('Application error: Error: No carts found. Database is empty')
+
+})
+
+test("Given return value; when fetching available carts is undefined; The an error is thrown", async () => {
+
+    //Given
+
+    cartDb.returnAllCartsAvailable = mockCartDb_returnAllCartsAvailable.mockReturnValue(undefined);
+
+    //when and then
+
+    await expect(cartService.getAllCartsAvailable())
+    .rejects
+    .toThrow('Application error: Error: No carts found. Database is empty')
+
+})
+
+test("Given valid cart ID; When getting cart contains product by cart ID; Then cart items are returned.", async () => {
     // GIVEN
-    // Variables at the top of the file.
+    const cartId = "2e937a99-6713-4237-86b9-817b2939fbe6";
+    const product = new Product({ name: "I-phone 16 pro max", price: 1200, unit: "Euros", stock: 200, description: "The iPhone 16 Pro Max features a stunning 6.9-inch Super Retina XDR display with a resolution of 2868x1320 pixels, delivering vibrant colors and sharp details. Encased in a durable titanium design, it offers exceptional durability and a sleek look.", imagePath: "C:/Users/HOME/OneDrive/Desktop/UCLL/FULLSTACK/project2425-group2-9/back-end/images/apple_iphone-16-pro-max-256-brz_7726759_1.jpg" });
+    const cartContainsProduct = new CartContainsProduct({ cartId, productName: product.getName(), quantity: 1, product });
+
+    cartContainsProductDb.returnAllItemsInCart = mockCartContainsProductDb_returnAllItemsInCart.mockResolvedValue([cartContainsProduct]);
 
     // WHEN
-    const addProductToCart = () => cartService.addProductToCart(0, productName);
+    const result = await cartService.getCartContainsProductByCartId({ cartId });
 
     // THEN
-    expect(addProductToCart).rejects.toThrow("Customer ID is required.");
-
+    expect(result).toEqual([cartContainsProduct]);
+    expect(mockCartContainsProductDb_returnAllItemsInCart).toHaveBeenCalledWith(cartId);
 });
 
-test('Given customer with ID does not exist in the database; When calling addProductToCart; Then error is thrown.', () => {
+test("Given invalid cart ID; When getting cart contains product by cart ID; Then error is thrown.", async () => {
     // GIVEN
-    // Variables at the top of the file.
-    customerDb.getCustomerById = mockCustomerDb_getCustomerById.mockReturnValue(null);
+    const cartId = "invalid-cart-id";
 
-    // WHEN
-    const addProductToCart = () => cartService.addProductToCart(customer.getId(), productName);
+    cartContainsProductDb.returnAllItemsInCart = mockCartContainsProductDb_returnAllItemsInCart.mockResolvedValue(undefined);
 
-    // THEN
-    expect(addProductToCart).rejects.toThrow("Customer does not exist.");
+    // WHEN and THEN
+    await expect(cartService.getCartContainsProductByCartId({ cartId })).rejects.toThrow("cart has no products");
+    expect(mockCartContainsProductDb_returnAllItemsInCart).toHaveBeenCalledWith(cartId);
 });
 
-test('Given customer without a cart; When calling addProductToCart; Then error is thrown.', () => {
+test("Given valid cart ID; When getting cart details; Then cart details are returned.", async () => {
     // GIVEN
-    // Variables at the top of the file.
-    customerDb.getCustomerById = mockCustomerDb_getCustomerById.mockReturnValue(customer);
-    cartDb.getCartByCustomerId = mockCartDb_getCartByCustomerId.mockReturnValue(null);
+    const cartId = "2e937a99-6713-4237-86b9-817b2939fbe6";
+    const product = new Product({ name: "I-phone 16 pro max", price: 1200, unit: "Euros", stock: 200, description: "The iPhone 16 Pro Max features a stunning 6.9-inch Super Retina XDR display with a resolution of 2868x1320 pixels, delivering vibrant colors and sharp details. Encased in a durable titanium design, it offers exceptional durability and a sleek look.", imagePath: "C:/Users/HOME/OneDrive/Desktop/UCLL/FULLSTACK/project2425-group2-9/back-end/images/apple_iphone-16-pro-max-256-brz_7726759_1.jpg" });
+    const cartContainsProduct = new CartContainsProduct({ cartId, productName: product.getName(), quantity: 1, product });
 
+    cartContainsProductDb.returnAllItemsInCart = mockCartContainsProductDb_returnAllItemsInCart.mockResolvedValue([cartContainsProduct]);
+    cartContainsProductDb.calculateTotalPrice = mockCartContainsProductDb_calculateTotalPrice.mockResolvedValue(1200);
 
     // WHEN
-    const addProductToCart = () => cartService.addProductToCart(customer.getId(), productName);
+    const result = await cartService.getCartDetails({ cartId });
 
     // THEN
-    expect(addProductToCart).rejects.toThrow("Cart does not exist.");
-
+    expect(result).toEqual([{ product: [{ cartId: cartContainsProduct.getCartId(), productName: cartContainsProduct.getProductName(), quantity: cartContainsProduct.getQuantity(), price: `$${product.getPrice()}` }], totalPrice: 1200 }]);
+    expect(mockCartContainsProductDb_returnAllItemsInCart).toHaveBeenCalledWith(cartId);
+    expect(mockCartContainsProductDb_calculateTotalPrice).toHaveBeenCalledWith({ cartId });
 });
 
-test('Given no product name; When calling addProductToCart; Then error is thrown', () => {
+test("Given invalid cart ID; When getting cart details; Then error is thrown.", async () => {
     // GIVEN
-    // Variables at the top of the file.
-    const productName: string = "Bananas";
-    customerDb.getCustomerById = mockCustomerDb_getCustomerById.mockReturnValue(customer);
-    cartDb.getCartByCustomerId = mockCartDb_getCartByCustomerId.mockReturnValue(cart);
+    const cart_Id = "invalid-cart-id";
 
+    cartContainsProductDb.returnAllItemsInCart = mockCartContainsProductDb_returnAllItemsInCart.mockResolvedValue(undefined);
 
-    // WHEN
-    const addProductToCart = () => cartService.addProductToCart(customer.getId(), "");
-
-    // THEN
-    expect(addProductToCart).rejects.toThrow("Product name is required.");
-
+    // WHEN and THEN
+    await expect(cartService.getCartDetails({ cartId : cart_Id })).rejects.toThrow("cart has no products");
+    expect(mockCartContainsProductDb_returnAllItemsInCart).toHaveBeenCalledWith(cart_Id);
 });
 
-test('Given product does not exist in the database; When calling addProductToCart; Then error is thrown.', () => {
-    // GIVEN
-    // Variables at the top of the file.
-    const productName: string = "Bananas";
-    customerDb.getCustomerById = mockCustomerDb_getCustomerById.mockReturnValue(customer);
-    cartDb.getCartByCustomerId = mockCartDb_getCartByCustomerId.mockReturnValue(cart);
-    productDb.getProductByName = mockProductDb_getProductByName.mockReturnValue(null);
-
-    // WHEN
-    const addProductToCart = () => cartService.addProductToCart(customer.getId(), productName);
-
-    // THEN
-    expect(addProductToCart).rejects.toThrow("Product does not exist.");
-
-});
-
-test("Given customer ID; When calling deleteAllCartItems; Then customer's cart is deleted and message indicating success is returned.", async () => {
-    // GIVEN
-    // Variables at the top of the file.
-    customerDb.getCustomerById = mockCustomerDb_getCustomerById.mockReturnValue(customer);
-    cartDb.getCartByCustomerId = mockCartDb_getCartByCustomerId.mockReturnValue(cart);
-    cartContainsProductDb.deleteAllCartItems = mockCartContainsProductDb_deleteAllCartItems.mockReturnValue("Cart items deleted successfully.");
-
-    // WHEN
-    const result: string = await cartService.deleteAllCartItems(customer.getId());
-
-    // THEN
-    expect(result).toEqual("Cart items deleted successfully.");
-
-    expect(mockCustomerDb_getCustomerById).toHaveBeenCalledTimes(1);
-    expect(mockCustomerDb_getCustomerById).toHaveBeenCalledWith(customer.getId());
-
-    expect(mockCartDb_getCartByCustomerId).toHaveBeenCalledTimes(1);
-    expect(mockCartDb_getCartByCustomerId).toHaveBeenCalledWith(customer.getId());
-
-    expect(mockCartDb_getCartByCustomerId).toHaveBeenCalledTimes(1);
-    expect(mockCartDb_getCartByCustomerId).toHaveBeenCalledWith(cart.getId());
-
-});
-
-test('Given no customer ID; When calling deleteAllCartItems; Then error is thrown.', async () => {
-    // GIVEN
-    // Variables at the top of the file.
-
-    // WHEN
-    const deleteAllCartItems = () => cartService.deleteAllCartItems(0);
-
-    // THEN
-    expect(deleteAllCartItems).rejects.toThrow("Customer ID is required.");
-
-});
-
-test('Given customer does not exist in the database; When calling deleteAllCartItems; Then error is thrown.', async () => {
-    // GIVEN
-    // Variables at the top of the file.
-    customerDb.getCustomerById = mockCustomerDb_getCustomerById.mockReturnValue(null);
-
-    // WHEN
-    const deleteAllCartItems = () => cartService.deleteAllCartItems(customer.getId());
-
-    // THEN
-    expect(deleteAllCartItems).rejects.toThrow("Customer does not exist.");
-
-});
-
-test('Given a customer without a cart; When calling deleteAllCartItems; Then error is thrown.', async () => {
-    // GIVEN
-    // Variables at the top of the file.
-    customerDb.getCustomerById = mockCustomerDb_getCustomerById.mockReturnValue(customer);
-    cartDb.getCartByCustomerId = mockCartDb_getCartByCustomerId.mockReturnValue(null);
-
-    // WHEN
-    const deleteAllCartItems = () => cartService.deleteAllCartItems(customer.getId());
-
-    // THEN
-    expect(deleteAllCartItems).rejects.toThrow("Cart does not exist.");
-
->>>>>>> 6913e423f295a49071dd6922709f3b637d77f35d
-});

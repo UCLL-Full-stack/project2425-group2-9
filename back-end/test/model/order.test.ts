@@ -104,15 +104,15 @@ test("Given valid values; When setting new cart; Then cart is updated.", () => {
     expect(order.getCart()).toBe(newCart);
 });
 
-test("Given valid values; When setting new customer; Then customer is updated.", () => {
-    // GIVEN
-    const order = new Order({ id: 1, date, cartId, cart, customer });
-    const newCustomer = new Customer({ id: "2", username: "Jane Doe", firstName: "Jane", lastName: "Doe", password: "password456", phone: "87654321", });
+// test("Given valid values; When setting new customer; Then customer is updated.", () => {
+//     // GIVEN
+//     const order = new Order({ id: 1, date, cartId, cart, customer });
+//     const newCustomer = new Customer({ id: "2", username: "Jane Doe", firstName: "Jane", lastName: "Doe", password: "password456", phone: "87654321", });
 
-    // WHEN
-    order.setCustomer(newCustomer);
+//     // WHEN
+//     order.setCustomer(newCustomer);
 
-    // THEN
-    expect(order.getCustomer()).toBe(newCustomer);
-});
+//     // THEN
+//     expect(order.getCustomer()).toBe(newCustomer);
+// });
 

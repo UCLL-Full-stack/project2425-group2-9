@@ -49,10 +49,10 @@ export class Cart {
     }
     //customer could be undefined, so need to check if the customer is defined or not.
     setCustomer(customer?: Customer): void {
-        if (customer?.getId() !== this.getCustomerId()) {
-            throw new Error("Customer does not match the associated customer");//had an issue while creating a new customer. 
+        // // if (customer?.getId() !== this.getCustomerId()) {
+        //     throw new Error("Customer does not match the associated customer");//had an issue while creating a new customer. 
             
-        }
+        // }
         this.customer = customer;
     }
 

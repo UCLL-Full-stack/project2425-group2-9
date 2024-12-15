@@ -4,7 +4,19 @@ import productDb from "../repository/product.db";
 import { ProductInput } from "../types";
 
 const getAllProducts = async (): Promise<Product[] | undefined> => {
-    return await productDb.getAllProducts();
+    try {
+
+        const products = await productDb.getAllProducts();
+
+        // if (!products || (Array.isArray(products) && products.length === 0))
+        //     throw new Error('No products found.')
+
+        return products
+    }
+
+    catch(error) {
+        throw new Error('No products found.')
+    }
 }
 
 const getProductByName = async (name: string): Promise<Product> => {
@@ -16,7 +28,7 @@ const getProductByName = async (name: string): Promise<Product> => {
 }
 catch (error){
     console.log(error)
-    throw new Error("Database error. See server log for details.")
+    throw new Error(`Product "${name}" does not exist.`)
 }
     }
 

@@ -57,7 +57,7 @@ const returnAllCartsAvailable = async (): Promise<Cart[] | null> => {
    try{
     const cartDb  = await database.cart.findMany({
         include:{
-            customer:true
+            customer:true, product : true
         }
     })
     
@@ -71,10 +71,10 @@ const returnAllCartsAvailable = async (): Promise<Cart[] | null> => {
 const createNewCartForCustomer = async (cart : Cart) : Promise<Cart> =>{
 
     try {
-
+        //creating a new cart for an existing customer.
         const cartPrisma = await database.cart.create({
             data : {
-                totalPrice : 0,
+                totalPrice : cart.getTotalPrice(),
                 customer : {
                     connect : {
                         id : cart.getCustomerId()

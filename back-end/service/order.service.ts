@@ -38,7 +38,7 @@ const createAnOrder = async ( customerId : string) : Promise<string | null> => {
     }
     catch(error){
         console.error(error)
-        throw new Error("application error. see server logs for details")
+        throw new Error("application error:" + error)
     }
 }
 

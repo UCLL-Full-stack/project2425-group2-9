@@ -71,7 +71,7 @@ catch(error) {
 
 const authenticate = async ({ username, password, role }: CustomerInput): Promise<AuthenticationResponse> => {
 
-    if (!username || !password || role) throw new Error("all fields are required")
+    if (!username || !password || !role) throw new Error("all fields are required")
     const customer = await customerDb.findCustomerByUserName({ username });
 
     const singleCustomer = customer?.find((customer) => customer)

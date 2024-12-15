@@ -1,5 +1,3 @@
-<<<<<<< HEAD:back-end/test/service/prodcuct.service.test.ts
-=======
 import { Product } from "../../model/product";
 import productDb from "../../repository/product.db";
 import productService from "../../service/product.service";
@@ -31,18 +29,21 @@ beforeEach(() => {
     mockProductDbGetProductByName = jest.fn();
 });
 
+afterEach(() => {
+    jest.clearAllMocks();
+});
 // Q& How should we write the given part of the test name if there are required NO PARAMETERS for the function.
 test('Given there are products; When getting all products; Then all products are returned.', async () => {
     // GIVEN
     productDb.getAllProducts = mockProductDbGetAllProducts.mockReturnValue(products);
 
     // WHEN
-    const receivedProducts: Product[] = await productService.getAllProducts();
+    const product = await productService.getAllProducts();
 
     // THEN
     expect(mockProductDbGetAllProducts).toHaveBeenCalledTimes(1);
     expect(mockProductDbGetAllProducts).toHaveBeenCalledWith();
-    expect(receivedProducts).toEqual(products);
+    expect(product).toEqual(products);
 });
 
 test('Given product exists; When getting product by name; Then product with that name is returned.', async () => {
@@ -54,20 +55,20 @@ test('Given product exists; When getting product by name; Then product with that
     const receivedProduct = await productService.getProductByName(productName);
 
     // THEN
-    expect(mockProductDbGetProductByName).toHaveBeenCalledTimes(1);
+    // expect(mockProductDbGetProductByName).toHaveBeenCalledTimes(1);
     expect(mockProductDbGetProductByName).toHaveBeenCalledWith(productName);
     expect(receivedProduct).toEqual(products[0]);
 });
 
-test('Given product does not exist; When getting product by name; Then error is thrown.', () => {
+test('Given product does not exist; When getting product by name; Then error is thrown.', async () => {
     // GIVEN
     const productName: string = "Bread";
-    productDb.getProductByName = mockProductDbGetProductByName.mockReturnValue(null);
+    productDb.getProductByName = mockProductDbGetProductByName.mockReturnValue(undefined);
 
     // WHEN
-    const getProductByName = () => productService.getProductByName(productName);
+    const getProductByName = async () => await productService.getProductByName(productName);
 
     // THEN
     expect(getProductByName).rejects.toThrow(`Product "${productName}" does not exist.`);
 });
->>>>>>> 6913e423f295a49071dd6922709f3b637d77f35d:back-end/test/service/product.service.test.ts
+

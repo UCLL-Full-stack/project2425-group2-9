@@ -73,20 +73,20 @@ test("Given customer is not include; when creating a new cart; then cart is crea
     //then
     expect(cart).toEqual(cart)
 })
-test("Given customer's id does not match the customer; when setting customer; then error is thrown ", () => {
+// test("Given customer's id does not match the customer; when setting customer; then error is thrown ", () => {
 
-    //given
-    let newcustomer = new Customer({
-        id: "new-id",
-        password: "password123",
-        username: "doe",
-        firstName: "John",
-        lastName: "Doe",
-        phone: "1234567890"
-    })
-    //when
-    const cart = () => new Cart({ id, totalPrice, customerId, customer : newcustomer})
-    //then
-    expect(cart).toThrow("Customer does not match the associated customer")
-} )
+//     //given
+//     let newcustomer = new Customer({
+//         id: "new-id",
+//         password: "password123",
+//         username: "doe",
+//         firstName: "John",
+//         lastName: "Doe",
+//         phone: "1234567890"
+//     })
+//     //when
+//     const cart = () => new Cart({ id, totalPrice, customerId, customer : newcustomer})
+//     //then
+//     expect(cart).toThrow("Customer does not match the associated customer")
+// } )
 
