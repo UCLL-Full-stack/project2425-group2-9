@@ -9,21 +9,27 @@ const getAllProducts = async () => {
         }
     );
 };
-const getProductByName = async(name:string|undefined)=>{
 
-    const loggedInCustomer = sessionStorage.getItem("loggedInCustomer");
-    const token = loggedInCustomer ? JSON.parse(loggedInCustomer).token : null;
-    return await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/products/${name}`,
-        {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization : `Bearer ${token}`
+const getProductByName = async (name: string) => {
+    //ensure session storage is only dine client-side
+    if (typeof window !== 'undefined') {
+        const loggedInCustomer = sessionStorage.getItem("loggedInCustomer");
+        const token = loggedInCustomer ? JSON.parse(loggedInCustomer).token : null;
+        return await fetch(
+            `${process.env.NEXT_PUBLIC_API_URL}/products/${name}`,
+            {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`
+                }
             }
-        }
-    );
-}
+        );
+    } else {
+        throw new Error("sessionStorage is not available on the server side.");
+    }
+};
+
 const ProductService = {
     getAllProducts,
     getProductByName

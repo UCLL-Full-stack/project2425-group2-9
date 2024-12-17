@@ -17,9 +17,10 @@ const Product: React.FC<Props> = ({ products, productName }: Props) => {
     const [product, setProducts] = useState<Array<Product>>([]);
      const router = useRouter();
     
-    const dynamicRout = () => {
-        router.push(`/products/${productName}`)
-    }
+    const dynamicRoute = (productName: string) => {
+        router.push(`/products/${productName}`);
+    };
+
     // Functions that is called on click of 'Add to cart' button.
     const addToCartBtn = async (e: React.MouseEvent<HTMLButtonElement>) => {
         const productInfo = e.currentTarget.parentElement?.children;
@@ -45,7 +46,7 @@ const Product: React.FC<Props> = ({ products, productName }: Props) => {
                         width={150} // this is changed in product.module.css
                         height={150}
                         alt={product.name}
-                        onClick={dynamicRout}
+                        onClick={() => dynamicRoute(product.name)}
                         />
                     <div>
                         <p>{product.name}</p>

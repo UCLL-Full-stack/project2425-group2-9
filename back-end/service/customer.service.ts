@@ -89,7 +89,7 @@ const authenticate = async ({ username, password }: CustomerInput): Promise<Auth
              if ( singleCustomer?.getUsername() !== username) throw new Error("Incorrect username. please try again")
     
             return {
-                message : "Authentication successful.",
+                // message : "Authentication successful.",
                 token: generateJwtToken({ username, role : singleCustomer?.getRole() as Role }),
                 username: username,
                 role : singleCustomer?.getRole(),
