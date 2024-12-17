@@ -69,26 +69,42 @@ catch(error) {
 }
 
 
-const authenticate = async ({ username, password, role }: CustomerInput): Promise<AuthenticationResponse> => {
+const authenticate = async ({ username, password }: CustomerInput): Promise<AuthenticationResponse> => {
 
-    if (!username || !password || !role) throw new Error("all fields are required")
-    const customer = await customerDb.findCustomerByUserName({ username });
+    try {
+        if (!username || !password ) throw new Error("password and username is required")
+            const customer = await customerDb.findCustomerByUserName({ username });
+        if (! customer || customer.length === 0 ) throw new Error("you are not registered in our system. please signup.")
 
-    const singleCustomer = customer?.find((customer) => customer)
-     
-    if (! customer) throw new Error("customer not found")
-
-    const isValidPassword = await bcrypt.compare(password, singleCustomer?.getPassword()!);
-
-    if (!isValidPassword) {
-        throw new Error('Incorrect password.');
+        const singleCustomer = customer?.find((customer) => customer)
+             
+        if (!singleCustomer?.getPassword()) {
+            throw new Error("Password is not set for this user.");
+          }
+            const isValidPassword = await bcrypt.compare(password, singleCustomer?.getPassword());
+            
+            if (!isValidPassword) {
+                throw new Error('Incorrect password. please try again');
+            }
+             if ( singleCustomer?.getUsername() !== username) throw new Error("Incorrect username. please try again")
+    
+            return {
+                message : "Authentication successful.",
+                token: generateJwtToken({ username, role : singleCustomer?.getRole() as Role }),
+                username: username,
+                role : singleCustomer?.getRole(),
+                fullname: `${singleCustomer?.getFirstName()} ${singleCustomer?.getLastName()}`,
+            };
+            
     }
-    return {
-        token: generateJwtToken({ username, role : singleCustomer?.getRole() as Role }),
-        username: username,
-        role : singleCustomer?.getRole(),
-        fullname: `${singleCustomer?.getFirstName()} ${singleCustomer?.getLastName()}`,
-    };
+        catch (error) {
+            if (error instanceof Error) {
+                throw new Error(`Authentication error: ${error.message}`);
+            } else {
+                throw new Error('Authentication error: unknown error');
+            }
+          
+    }
 };
 
 

@@ -27,9 +27,8 @@ interface CartInputs {
 }
 
 interface CustomerInput {
-    id?: number;
+    id?: string;
     password?: string;
-    securityQuestion?: string;
     username?: string;
     firstName?: string;
     lastName?: string;
@@ -48,6 +47,11 @@ interface CartContainsProductInput {
     quantity: number;//Q& am not sure but are we suppose to have a separate interface for the relationship between cart and product???
 }
 
+export type  LoginInput = {
+    username? : string,
+    password? : string
+}
+
 interface DeleteCartItemInput {
     customerId: number;
     productName: string;
@@ -60,6 +64,7 @@ interface AddToCartInput {
 
 
 type AuthenticationResponse = {
+    message? : string
     token?: string;
     username?: string;
     role? : Role;

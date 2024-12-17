@@ -3,7 +3,7 @@ import { Cart } from "../../model/cart";
 import { Customer } from "../../model/customer";
 import { set } from 'date-fns';
 
-const date = set(new Date(), { hours: 15, minutes: 30, seconds: 20, milliseconds: 200 });
+const date = set(new Date(), { year: 2000, month: 1, date: 1, hours: 15, minutes: 30, seconds: 20, milliseconds: 200 });
 const cartId = "2e937a99-6713-4237-86b9-817b2939fbe6";
 const customer = new Customer({ id: "1", username: "John Doe", firstName: "John", lastName: "Doe", password: "password123", phone: "12345678", role: "CUSTOMER" });
 const cart = new Cart({ id: cartId, customerId: customer.getId(), totalPrice: 100, customer });

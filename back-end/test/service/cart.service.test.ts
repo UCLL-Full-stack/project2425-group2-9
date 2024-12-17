@@ -174,19 +174,21 @@ test(`Given cart exists for a customer and the selected product is in the custom
 test(`Given cart does not exist for an existing customer; When they want to add product o a cart; Then a new cart is created for the customer`, async() => {
 
     //Given 
+
+    const newCart =  new Cart({ customerId: customerWithoutCart.getId()!, totalPrice: 
+        product[0].getPrice(), customer: customerWithoutCart });
     cartDb.getCartByCustomerId = mockCartDb_getCartByCustomerId.mockReturnValue(undefined);
-    customerDb.getCustomerById = mockCustomerDb_getCustomerById.mockReturnValue(customerWithoutCart)
-    cartDb.createNewCartForCustomer = mockCartDb_createNewCartForCustomer.mockReturnValue(new Cart({ customerId: customerWithoutCart.getId(), totalPrice: product[0].getPrice(), customer: customerWithoutCart }))
+    customerDb.getCustomerById = mockCustomerDb_getCustomerById.mockReturnValue(customerWithoutCart);
+    cartDb.createNewCartForCustomer = mockCartDb_createNewCartForCustomer.mockReturnValue(newCart);
 
-    //when
+        const result = await cartService.addProductToCart({customerId : customerWithoutCart.getId()!, productName : product[0].getName()});
 
-    await cartService.addProductToCart({customerId : customerWithoutCart.getId()!, productName : product[0].getName()})
-
-    //then
-
-    expect(mockCartDb_getCartByCustomerId).toHaveBeenCalledWith(customerWithoutCart.getId())
-    expect(mockCustomerDb_getCustomerById).toHaveBeenCalledWith(customerWithoutCart.getId())
-    expect(mockCartDb_createNewCartForCustomer).toHaveBeenCalledWith({customerId : customerWithoutCart.getId(), totalPrice : product[0].getPrice(), customer : customerWithoutCart})
+        //then
+        expect(result).toEqual(newCart)
+        expect(mockCartDb_getCartByCustomerId).toHaveBeenCalledWith(customerWithoutCart.getId());
+        expect(mockCustomerDb_getCustomerById).toHaveBeenCalledWith(customerWithoutCart.getId());
+        expect(mockCartDb_createNewCartForCustomer).toHaveBeenCalledWith({customerId : customerWithoutCart.getId(), totalPrice : product[0].getPrice(), customer : customerWithoutCart})
+        
 
 })
 

@@ -32,7 +32,68 @@ import { AddToCartInput, CartDetails } from '../types';
 
 const cartRouter = express.Router();
 
+/**
+ * @swagger
+ * /carts/create:
+ *  post:
+ *      summary: Create a new cart
+ *      requestBody:
+ *          required: true
+ *          content:
+ *              application/json:
+ *                  schema:
+ *                      type: object
+ *                      properties:
+ *                          customerId:
+ *                              type: string
+ *                              example: 01c87cd2-e69f-4371-9a4f-b53faaf75ac4
+ *      responses:
+ *          201:
+ *              description: Cart created successfully
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          $ref: '#/components/schemas/cart'
+ *          400:
+ *              description: Bad request
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          type: object
+ *                          properties:
+ *                              message:
+ *                                  type: string
+ *                                  example: customerId is needed
+ *          404:
+ *              description: Not found
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          type: object
+ *                          properties:
+ *                              message:
+ *                                  type: string
+ *                                  example: sorry... cart could not be created, try again
+ */
 
+// URL: /carts/create
+// cartRouter.post("/create", async (req: Request, res: Response, next: NextFunction) => {
+//     try {
+//         const { customerId } = req.body
+//         if (!customerId) {
+//             return res.status(400).json({ message: 'customerId is needed' })//Q& am not really sure of this because we wont expect our customer to manually fill in their ID
+//         }
+//         const createCart = await cartService.createNewCart(customerId)
+//         if (!createCart) {
+//             return res.status(404).json({ message: 'sorry... cart could not be created, try again' })
+//         }
+//         return res.status(201).json({ message: 'cart created successfully' })
+//     } catch (e) {
+//         const error = (e as Error)
+//         res.status(400).json({ status: "error", message: error.message })
+//     }
+
+// })
 
 /**
  * @swagger
@@ -65,7 +126,18 @@ const cartRouter = express.Router();
  *                          type: object
  *                          properties:
  *                              message:
- *                                  type: string    
+ *                                  type: string
+ *                                  example: "Product added to cart successfully"
+ *          400:
+ *              description: Bad Request
+ *              content:
+ *                  application/json:
+ *                      schema:
+ *                          type: object
+ *                          properties:
+ *                              message:
+ *                                  type: string
+ *         
  */
 cartRouter.post('/addtocart', async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -91,7 +163,7 @@ cartRouter.post('/addtocart', async (req: Request, res: Response, next: NextFunc
  *           type: string
  *         required: true
  *         description: The Id of the cart.
- *         example: "2e937a99-6713-4237-86b9-817b2939fbe6"
+ *         example: 1
  *     responses:
  *       200:
  *         description: A product object.
@@ -100,16 +172,18 @@ cartRouter.post('/addtocart', async (req: Request, res: Response, next: NextFunc
  *             schema:
  *               $ref: '#/components/schemas/Product'
  */
-
 cartRouter.get("/:cartId", async (req: Request, res: Response, next: NextFunction) => {
     try {
         const cartId: string = (req.params.cartId);
-         const cart: CartDetails[] |null  = await cartService.getCartDetails({ cartId });
+         const cart: CartDetails[]  = await cartService.getCartDetails({cartId});
         //  const cart: Product[] | null = await cartService.returnAllProductsInCart(cartId);
-        return res.status(202).json(cart);
+        if (!cart)
+            res.status(404).json({ message: `Cart with id ${cartId} not found.` });
+        res.status(202).json(cart);
     } catch (e) {
         next(e);
     }
+
 String
 })
 

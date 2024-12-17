@@ -49,7 +49,7 @@ const getCartByCartIdAndProductName = async (cartId: string, productName: string
             include: { cart: true, product: true }
         });
 
-        if (!cartContainsProductPrisma) return null;
+        if (!cartContainsProductPrisma) throw new Error("database error. cart not found");
 
         return CartContainsProduct.from({
             ...cartContainsProductPrisma,
@@ -234,6 +234,7 @@ const updateProduct = async (cartId: string, name: string) => {
         console.error(error);
     }
 };
+
 
 export default {
     getCartItemNamesByCartId,

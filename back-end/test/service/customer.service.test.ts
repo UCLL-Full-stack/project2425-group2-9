@@ -112,7 +112,7 @@ test("Given valid customer input; When registering a new customer; Then the cust
     const hashedPassword = "hashedPassword";
     const newCustomer = new Customer({ ...customerInput, password: hashedPassword });
 
-    customerDb.findCustomerByUserName = mockCustomerDb_findCustomerByUserName.mockResolvedValue([]);
+    customerDb.findCustomerByUserName = mockCustomerDb_findCustomerByUserName.mockResolvedValue(undefined);
     bcrypt.hash = mockBcrypt_hash.mockResolvedValue(hashedPassword);
     customerDb.registerCustomer = mockCustomerDb_registerCustomer.mockResolvedValue(newCustomer);
 

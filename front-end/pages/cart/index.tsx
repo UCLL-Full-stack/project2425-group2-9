@@ -1,5 +1,5 @@
 import Header from "@/components/header";
-import Product from "@/components/product";
+import Product from "@/components/products/product";
 import ProductService from "@/services/ProductService";
 import styles from "../../styles/home.module.css";
 import { useState, useEffect } from "react";
@@ -46,7 +46,7 @@ const Cart: React.FC = () => {
 
     const clearCart = () => {
         // setCartItems([]);
-        CustomerService.clearCart(1); // TODO: should not be hardcoded.
+        // CustomerService.clearCart(1); // TODO: should not be hardcoded.
         fetchCartByCustomerId(1); // TODO: Cart id should not be hardcoded!
 
     };

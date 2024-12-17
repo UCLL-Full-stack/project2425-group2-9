@@ -1,6 +1,7 @@
 import { CartContainsProduct as cartContainsProductPrisma } from "@prisma/client";
 import { Cart as cartPrisma } from "@prisma/client";
 import { Product as productPrisma } from "@prisma/client";
+import { Customer as customerPrisma } from "@prisma/client";
 import { Cart } from "./cart";
 import { Product } from "./product";
 export class CartContainsProduct {
@@ -46,21 +47,15 @@ export class CartContainsProduct {
     }
 
     setCart( cart?:Cart ) :void {
-
-        //  if (cart?.getId() !== this.getCartId())
-        //     throw new Error("cart does not match cartId")
         this.cart = cart
-
     }
 
     getProduct(): Product|undefined {
         return this.product
     }
-//Q& why do i have to include product and cart when creating a new cartcontains product object. it only behaves this w&y if i use the validation in setters of cart and product.
+
     setProduct( product?:Product ): void {
 
-        //  if (product?.getName().toLocaleLowerCase() !== this.getProductName().toLocaleLowerCase())
-        //     throw new Error("product does not match the product name")
         this.product = product
     }
 

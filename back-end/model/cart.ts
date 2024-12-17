@@ -10,7 +10,7 @@ export class Cart {
     private customer?: Customer;
 
     constructor(cart: { id?: string, totalPrice: number, customerId?: string, customer?: Customer }) {
-        this.setId(cart.id);
+        this.id = cart.id
         this.setCustomerId(cart.customerId);
         this.setTotalPrice(cart.totalPrice);
         this.setCustomer(cart.customer);
@@ -20,7 +20,7 @@ export class Cart {
         return this.id;
     }
 
-    setId(id: string | undefined): void {
+    setId(id: string): void {
         this.id = id;
     }
 

@@ -1,52 +1,16 @@
 import express, { NextFunction, Request, Response } from 'express';
 import customerService from '../service/customer.service';
-import {  Role } from '@prisma/client';
+import { Role } from '@prisma/client';
 import { AuthenticatedRequest, CustomerInput, UploadAuth } from '../types';
 import multer from 'multer';
 import { uploadOptions } from '../util/middleware';
 
-/**
- * @swagger
- *   components:
- *    securitySchemes:
- *     bearerAuth:
- *      type: http
- *      scheme: bearer
- *      bearerFormat: JWT
- *    schemas:
- *      customer:
- *          type: object
- *          properties:
- *            name:
- *              type: string
- *              description: customers name.
- *            username: 
- *              type: string
- *              description: customers name used to login if registered
- *            password:
- *              type: string
- *              description: customers password
- *            firstName:
- *              type: string
- *              description: customers first name
- *            lastName:
- *              type: string
- *              description: last name of the customer
- *          phone:
- *              type: string
- *              description: customers phone number
- *          role:  
- *              type: ROle
- *              description: role of the customer(admin, guest or customer)
- */
-const customerRouter = express.Router()
+const customerRouter = express.Router();
 
 /**
  * @swagger
  * /customers/{id}/cart/{productName}:
  *   delete:
- *     security:
- *       - bearerAuth: []
  *     summary: Delete an item (product) from a cart using customer ID and product name.
  *     parameters:
  *          - in: path
@@ -75,8 +39,7 @@ customerRouter.delete('/:id/cart/:productName', async (req: Request, res: Respon
         const customerId: string = String(req.params.id);
         const productName: string = String(req.params.productName);
         const result: string = await customerService.deleteCartItem({ customerId, productName });
-        res.json(result);
-        // res.status(200).json(result);   // DOES NOT WORK!!!!!!!! Q&
+        res.status(200).json(result);
     } catch (error) {
         next(error);
     }
@@ -110,8 +73,7 @@ customerRouter.delete('/:id/cart', async (req: Request, res: Response, next: Nex
     try {
         const customerId: string = String(req.params.id);
         const result: string = await customerService.deleteAllCartItems(customerId);
-        res.json(result);
-        // res.status(200).json(result);   // DOES NOT WORK!!!!!!!! Q&
+        res.status(200).json(result);
     } catch (error) {
         next(error);
     }
@@ -156,20 +118,15 @@ customerRouter.delete('/:id/cart', async (req: Request, res: Response, next: Nex
  *             schema:
  *               type: object
  */
-
-customerRouter.post('/signup', async (req:Request, res: Response, next: NextFunction) => {
-
+customerRouter.post('/signup', async (req: Request, res: Response, next: NextFunction) => {
     try {
-
-        const customer  = <CustomerInput>req.body
-        const createCustomer = await customerService.registerCustomer(customer)
-        res.status(200).json(createCustomer)
+        const customer = <CustomerInput>req.body;
+        const createCustomer = await customerService.registerCustomer(customer);
+        res.status(200).json(createCustomer);
+    } catch (error) {
+        next(error);
     }
-    catch (error){
-        next(error)
-    }
-})
-
+});
 
 /**
  * @swagger
@@ -198,20 +155,15 @@ customerRouter.post('/signup', async (req:Request, res: Response, next: NextFunc
  *             schema:
  *               $ref: '#/components/schemas/AuthenticationResponse'
  */
-
 customerRouter.post('/login', async (req: Request, res: Response, next: NextFunction) => {
     try {
         const userInput: CustomerInput = req.body;
         const response = await customerService.authenticate(userInput);
-        return res.status(200).json(response)
+        return res.status(200).json({ message: 'Authentication successful', ...response });
     } catch (error) {
         next(error);
     }
 });
-
-
-
-
 
 /**
  * @swagger
@@ -240,7 +192,7 @@ customerRouter.get('/', async (req: Request, res: Response, next: NextFunction) 
         next(error);
     }
 });
-    
+
 /**
  * @swagger
  * /customers:
@@ -295,11 +247,8 @@ customerRouter.get('/', async (req: Request, res: Response, next: NextFunction) 
  *       403:
  *         description: Access denied
  */
-customerRouter.post('/', uploadOptions.single('image'),
- async (req : Request , res : Response, next : NextFunction) => {
-    
+customerRouter.post('/', uploadOptions.single('image'), async (req: Request, res: Response, next: NextFunction) => {
     try {
-
         const { name, price, unit, stock, description } = req.body;
 
         if (!req.file) {
@@ -316,9 +265,9 @@ customerRouter.post('/', uploadOptions.single('image'),
         });
 
         res.status(201).json(newProduct);
-    }
-    catch (error) {
+    } catch (error) {
         next(error);
     }
-})
+});
+
 export { customerRouter };

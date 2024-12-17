@@ -15,9 +15,9 @@
 //     );
 // };
 
-import { CartItem } from "@/types";
+import { CartItem, Role, CustomerInput } from "@/types";
 
-const clearCart = async (customerId: number) => {
+const clearCart = async (customerId: string) => {
     return await fetch(
         process.env.NEXT_PUBLIC_API_URL + `/customers/${customerId}/cart`,
         {
@@ -30,7 +30,7 @@ const clearCart = async (customerId: number) => {
     );
 };
 
-const addCartItem = async (customerId: number, productName: string) => {
+const addCartItem = async (customerId: string, productName: string) => {
     return await fetch(
         process.env.NEXT_PUBLIC_API_URL + `/customers/${customerId}/cart/${productName}`,
         {
@@ -56,10 +56,48 @@ const fetchCartItemsByCustomerId = async(id: number) => {
     );
 }
 
+const register = async ( { password, firstName, lastName, username, phone, role }: CustomerInput  ) => {
+
+    return await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/customers/signup`,
+        {
+            method:"POST",
+            body: JSON.stringify({
+                password,
+                lastName,
+                firstName,
+                role,
+                phone,
+                username
+              }),
+            headers:{
+                "content-type":"application/json"
+            }
+})
+}
+
+const  login = async ( { username, password} : CustomerInput )  => {
+
+    return await fetch(
+         `${process.env.NEXT_PUBLIC_API_URL}/customers/login`,
+         {
+            method:"POST",
+            headers:{
+                "content-type":"application/json"
+            },
+            body: JSON.stringify({
+                username,
+                password,
+            }),
+         }
+    )
+}
 const CustomerService = {
     clearCart,
     addCartItem,
-    fetchCartItemsByCustomerId
+    fetchCartItemsByCustomerId,
+    register,
+    login
 }
 
 export default CustomerService;
