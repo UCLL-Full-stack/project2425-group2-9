@@ -1,20 +1,3 @@
-// const addCartItem = async ({ cartId, productName }: CartItem ) => {
-//     return await fetch(
-//         process.env.NEXT_PUBLIC_API_URL + "/carts/addtocart",
-//         {
-//             method: "POST",
-//             body: JSON.stringify({
-//                     "cartId": cartId,
-//                     "productName": productName
-//             }),
-//             headers: {
-//                 'Content-Type': 'application/json',
-//                 Accept: 'application/json'
-//             }
-//         }
-//     );
-// };
-
 import { CartItem, Role, CustomerInput } from "@/types";
 
 const clearCart = async (customerId: string) => {
@@ -43,7 +26,6 @@ const addCartItem = async (customerId: string, productName: string) => {
     );
 };
 
-
 const fetchCartItemsByCustomerId = async(id: number) => {
     return fetch(
         process.env.NEXT_PUBLIC_API_URL + `/customers/${id}/cart`,
@@ -57,8 +39,7 @@ const fetchCartItemsByCustomerId = async(id: number) => {
 }
 
 const register = async ( { password, firstName, lastName, username, phone, role }: CustomerInput  ) => {
-
-    return await fetch(
+    const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/customers/signup`,
         {
             method:"POST",
@@ -73,12 +54,19 @@ const register = async ( { password, firstName, lastName, username, phone, role 
             headers:{
                 "content-type":"application/json"
             }
-})
+        }
+    );
+
+    
+    if (!response.ok) {
+        const errorData = await response.json(); 
+        throw new Error(errorData.message || "Login failed");
+     } 
+    return response;
 }
 
-const  login = async ( { username, password} : CustomerInput )  => {
-
-    return await fetch(
+const login = async ( { username, password} : CustomerInput )  => {
+    const response = await fetch(
          `${process.env.NEXT_PUBLIC_API_URL}/customers/login`,
          {
             method:"POST",
@@ -90,14 +78,46 @@ const  login = async ( { username, password} : CustomerInput )  => {
                 password,
             }),
          }
-    )
+    );
+
+    if (!response.ok) {
+        const errorData = await response.json(); 
+        throw new Error(errorData.message || "Login failed");
+     } 
+    return response;
 }
+
+const fetchCustomers = async () => {
+    const loggedInCustomer = sessionStorage.getItem("loggedInCustomer");
+    const token = loggedInCustomer ? JSON.parse(loggedInCustomer).token : null;
+    const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/customers`,
+        {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`
+            }
+        }
+    );
+
+    if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText);
+    }
+
+    return await response.json();
+};
+
+
 const CustomerService = {
     clearCart,
     addCartItem,
     fetchCartItemsByCustomerId,
     register,
-    login
-}
+    login,
+    fetchCustomers,
+
+};
 
 export default CustomerService;

@@ -2,6 +2,7 @@ import {  Role } from "@prisma/client";
 import { Customer } from "../model/customer";
 import database from "../util/database";
 import { CustomerInput } from "../types";
+import { da } from "date-fns/locale";
 
 //for admin
 const getAllCustomers = async () :  Promise <Customer[] | null> => {
@@ -63,7 +64,7 @@ try {
 }
 catch (error) {
     console.error(error)
-    throw new Error("application error. see server logs for more info.")
+    throw new Error("application error:"+error)
 }
 }
 
@@ -88,11 +89,22 @@ const findCustomerByUserName = async ( {username} : {username : string}) : Promi
     }
 }
 
+const findCustomerByPhone = async (phone :string) : Promise<Customer| null> => {
+
+    const customer = await database.customer.findFirst({
+        where :{
+            phone
+        }
+    })
+
+    return customer ? Customer.from(customer) : null
+}
 
 
 export default {
     getCustomerById,
     registerCustomer,
     findCustomerByUserName,
-    getAllCustomers
+    getAllCustomers,
+    findCustomerByPhone
 }

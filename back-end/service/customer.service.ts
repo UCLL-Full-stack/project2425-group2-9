@@ -5,11 +5,10 @@ import cartDb from "../repository/cart.db";
 import cartContainsProductDb from "../repository/cartContainsProduct.db";
 import customerDb from "../repository/customer.db";
 import { AuthenticationResponse, CustomerInput, ProductInput, UploadAuth, } from "../types";
-import {generateJwtToken} from "../util/jwt"
+import { generateJwtToken } from "../util/jwt";
 import { Role } from "@prisma/client";
 import { UnauthorizedError } from "express-jwt";
-import productDb from "../repository/product.db";
-import { Product } from "../model/product";
+
 
 
 const deleteCartItem = async ({ customerId, productName }: { customerId: string, productName: string }): Promise<string> => {
@@ -47,11 +46,12 @@ const registerCustomer = async ({password, firstName, lastName, username, phone,
 
     try {
         if (!password || !firstName || !lastName || !username || !phone || !role )
-            throw new Error(" customer input is required")
+            throw new Error(" All fields is required to register.")
         const existingCustomer =  await  customerDb.findCustomerByUserName({ username })
 
         const singleCustomer = existingCustomer?.find((customer) => customer)
 
+        if (await customerDb.findCustomerByPhone(phone)) throw new Error('customer with this phone number already exist. Please use a different number.')
         if (singleCustomer) {
             throw new Error (` customer with username ${username} already exist.`)
         }
@@ -63,124 +63,73 @@ const registerCustomer = async ({password, firstName, lastName, username, phone,
         return newCustomer
 }
 catch(error) {
-    console.error(error)
-    throw new Error("application error. see server log for more info.")
+    console.error(error);
+    if (error instanceof Error) {
+        throw new Error("Application error: " + error.message);
+    }
+    throw error;
 }
 }
 
 
 const authenticate = async ({ username, password }: CustomerInput): Promise<AuthenticationResponse> => {
-
     try {
-        if (!username || !password ) throw new Error("password and username is required")
-            const customer = await customerDb.findCustomerByUserName({ username });
-        if (! customer || customer.length === 0 ) throw new Error("you are not registered in our system. please signup.")
+        if (!username || !password) throw new Error("Password and username are required");
+        
+        const customer = await customerDb.findCustomerByUserName({ username });
+        if (!customer || customer.length === 0) throw new Error("You are not registered in our system. Please sign up.");
 
-        const singleCustomer = customer?.find((customer) => customer)
-             
+        const singleCustomer = customer.find((customer) => customer);
         if (!singleCustomer?.getPassword()) {
             throw new Error("Password is not set for this user.");
-          }
-            const isValidPassword = await bcrypt.compare(password, singleCustomer?.getPassword());
-            
-            if (!isValidPassword) {
-                throw new Error('Incorrect password. please try again');
-            }
-             if ( singleCustomer?.getUsername() !== username) throw new Error("Incorrect username. please try again")
-    
-            return {
-                // message : "Authentication successful.",
-                token: generateJwtToken({ username, role : singleCustomer?.getRole() as Role }),
-                username: username,
-                role : singleCustomer?.getRole(),
-                fullname: `${singleCustomer?.getFirstName()} ${singleCustomer?.getLastName()}`,
-            };
-            
-    }
-        catch (error) {
-            if (error instanceof Error) {
-                throw new Error(`Authentication error: ${error.message}`);
-            } else {
-                throw new Error('Authentication error: unknown error');
-            }
-          
+        }
+
+        const isValidPassword = await bcrypt.compare(password, singleCustomer.getPassword());
+        if (!isValidPassword) {
+            throw new Error('Incorrect password. Please try again.');
+        }
+
+        if (singleCustomer.getUsername() !== username) throw new Error("Incorrect username. Please try again");
+
+        return {
+            token: generateJwtToken({ username, role: singleCustomer.getRole() as Role }),
+            username: username,
+            role: singleCustomer.getRole(),
+            fullname: `${singleCustomer.getFirstName()} ${singleCustomer.getLastName()}`,
+        };
+    } catch (error) {
+        if (error instanceof Error) {
+            throw new Error(`Authentication error: ${error.message}`);
+        } else {
+            throw new Error('Authentication error: unknown error');
+        }
     }
 };
 
 
-const getAllCustomers = async ( {username, role} : CustomerInput): Promise<Customer[]> => {
-
+const getAllCustomers = async ({ username, role }: CustomerInput): Promise<Customer[]> => {
     if (!username) throw new Error("Username is required for customer role.");
+
     try {
-        if ( role === "ADMIN") {
+        if (role === "ADMIN") {
             const allCustomers = await customerDb.getAllCustomers();
-            if (!allCustomers) throw new Error( "no customers found")
-            return allCustomers
-        }
-           
-        else if ( role === "CUSTOMER"){
-            const singleCustomer = await customerDb.findCustomerByUserName( { username } )
-            if (!singleCustomer) throw new Error (` customer with username ${username} does not exist`)
-            return singleCustomer
-        }
-
-        else {
+            if (!allCustomers) throw new Error("No customers found");
+            return allCustomers;
+        } else if (role === "CUSTOMER") {
+            const singleCustomer = await customerDb.findCustomerByUserName({ username });
+            if (!singleCustomer) throw new Error(`Customer with username ${username} does not exist`);
+            return singleCustomer; // Return as an array to match the return type
+        } else {
             throw new UnauthorizedError('credentials_required', {
-                message : 'you are not authorized to access the resource'
-            })
+                message: 'You are not authorized to access the resource'
+            });
         }
-            
-    }
-    catch(error) {
-        console.error(error) 
+    } catch (error) {
+        console.error(error);
         throw new UnauthorizedError('credentials_required', {
-                message : 'you are not authorized to access the resource'
-            })
+            message: 'You are not authorized to access the resource'
+        });
     }
+};
 
-}
-
-//admin
-const uploadNewProduct = async ( { name ,price, unit ,stock , description ,imagePath} : ProductInput) : Promise<Product | null> => {
-
-    try {
-         if (
-
-            !name || 
-            !unit || 
-            !price ||
-            !stock || 
-            !description || 
-            !imagePath
-        
-        )
-             
-            throw new Error("all fields required")
-
-         const newProduct =  new Product({
-             
-             name ,
-             price ,
-             unit ,
-             stock ,
-             description,
-             imagePath 
- 
-         })
- 
-        //  if (role !== "ADMIN")
-        //     throw new UnauthorizedError('credentials_required', {
-        //         message : 'you are not authorized to access the resource'
-        //     })
-         return await productDb.addNewProduct(newProduct)
-     
-    }
-    catch(error){
-        console.error(error)
-        throw new UnauthorizedError('credentials_required', {
-            message : 'you are not authorized to access the resource'
-        })
-    }
- }
-
-export default { deleteCartItem, deleteAllCartItems, registerCustomer, getAllCustomers, authenticate, uploadNewProduct };
+export default { deleteCartItem, deleteAllCartItems, registerCustomer, getAllCustomers, authenticate };

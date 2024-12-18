@@ -1,5 +1,7 @@
 import CustomerService from "@/services/CustomerSevice";
 import { StatusMessage, Role } from "@/types";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 
 // const GUEST_ROLE: Role = "CUSTOMER"; // Define the GUEST role value
 import classNames from "classnames";
@@ -7,7 +9,7 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 
 const UserSignUpForm: React.FC = () => {
-
+  const [showPassword, setShowPassword] = useState(false);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [userName, setUserName] = useState("");
@@ -29,9 +31,10 @@ const UserSignUpForm: React.FC = () => {
   const validate = (): boolean => {
 
     let result  = false
+    const errorMessage = "All fields are required.";
 
     if (!firstName.trim() || !lastName.trim() || !userName.trim() || !phone.trim() || !role) {
-        setNameError('All fields are required');
+        setStatusMessages([{type : "error" , message : errorMessage}]);
         return result;
       }
     return true
@@ -60,7 +63,7 @@ const UserSignUpForm: React.FC = () => {
         });
   
         if (response.status === 200) {
-          setStatusMessages( [ { type : "success" , message : `Login  successful: redirecting to product page...`}]);
+          setStatusMessages( [ { type : "success" , message : `Signup  successful: redirecting to home page...`}]);
           const customer= await response.json();
           sessionStorage.setItem(
             'loggedInCustomer',
@@ -73,7 +76,7 @@ const UserSignUpForm: React.FC = () => {
             })
           )
           setTimeout(() => {
-            router.push('/products');
+            router.push('/');
           }, 2000);
         } else  {
           const { errorMessage } = await response.json();
@@ -81,7 +84,7 @@ const UserSignUpForm: React.FC = () => {
         }
       } catch (error) {
         console.error(error)
-        setStatusMessages([{ type: 'error', message: 'An error occurred during registration' }]);
+        setStatusMessages([{ type: 'error', message: (error as Error).message}]);
       }
 };
 
@@ -158,14 +161,21 @@ const UserSignUpForm: React.FC = () => {
         <label htmlFor="PasswordInput" className="block mb-2 text-sm font-medium">
           Password:
         </label>
-        <div className="block mb-2 text-sm font-medium">
+        <div className="relative">
         <input
-          type="password"
-          value={password}
-          onChange={(event) => setPassword(event.target.value)}
-          // placeholder="Password"
-          className="border border-gray-300 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-        />
+                            type={showPassword ? 'text' : 'password'}
+                            id="password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            className="border border-gray-300 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                            required
+                        />
+                        <span
+                            onClick={() => setShowPassword(!showPassword)}
+                            className="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer"
+                        >
+                            <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
+                        </span>
         {nameError && (
              <div>{ nameError} 
              </div> 

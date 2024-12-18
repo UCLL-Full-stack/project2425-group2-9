@@ -1,10 +1,7 @@
 import Image from 'next/image'
 import { useState } from 'react';
 import type { Product } from '../../types';
-import ProductService from '@/services/ProductService';
-import CartItem from '../cartItem';
-// import CartService from '@/services/CartService';
-import CustomerService from '@/services/CustomerSevice';
+import styles from '@styles/products.module.css';
 import { useRouter } from 'next/router';
 
 
@@ -46,6 +43,7 @@ const Product: React.FC<Props> = ({ products, productName }: Props) => {
                         width={150} // this is changed in product.module.css
                         height={150}
                         alt={product.name}
+                        className={styles.hoverCursor}
                         onClick={() => dynamicRoute(product.name)}
                         />
                     <div>

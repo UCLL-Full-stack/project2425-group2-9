@@ -4,6 +4,7 @@ import { Role } from '@prisma/client';
 import { AuthenticatedRequest, CustomerInput, UploadAuth } from '../types';
 import multer from 'multer';
 import { uploadOptions } from '../util/middleware';
+import authMiddleware from '../middleware/authMiddleware';
 
 const customerRouter = express.Router();
 
@@ -34,7 +35,7 @@ const customerRouter = express.Router();
  *             schema:
  *               type: string
  */
-customerRouter.delete('/:id/cart/:productName', async (req: Request, res: Response, next: NextFunction) => {
+customerRouter.delete('/:id/cart/:productName', authMiddleware, async (req: Request, res: Response, next: NextFunction) => {
     try {
         const customerId: string = String(req.params.id);
         const productName: string = String(req.params.productName);
@@ -69,7 +70,7 @@ customerRouter.delete('/:id/cart/:productName', async (req: Request, res: Respon
  *               type: string
  *               example: Cart items deleted successfully.
  */
-customerRouter.delete('/:id/cart', async (req: Request, res: Response, next: NextFunction) => {
+customerRouter.delete('/:id/cart', authMiddleware, async (req: Request, res: Response, next: NextFunction) => {
     try {
         const customerId: string = String(req.params.id);
         const result: string = await customerService.deleteAllCartItems(customerId);
@@ -182,7 +183,7 @@ customerRouter.post('/login', async (req: Request, res: Response, next: NextFunc
  *               items:
  *                  $ref: '#/components/schemas/Customer'
  */
-customerRouter.get('/', async (req: Request, res: Response, next: NextFunction) => {
+customerRouter.get('/', authMiddleware, async (req: Request, res: Response, next: NextFunction) => {
     const authReq = req as unknown as AuthenticatedRequest;
     try {
         const { username, role } = authReq.auth;
@@ -193,81 +194,8 @@ customerRouter.get('/', async (req: Request, res: Response, next: NextFunction) 
     }
 });
 
-/**
- * @swagger
- * /customers:
- *   post:
- *     summary: Upload a new product
- *     security:
- *       - bearerAuth: []
- *     tags:
- *       - Products
- *     requestBody:
- *       required: true
- *       content:
- *         multipart/form-data:
- *           schema:
- *             type: object
- *             properties:
- *               name:
- *                 type: string
- *               price:
- *                 type: number
- *               unit:
- *                 type: string
- *               stock:
- *                 type: number
- *               description:
- *                 type: string
- *               image:
- *                 type: string
- *                 format: binary
- *     responses:
- *       201:
- *         description: Product created successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 name:
- *                   type: string
- *                 price:
- *                   type: number
- *                 unit:
- *                   type: string
- *                 stock:
- *                   type: number
- *                 description:
- *                   type: string
- *                 imagePath:
- *                   type: string
- *       400:
- *         description: Bad request
- *       403:
- *         description: Access denied
- */
-customerRouter.post('/', uploadOptions.single('image'), async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        const { name, price, unit, stock, description } = req.body;
 
-        if (!req.file) {
-            return res.status(400).json({ message: 'No file uploaded.' });
-        }
-        const imageUrl = `${req.protocol}://${req.get('host')}/resources/images/${req.file.filename}`;
-        const newProduct = await customerService.uploadNewProduct({
-            name,
-            price: parseFloat(price),
-            unit,
-            stock: parseInt(stock, 10),
-            description,
-            imagePath: imageUrl
-        });
-
-        res.status(201).json(newProduct);
-    } catch (error) {
-        next(error);
-    }
-});
+ 
+ 
 
 export { customerRouter };

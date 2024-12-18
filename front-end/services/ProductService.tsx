@@ -11,7 +11,7 @@ const getAllProducts = async () => {
 };
 
 const getProductByName = async (name: string) => {
-    //ensure session storage is only dine client-side
+    //ensure session storage is only dine
     if (typeof window !== 'undefined') {
         const loggedInCustomer = sessionStorage.getItem("loggedInCustomer");
         const token = loggedInCustomer ? JSON.parse(loggedInCustomer).token : null;

@@ -6,16 +6,13 @@
   min-height: 100vh;
 }
 
+
+
 .main h1 {
   display: inline-block;
   margin-left: 1rem;
 }
 
-.welcome {
-  font-size: xx-large;
-  color: rgb(47, 47, 29);
-  -o-animation: alternate;
-}
 .main h2 {
   margin-bottom: 2rem;
 }
@@ -25,11 +22,10 @@
 .login {
   margin: 1rem;
 }
-.guest{
+.guest {
   margin: 3rem;
   color: blue;
-  font-size:larger;
-  
+  font-size: larger;
 }
 .description {
   /* margin-top: 2rem; */

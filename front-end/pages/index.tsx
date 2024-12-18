@@ -4,14 +4,29 @@ import styles from '@styles/home.module.css';
 import Header from '@/components/header';
 import Footer from '@/components/footer';
 import { useEffect, useState } from 'react';
+import PredefinedCustomers from '@/components/customer/prdefinedcustomers';
 
 const Home: React.FC = () => {
-  const [role, setRole] = useState('guest');
+  const [role, setRole] = useState('GUEST');
+  const [welcomeMessage, setWelcomeMessage] = useState<string>("")
   useEffect(() => {
-    const loggedInCustomer = sessionStorage.getItem('loggedInCustomer');
+    let loggedInCustomer = sessionStorage.getItem('loggedInCustomer');
     if (loggedInCustomer) {
       const customer = JSON.parse(loggedInCustomer);
       setRole(customer.role);
+      if (customer.role === "CUSTOMER"){
+        setWelcomeMessage(`Welcome back, ${customer.role}!`);
+      } else if (customer.role === "ADMIN") {
+        setWelcomeMessage(`Welcome ${customer.role}! You can access all parts of the application.`);
+      }else {
+        const text = 'The table you see is for Evaluation Purpose!'
+        setWelcomeMessage(`Welcome, guest! You are limited to just seeing the products in our shop. 
+          If you wish to shop with us, please go ahead and signup or login.
+           ${text}`);
+      }
+    } else {
+      sessionStorage.setItem('loggedInCustomer', JSON.stringify({ role: 'GUEST' }));
+      loggedInCustomer = 'GUEST';
     }
   }, []);
   return (
@@ -25,27 +40,15 @@ const Home: React.FC = () => {
       <Header />
       <main className={styles.main}>
 
-        <span>
-        <h1 className={styles.welcome}>Welcome!</h1>
-        <p className={styles.guest}>You are currently loggedIn as {role}. To gain more application access, please login.</p>
-          <Image
-            src="/images/shoppingcart.jpg"
-            alt="Courses Logo"
-            className={styles.padding}
-            width={300}
-            height={200}
-          />
-          
-        </span>
 
-        <div className={styles.description}>
-          <p>
-          This Online Shopping App is a platform designed to provide users with a 
-          seamless shopping experience. <br />The application features a user-friendly 
-          interface that allows users to browse products, add items to their cart, and manage their orders. <br />
-          The app includes functionalities such as viewing product details, managing a shopping cart, and accessing user profiles.
-          </p>
-        </div>
+        {welcomeMessage  && <p className={styles.guest}>{welcomeMessage}</p>}
+
+        <section>
+
+          <PredefinedCustomers />
+
+        </section>
+        
       </main>
 
       <Footer />

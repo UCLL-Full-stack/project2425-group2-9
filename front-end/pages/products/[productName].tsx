@@ -2,6 +2,9 @@ import { GetServerSideProps } from 'next';
 import { useRouter } from 'next/router';
 import ProductService from '@/services/ProductService';
 import type { Product } from '@/types';
+import ProductInfo from "@/components/products/productInformation";
+import Header from '@/components/header';
+import Footer from '@/components/footer';
 
 type Props = {
     product: Product | null;
@@ -19,12 +22,15 @@ const ProductPage: React.FC<Props> = ({ product }) => {
     }
 
     return (
-        <div>
-            <h1>{product.name}</h1>
-            <p>{product.description}</p>
-            <p>{product.price} $ / {product.unit}</p>
-            <img src={product.imagePath} alt={product.name} />
-        </div>
+        <>
+        <Header />
+        <main>
+        <ProductInfo />
+        </main>
+
+        <Footer />
+        </>
+        
     );
 };
 

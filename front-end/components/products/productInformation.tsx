@@ -6,24 +6,29 @@ import { useEffect, useState } from "react";
 const ProductInfo: React.FC = () => {
     const [product, setProduct] = useState<Product | null>(null);
     const [productError, setProductError] = useState<string>("");
-
+    const router = useRouter();
     const { productName } = useRouter().query;
 
-
     const fetchProduct = async () => {
-        setProductError("");
-        const response = await ProductService.getProductByName( productName as string);
-        if (!response.ok) {
-            if (response.status === 401) {
-                setProductError(
-                    "Sorry, you are not authorized to view this page. Please login first."
-                );
+        try {
+            setProductError("");
+            const response = await ProductService.getProductByName(productName as string);
+            if (!response.ok) {
+                if (response.status === 400) {
+                    setProductError("Sorry, you are not authorized to view this page. Please login first.");
+                    setTimeout(() => {
+                        router.push("/customer");
+                    }, 3000); 
+                } else {
+                    setProductError(response.statusText);
+                }
+                
             } else {
-                setProductError(response.statusText);
+                const product = await response.json();
+                setProduct(product);
             }
-        } else {
-            const product = await response.json();
-            setProduct(product);
+        } catch (error) {
+            setProductError("error:" + (error as Error).message);
         }
     };
 
@@ -37,26 +42,32 @@ const ProductInfo: React.FC = () => {
         <>
             {productError && <div className="text-red-800">{productError}</div>}
             {product && (
-                <table>
-                    <thead>
-                        <tr>
-                            <th scope="col">Name</th>
-                            <th scope="col">Price</th>
-                            <th scope="col">Stock</th>
-                            <th scope="col">Description</th>
-                            <th scope="col">Unit</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>{product.name}</td>
-                            <td>{product.price}</td>
-                            <td>{product.stock}</td>
-                            <td>{product.description}</td>
-                            <td>{product.unit}</td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div className="overflow-x-auto">
+                    <table className="min-w-full bg-white border border-gray-200">
+                        <thead>
+                            <tr className="bg-gray-100 border-b">
+                                <th className="py-2 px-4 text-left">Image</th>
+                                <th className="py-2 px-4 text-left">Name</th>
+                                <th className="py-2 px-4 text-left">Price</th>
+                                <th className="py-2 px-4 text-left">Stock</th>
+                                <th className="py-2 px-4 text-left">Description</th>
+                                {/* <th className="py-2 px-4 text-left">Unit</th> */}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr className="border-b">
+                                <td className="py-2 px-4">
+                                    <img src={product.imagePath} alt={product.name} className="w-16 h-16 object-cover" />
+                                </td>
+                                <td className="py-2 px-4">{product.name}</td>
+                                <td className="py-2 px-4">${product.price} / {product.unit}</td>
+                                <td className="py-2 px-4">{product.stock}</td>
+                                <td className="py-2 px-4">{product.description}</td>
+                                {/* <td className="py-2 px-4">{product.unit}</td> */}
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             )}
         </>
     );
