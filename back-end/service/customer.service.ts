@@ -95,6 +95,7 @@ const authenticate = async ({ username, password }: CustomerInput): Promise<Auth
             token: generateJwtToken({ username, role: singleCustomer.getRole() as Role }),
             username: username,
             role: singleCustomer.getRole(),
+            id : singleCustomer.getId(),
             fullname: `${singleCustomer.getFirstName()} ${singleCustomer.getLastName()}`,
         };
     } catch (error) {

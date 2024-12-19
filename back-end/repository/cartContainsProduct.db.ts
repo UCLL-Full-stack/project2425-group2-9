@@ -49,7 +49,11 @@ const getCartByCartIdAndProductName = async (cartId: string, productName: string
             include: { cart: true, product: true }
         });
 
-        if (!cartContainsProductPrisma) throw new Error("database error. cart not found");
+
+        //you do not throw an error in the repository , if a record does not exist return null.
+        //error are handled only in the service.
+        // if (!cartContainsProductPrisma) throw new Error("No cart item found");
+        if (!cartContainsProductPrisma) return null;
 
         return CartContainsProduct.from({
             ...cartContainsProductPrisma,
@@ -58,12 +62,12 @@ const getCartByCartIdAndProductName = async (cartId: string, productName: string
         });
     } catch (error) {
         console.error(error);
-        throw new Error("Database error. See server log for details.");
+        throw new Error("Database error:"+error);
     }
 };
 
 // Cart item is product in the cart.
-const addCartItem = async (cartItem: CartContainsProduct): Promise<CartContainsProduct> => {
+const addCartItem = async (cartItem: CartContainsProduct): Promise<CartContainsProduct | null> => {
     try {
         const cartContainsProductPrisma = await database.cartContainsProduct.create({
             data: {
@@ -76,7 +80,7 @@ const addCartItem = async (cartItem: CartContainsProduct): Promise<CartContainsP
             // }
         });
 
-        if (!cartContainsProductPrisma) throw new Error("cart item was not created.");
+        if (!cartContainsProductPrisma) return null
 
         return CartContainsProduct.from(
             cartContainsProductPrisma
@@ -89,7 +93,7 @@ const addCartItem = async (cartItem: CartContainsProduct): Promise<CartContainsP
 };
 
 // const getCartItemByCartId, returns a list of all items with the correct cart id.
-const returnAllItemsInCart = async (uniqueCartId: string | undefined): Promise<CartContainsProduct[] | undefined> => {
+const returnAllItemsInCart = async (uniqueCartId: string ): Promise<CartContainsProduct[] | null> => {
     try {
         const cartContainsProductPrisma = await database.cartContainsProduct.findMany({
             where: {
@@ -98,8 +102,8 @@ const returnAllItemsInCart = async (uniqueCartId: string | undefined): Promise<C
             include: { cart: true, product: true }
         });
 
-        if (!cartContainsProductPrisma || cartContainsProductPrisma.length == 0)
-            throw new Error("no carts found");
+        if (!cartContainsProductPrisma || cartContainsProductPrisma.length === 0)
+            return null
 
         return cartContainsProductPrisma.map((cartContainsProductPrisma) =>
             CartContainsProduct.from({
@@ -109,6 +113,7 @@ const returnAllItemsInCart = async (uniqueCartId: string | undefined): Promise<C
         );
     } catch (error) {
         console.log(error);
+        throw new Error('database error'+error)
     }
 }; //now we have a list of carts that match a particular cart id
 
@@ -116,9 +121,10 @@ const deleteCartItemByCartIdAndProductName = async (
     cartId: string | undefined,
     name: string
 ): Promise<string | null> => {
-    if (!cartId) throw new Error("cartId is undefined");
+    
+    if (!cartId) return null
 
-    if (!name) throw new Error("name is undefined");
+    // if (!name) throw new Error("name is undefined");
 
     try {
         const cartContainsProductPrisma = await database.cartContainsProduct.delete({
@@ -146,7 +152,7 @@ const deleteAllCartItems = async (cartId: string): Promise<string> => {
             }
         });
 
-        if (cartContainsProductPrisma.count == 0) throw new Error("no items to be deleted");
+        if (cartContainsProductPrisma.count === 0) return "no items to be deleted";
         return "items deleted successfully";
     } catch (error) {
         throw new Error("Database error. See server log for details.");
@@ -154,37 +160,39 @@ const deleteAllCartItems = async (cartId: string): Promise<string> => {
 };
 
 const getProductsByNameInCart = async (
-    cartId: string | undefined,
+    cartId: string,
     productName: string
-): Promise<CartContainsProduct[] | undefined> => {
-    if (!cartId) throw new Error(`cart with id ${cartId} not found`);
+): Promise<CartContainsProduct[] | null> => {
 
     try {
-        const returnAllItemsInCartResult = returnAllItemsInCart(cartId);
+        const returnAllItemsInCartResult = await returnAllItemsInCart(cartId);
 
-        if (!returnAllItemsInCartResult) throw new Error("undefined");
+        if (!returnAllItemsInCartResult) return null;
 
-        return returnAllItemsInCartResult.then((result) =>
-            result?.filter((cartContainsProduct) => cartContainsProduct.getProductName() == productName)
+        return returnAllItemsInCartResult.filter(
+            (cartContainsProduct) => cartContainsProduct.getProductName() == productName
         );
+        
     } catch (error) {
         console.log(error);
+        throw new Error('database Error'+error)
     }
 };
 
 const calculateTotalPrice = async ( {cartId} : {cartId :string}) : Promise<number> => {
-    if (!cartId) throw new Error("Cart ID is required.");
+    // if (!cartId) throw new Error("Cart ID is required.");
 
     try {
         const cartContainsProduct = await returnAllItemsInCart( cartId )
 
         // Log the cart items to ensure they are being fetched correctly
-        console.log("Cart items for total price calculation:", cartContainsProduct);
+        // console.log("Cart items for total price calculation:", cartContainsProduct);
+        if (!cartContainsProduct || cartContainsProduct.length === 0) return 0
 
         const totalPrice =  cartContainsProduct?.reduce((finalPrice, product) => {
             const productPrice = product.getProduct()?.getPrice();
-            if (!productPrice) throw new Error(`Price not found for product ${product.getProductName()}`);
-            return finalPrice + (product.getQuantity() * productPrice);
+            // if (!productPrice) throw new Error(`Price not found for product ${product.getProductName()}`);
+            return finalPrice + (product.getQuantity() * (productPrice ?? 0));
         },0)
 
         return totalPrice ?? 0;
@@ -196,31 +204,26 @@ const calculateTotalPrice = async ( {cartId} : {cartId :string}) : Promise<numbe
 }
 const updateProduct = async (cartId: string, name: string) => {
     try {
-        if (!cartId || !name) throw new Error("undefined cart");
+        if (!cartId || !name) return undefined;
 
-        const newTotalPrice =  await calculateTotalPrice({cartId});
+        // Update the cartContainsProduct record
         const increaseProductQuantity = await database.cartContainsProduct.update({
-            data: {
-                quantity: {
-                    increment: 1
-                },
-                cart: {
-                    update: {
-                        totalPrice: newTotalPrice
-                    }
-                },
-                product : {
-                    update : {
-                        stock :{
-                            decrement : 1
-                        }
-                    }
-                }
-            },
             where: {
                 cartId_productName: {
                     cartId: cartId,
                     productName: name
+                }
+            },
+            data: {
+                quantity: {
+                    increment: 1
+                },
+                product: {
+                    update: {
+                        stock: {
+                            decrement: 1
+                        }
+                    }
                 }
             },
             include: {
@@ -229,11 +232,22 @@ const updateProduct = async (cartId: string, name: string) => {
             }
         });
 
-        if (!increaseProductQuantity) throw new Error(" product quantity was not increased.");
+        // Calculate the new total price
+        const newTotalPrice = await calculateTotalPrice({ cartId });
+
+        // Update the cart record with the new total price
+        await database.cart.update({
+            where: { id: cartId },
+            data: { totalPrice: newTotalPrice }
+        });
+
+        return increaseProductQuantity;
     } catch (error) {
         console.error(error);
     }
 };
+
+export { updateProduct };
 
 
 export default {

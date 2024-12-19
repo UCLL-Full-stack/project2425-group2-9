@@ -13,93 +13,52 @@ import { Prisma } from "@prisma/client";
 import { ToTuple } from "@prisma/client/runtime/library";
 
 
-// const createNewCart = async (newCustomerId: string): Promise<string | null> => {
-    
-//     try {
-
-//         const customer: Customer | null = await customerDb.getCustomerById(newCustomerId);
-//     if (!customer) {
-//         throw new Error("Customer does not exist.");
-//     }
-//     const hasCart = await cartDb.getCartByCustomerId(customer.getId());
-//     if ( hasCart ) throw new Error(`Customer has a cart.`);
-//     // True && False => False
-//     if (customer && !hasCart) {// Q& customer does not have a cart
-//         ;//Q& i don't know why the endpoint does not work without this line - customer already exist with an ID so setter should not be called.
-//         const newCart = await database.cart.create({
-//             data : {
-//                 totalPrice : 0,
-//                 customerId : newCustomerId
-//             }
-//         })
-//         // await cartDb.saveCart(newCart);
-//         // if (!newCart)
-//         //     throw new Error("cart was not created")
-//     }
-//     return "cart created successfully"
-//     }
-//     catch (error) {
-//         console.error(error)
-//         throw new Error("Database error. See server log for details.")
-//     }
-// }
-
-
-
 const addProductToCart = async ({ customerId, productName }: AddToCartInput): Promise<Cart> => {
-
-    if (!customerId || !productName) throw new Error("Customer ID and productName is required.");
-  try {
-       // const cart: Cart | null = await cartDb.getCartByCustomerId(cartId);
-
-       const product: Product | null = await productDb.getProductByName(productName);
-        if (!product) throw new Error("Product does not exist.");
-        
-       if (!customerId) throw new Error("Cart ID required.");
-       const cart: Cart | null = await cartDb.getCartByCustomerId(customerId);
-       if (!cart) {//cart does not exist for customer, create a cart and save it in the database
-
-
-        const customer: Customer | null = await customerDb.getCustomerById(customerId);
-        if (!customer) throw new Error("Customer does not exist.");
-
-        const newCart = new Cart({ customerId, totalPrice: product.getPrice(), customer });
-            const createNewCartForCustomer = await cartDb.createNewCartForCustomer(newCart)
-                
-            if (!createNewCartForCustomer)
-                throw new Error("Cart was not created.")
-       }
-   
-    //    const getCartId = cart?.getId();
-    //    if (!getCartId) throw new Error("Cart ID is undefined.");
-       let cartItem: CartContainsProduct | null = await cartContainsProductDb.getCartByCartIdAndProductName(cart?.getId()!, product.getName());
-       // if (!cartItem) throw new Error("Cart does not contains the product.");
-   
-       // CONNECT & SAVE
-       // If cart does not contain the item, create the first one.
-       if (!cartItem) {
-           cartItem = new CartContainsProduct({
-               cartId: cart?.getId()!,
-               productName: product.getName(),
-               quantity: 1
-           });
-           cartContainsProductDb.addCartItem(cartItem); // TODO: This should the only function of a POST request! Updating should be PUT!
-       }
-       else {
-                await cartContainsProductDb.updateProduct(cart!.getId()!, productName)
-       }
-   
-    //    cartItem.setQuantity(cartItem.getQuantity() + 1); // TODO: This should be a PUT?!\
-       if (!cart) throw new Error("Cart not found.");
-       return cart;
-   
+    try {
+         // const cart: Cart | null = await cartDb.getCartByCustomerId(cartId);
+         const product: Product | null = await productDb.getProductByName(productName);
+         if (!product) throw new Error("Product does not exist.");
+         if (!customerId) throw new Error("Cart ID required.");
+         let cart: Cart | null = await cartDb.getCartByCustomerId(customerId);
+         if (!cart) {//cart does not exist for customer, create a cart and save it in the database
+             cart  = new Cart({customerId, totalPrice: product.getPrice()})
+              const createNewCartForCustomer = await cartDb.createNewCartForCustomer(cart)
+              if (!createNewCartForCustomer)
+                  throw new Error("cart was not created")
+         }
+     
+         
+         
+         const getCartId = cart?.getId();
+         if (!getCartId) throw new Error("Cart ID is undefined.");
+         let cartItem: CartContainsProduct | null = await cartContainsProductDb.getCartByCartIdAndProductName(getCartId, product.getName());
+         // if (!cartItem) throw new Error("Cart does not contains the product.");
+     
+         // CONNECT & SAVE
+         // If cart does not contain the item, create the first one.
+         if (!cartItem) {
+             cartItem = new CartContainsProduct({
+                 cartId: getCartId,
+                 productName: product.getName(),
+                 quantity: 1
+             });
+             await cartContainsProductDb.addCartItem(cartItem); // TODO: This should the only function of a POST request! Updating should be PUT!
+         }
+         else {
+                  await cartContainsProductDb.updateProduct(getCartId, productName)
+         }
+     
+      //    cartItem.setQuantity(cartItem.getQuantity() + 1); // TODO: This should be a PUT?!\
+         if (!cart) throw new Error("Cart not found.");
+         return cart;
+     
+    }
+    catch (error) {
+      console.error
+      throw new Error("application error. see server logs."+error)
+    }
+     
   }
-  catch (error) {
-    console.error
-    throw new Error("Application error:" + error)
-  }
-   
-}
 //admin
 const getAllCartsAvailable = async (): Promise<Cart[] | null> => {
     try {
@@ -130,28 +89,51 @@ const getCartContainsProductByCartId = async ( {cartId}: {cartId :string} ): Pro
     }
     }
 
+    const getCartIdByCustomerId = async (customerId : string) :Promise<string|null> => {
 
-const getCartDetails = async ({cartId} : {cartId : string}) : Promise<CartDetails[]> =>{
-    
-    try {
-        const items = await getCartContainsProductByCartId({cartId})
-        if (!items || items.length === 0) throw new Error("cart has no products")
-     const totalPrice = await cartContainsProductDb.calculateTotalPrice({cartId})
+        const cart = await cartDb.getCartByCustomerId(customerId);
+        return cart ? cart.getId() ?? null : null;
+    }
 
-        return [{ product: items.map(item => 
+    const getCartDetails = async ({ customerId }: { customerId: string }): Promise<CartDetails[]> => {
+        try {
+            const cartId = await getCartIdByCustomerId(customerId);
+            if (!cartId) throw new Error('Cart not found for customer');
+    
+            const items = await getCartContainsProductByCartId({ cartId });
+            if (!items || items.length === 0) {
 
-            ({ cartId: item.getCartId(), 
-            productName: item.getProductName(), 
-            quantity: item.getQuantity(),
-            price : `$${item.getProduct()?.getPrice()}`
+                console.error(`No items found in cart for cartId ${cartId}`)
+                return []
+            }
     
-        })), 
+            const totalPrice = await cartContainsProductDb.calculateTotalPrice({ cartId });
     
-            totalPrice }]
-}
-catch(error){
-    throw new
-  Error('cart has no products')
-}
-}
-export default {  getAllCartsAvailable, addProductToCart,  getCartContainsProductByCartId , getCartDetails}
+            return [{
+                product: items.map(item => ({
+                    cartId: item.getCartId(),
+                    productName: item.getProductName(),
+                    quantity: item.getQuantity(),
+                    price: `$${item.getProduct()?.getPrice()}`,
+                    cart: item.getCart()
+                })),
+                totalPrice
+            }];
+        } catch (error) {
+            throw new Error('cart has no products');
+        }
+    };
+    
+
+
+
+
+const getCartItemsByCustomerId = async (customerId: string): Promise<Array<CartContainsProduct> | null> => {
+    if (!customerId) throw new Error("Customer ID is required.");
+    const cart: Cart | null = await cartDb.getCartByCustomerId(customerId);
+    if (!cart) throw new Error("Cart does not exist.");
+
+    return cartContainsProductDb.returnAllItemsInCart(cart.getId()!) || [];
+};
+
+export default {  getAllCartsAvailable, addProductToCart,  getCartContainsProductByCartId , getCartDetails, getCartIdByCustomerId, getCartItemsByCustomerId}

@@ -42,7 +42,7 @@ interface OrderInput {
     customerId? : string
 }
 interface CartContainsProductInput {
-    cartId: number; // Foreign key to Cart
+    cartId: string; // Foreign key to Cart
     productName: string; // Foreign key to Product
     quantity: number;//Q& am not sure but are we suppose to have a separate interface for the relationship between cart and product???
 }
@@ -53,7 +53,7 @@ export type  LoginInput = {
 }
 
 interface DeleteCartItemInput {
-    customerId: number;
+    customerId: string;
     productName: string;
 }
 
@@ -68,6 +68,7 @@ type AuthenticationResponse = {
     token?: string;
     username?: string;
     role? : Role;
+    id?: string;
     fullname?: string;
 };
 

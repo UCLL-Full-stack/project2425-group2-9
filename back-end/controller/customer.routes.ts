@@ -5,6 +5,8 @@ import { AuthenticatedRequest, CustomerInput, UploadAuth } from '../types';
 import multer from 'multer';
 import { uploadOptions } from '../util/middleware';
 import authMiddleware from '../middleware/authMiddleware';
+import { CartContainsProduct } from '../model/cartContainsProduct';
+import cartService from '../service/cart.service';
 
 const customerRouter = express.Router();
 
@@ -197,5 +199,39 @@ customerRouter.get('/', authMiddleware, async (req: Request, res: Response, next
 
  
  
+/**
+ * @swagger
+ * /customers/{id}/cart:
+ *   get:
+ *     summary: Get CartContainsProduct objects using customer ID. (Get cart items of a customer).
+ *     parameters:
+ *          - in: path
+ *            name: id
+ *            schema:
+ *              type: number
+ *              required: true
+ *              description: Customer's ID.
+ *              example: 1
+ *     responses:
+ *       200:
+ *         description: A list of CartContainsProduct objects.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/CartContainsProduct'
+ */
+customerRouter.get("/:id/cart", async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const customerId: string = String(req.params.id)
+        const cart: CartContainsProduct[] | null = await cartService.getCartItemsByCustomerId(customerId);
+        res.status(202).json(cart);
+    } catch (e) {
+        next(e);
+    }
+
+
+})
+
+
 
 export { customerRouter };

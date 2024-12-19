@@ -94,6 +94,20 @@ const createNewCartForCustomer = async (cart : Cart) : Promise<Cart> =>{
     }
 }
 
+const getCartIdByCustomerId = async (customerId : string) : Promise<string | null> => {
+
+    const cartId = await database.cart.findFirst({
+        where : {
+            customerId 
+        },
+        select : {
+            id: true
+        }
+    })
+
+    return cartId ? cartId.id : null
+}
+
 export default {
     getCartByCustomerId,
     returnAllCartsAvailable,

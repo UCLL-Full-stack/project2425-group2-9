@@ -151,19 +151,19 @@ cartRouter.post('/addtocart', async (req: Request, res: Response, next: NextFunc
 
 /**
  * @swagger
- * /carts/{cartId}:
+ * /carts/{customerId}:
  *   get:
  *     security:
  *       - bearerAuth: []
  *     summary: Get a cart with all its products.
  *     parameters:
  *       - in: path
- *         name: cartId
+ *         name: customerId
  *         schema:
  *           type: string
  *         required: true
- *         description: The Id of the cart.
- *         example: 1
+ *         description: The Id of the customer.
+ *         example: ed1e65bb-8f89-4d01-86bc-21b25f084b0a
  *     responses:
  *       200:
  *         description: A product object.
@@ -172,22 +172,32 @@ cartRouter.post('/addtocart', async (req: Request, res: Response, next: NextFunc
  *             schema:
  *               $ref: '#/components/schemas/Product'
  */
-cartRouter.get("/:cartId", async (req: Request, res: Response, next: NextFunction) => {
+cartRouter.get("/:customerId", async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const cartId: string = (req.params.cartId);
-         const cart: CartDetails[]  = await cartService.getCartDetails({cartId});
+        const customerId: string = String(req.params.customerId);
+         const cart: CartDetails[]  = await cartService.getCartDetails({customerId});
         //  const cart: Product[] | null = await cartService.returnAllProductsInCart(cartId);
         if (!cart)
-            res.status(404).json({ message: `Cart with id ${cartId} not found.` });
+            res.status(404).json({ message: `Cart with id ${customerId} not found.` });
         res.status(202).json(cart);
     } catch (e) {
         next(e);
     }
-
-String
 })
 
-
+cartRouter.get("/:customerId/cartId", async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const customerId: string = req.params.customerId;
+        const cartId: string | null = await cartService.getCartIdByCustomerId(customerId);
+        if (!cartId) {
+            res.status(404).json({ message: `Cart for customer with id ${customerId} not found.` });
+        } else {
+            res.status(200).json({ cartId });
+        }
+    } catch (e) {
+        next(e);
+    }
+});
 
 /** 
  * @swagger
@@ -236,4 +246,6 @@ cartRouter.put('/:cartId', async (req : Request, res : Response, next : NextFunc
     }
 
 })
+
+
 export { cartRouter }

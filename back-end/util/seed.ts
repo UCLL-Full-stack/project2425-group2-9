@@ -5,14 +5,41 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const prisma = new PrismaClient();
-const resourceImagePath: String = "/images/";
-const main = async () => {
-    const cartContainsProduct = await prisma.cartContainsProduct.deleteMany();
-    const products = await prisma.product.deleteMany();
-    const order = await prisma.order.deleteMany();
-    const cart = await prisma.cart.deleteMany();
-    const cus = await prisma.customer.deleteMany();
+const resourceImagePath: string = "/images/";
 
+const main = async () => {
+    // Delete existing records
+    await prisma.cartContainsProduct.deleteMany();
+    await prisma.product.deleteMany();
+    await prisma.order.deleteMany();
+    await prisma.cart.deleteMany();
+    await prisma.customer.deleteMany();
+
+    const returnAllItemsInCart = async (cartId: string) => {
+        return await prisma.cartContainsProduct.findMany({
+            where: { cartId: cartId },
+            include: { product: true }
+        });
+    };
+
+    const calculateTotalPrice = async ({ cartId }: { cartId: string }): Promise<number> => {
+        try {
+            const cartContainsProduct = await returnAllItemsInCart(cartId);
+            if (!cartContainsProduct || cartContainsProduct.length === 0) return 0;
+
+            const totalPrice = cartContainsProduct.reduce((finalPrice, product) => {
+                const productPrice = product.product?.price;
+                return finalPrice + (product.quantity * (productPrice ?? 0));
+            }, 0);
+
+            return totalPrice ?? 0;
+        } catch (error) {
+            console.error("Error in calculateTotalPrice:", error);
+            throw new Error('Error calculating total price');
+        }
+    };
+
+    // Create customers
     const customerRL = await prisma.customer.create({
         data: {
             password: await bcrypt.hash("roland1234", 10),
@@ -20,7 +47,7 @@ const main = async () => {
             firstName: "roland",
             lastName: "sone",
             phone: "046058946",
-            role : "ADMIN"
+            role: "ADMIN"
         },
     });
 
@@ -31,7 +58,7 @@ const main = async () => {
             firstName: "matej",
             lastName: "vesel",
             phone: "046058947",
-            role : "ADMIN"
+            role: "ADMIN"
         }
     });
 
@@ -42,7 +69,7 @@ const main = async () => {
             firstName: "Rhone",
             lastName: "Abani",
             phone: "046058949",
-            role : "CUSTOMER"
+            role: "CUSTOMER"
         },
     });
 
@@ -58,13 +85,14 @@ const main = async () => {
                     totalPrice: 0
                 }
             },
-            role : "GUEST"
+            role: "GUEST"
         },
     });
 
+    // Create carts for customers
     const cartRL = await prisma.cart.create({
         data: {
-            totalPrice: 50,
+            totalPrice: 0,
             customerId: customerRN.id,
         }
     });
@@ -83,14 +111,7 @@ const main = async () => {
         }
     });
 
-    const orderRL = await prisma.order.create({
-        data: {
-            customerId: customerRL.id,
-            date: new Date(),
-            cartId: cartRL.id
-        }
-    });
-
+    // Create products
     const productBread = await prisma.product.create({
         data: {
             name: "Bread",
@@ -190,118 +211,36 @@ const main = async () => {
         }
     });
 
-    const bananaRL = await prisma.cartContainsProduct.create({
-        data: {
-            quantity: 2,
-            cart: {
-                connect: {
-                    id: cartRL.id
-                }
-            },
-            product: {
-                connect: {
-                    name: productAP.name
+    // Function to add products to cart and update total price
+    const addProductToCart = async (cartId: string, productName: string, quantity: number) => {
+        await prisma.cartContainsProduct.create({
+            data: {
+                quantity,
+                cart: {
+                    connect: { id: cartId }
+                },
+                product: {
+                    connect: { name: productName }
                 }
             }
-        }
-    });
+        });
 
-    const bananaT = await prisma.cartContainsProduct.create({
-        data: {
-            quantity: 4,
-            cart: {
-                connect: {
-                    id: cartRN.id
-                }
-            },
-            product: {
-                connect: {
-                    name: productAP.name
-                }
-            }
-        }
-    });
+        const totalPrice = await calculateTotalPrice({ cartId });
+        await prisma.cart.update({
+            where: { id: cartId },
+            data: { totalPrice }
+        });
+    };
 
-    const bananaL = await prisma.cartContainsProduct.create({
-        data: {
-            quantity: 2,
-            cart: {
-                connect: {
-                    id: cartRL.id
-                }
-            },
-            product: {
-                connect: {
-                    name: productLp.name
-                }
-            }
-        }
-    });
-
-    const bananaP = await prisma.cartContainsProduct.create({
-        data: {
-            quantity: 2,
-            cart: {
-                connect: {
-                    id: cartRL.id
-                }
-            },
-            product: {
-                connect: {
-                    name: productMS.name
-                }
-            }
-        }
-    });
-
-    const bananaM = await prisma.cartContainsProduct.create({
-        data: {
-            quantity: 2,
-            cart: {
-                connect: {
-                    id: cartRL.id
-                }
-            },
-            product: {
-                connect: {
-                    name: productMy.name
-                }
-            }
-        }
-    });
-
-    const banana = await prisma.cartContainsProduct.create({
-        data: {
-            quantity: 2,
-            cart: {
-                connect: {
-                    id: cartRN.id
-                }
-            },
-            product: {
-                connect: {
-                    name: productMy.name
-                }
-            }
-        }
-    });
-
-    const bananaS = await prisma.cartContainsProduct.create({
-        data: {
-            quantity: 2,
-            cart: {
-                connect: {
-                    id: cartMT.id
-                }
-            },
-            product: {
-                connect: {
-                    name: productMy.name
-                }
-            }
-        }
-    });
-}
+    // Add products to carts
+    await addProductToCart(cartRL.id, productAP.name, 2);
+    await addProductToCart(cartRN.id, productAP.name, 4);
+    await addProductToCart(cartRL.id, productLp.name, 2);
+    await addProductToCart(cartRL.id, productMS.name, 2);
+    await addProductToCart(cartRL.id, productMy.name, 2);
+    await addProductToCart(cartRN.id, productMy.name, 2);
+    await addProductToCart(cartMT.id, productMy.name, 2);
+};
 
 (async () => {
     try {
