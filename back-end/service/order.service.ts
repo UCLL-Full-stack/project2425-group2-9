@@ -1,46 +1,55 @@
+import cartDb from "../repository/cart.db";
+import customerDb from "../repository/customer.db";
+import orderDb from "../repository/order.db";
+import { Customer } from "../model/customer";
+import { Order } from "../model/order";
+import { Cart } from "../model/cart";
 
-import { error } from "console"
-import cartDb from "../repository/cart.db"
-import customerDb from "../repository/customer.db"
-import orderDb from "../repository/order.db"
-import database from "../util/database"
-import { Customer } from "../model/customer"
-import cartContainsProductDb from "../repository/cartContainsProduct.db"
-import { Order } from "@prisma/client"
-const createAnOrder = async ( customerId : string) : Promise<string | null> => {
-
-    if ( !customerId )
-        throw new Error(` customer with id ${customerId} does not exist`)
+const createAnOrder = async (customerId: string): Promise<{ order: Order, message: string } | null> => {
+    if (!customerId) {
+        throw new Error("Customer ID is required");
+    }
 
     try {
-
-        const customer : Customer |null = await customerDb.getCustomerById(customerId)
-        if (!customer)
-            throw new Error("customer does not exist")
-        const cart = await cartDb.getCartByCustomerId(customer.getId())
-        const cartId = cart?.getId()
-        if (!cart)
-            throw new Error(`no carts found for customer`)
-
-        const getCartFromDb = await cartDb.getCartByCustomerId(customerId)
-        if (!getCartFromDb)
-            throw new Error("cart not found")
-
-        const placeOrder = await orderDb.newOrder({cartId, customerId})
-
-        if (placeOrder){
-            await cartContainsProductDb.deleteAllCartItems(cart.getId()!)
-        }else {
-            throw new Error("order was not created")
+        const customer: Customer | null = await customerDb.getCustomerById(customerId);
+        if (!customer) {
+            throw new Error("Customer does not exist");
         }
-        
-        return "order placed successful. thank you for choosing veso"
-    }
-    catch(error){
-        console.error(error)
-        throw new Error("application error:" + error)
-    }
-}
 
+        const cart = await cartDb.getCartByCustomerId(customer.getId());
+        if (!cart) {
+            throw new Error("No carts found for customer");
+        }
 
-export default {createAnOrder}
+        if (cart.getIsActive() === false) {
+            throw new Error("Order cannot be placed to inactive cart");
+        }
+
+        const placeOrder: { order: Order, message: string } | null = await orderDb.newOrder({ cartId: cart.getId(), customerId });
+
+        if (!placeOrder) {
+            throw new Error('Failed to place an order. Please check and try again.');
+        }
+
+        // Update the cart to set isActive to false
+        cart.setIsActive(false);
+        await cartDb.updateCartStatus(cart.getId()!, false);
+
+        // Create a new cart for the customer
+        const newCustomerCart = new Cart({ customerId: customer.getId(), totalPrice: 0, isActive: true });
+        const newCart = await cartDb.createNewCartForCustomer(newCustomerCart);
+        if (!newCart) {
+            throw new Error("Failed to assign a new cart for customer");
+        }
+
+        return {
+            order: placeOrder.order,
+            message: "Order placed successfully. Thank you for shopping with us."
+        };
+    } catch (error) {
+        console.error(error);
+        throw new Error("Application error: " + error);
+    }
+};
+
+export default { createAnOrder };

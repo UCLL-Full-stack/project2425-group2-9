@@ -97,7 +97,9 @@ const returnAllItemsInCart = async (uniqueCartId: string ): Promise<CartContains
     try {
         const cartContainsProductPrisma = await database.cartContainsProduct.findMany({
             where: {
-                cartId: uniqueCartId
+                cart : {
+                    id: uniqueCartId
+                }
             },
             include: { cart: true, product: true }
         });
@@ -124,7 +126,7 @@ const deleteCartItemByCartIdAndProductName = async (
     
     if (!cartId) return null
 
-    // if (!name) throw new Error("name is undefined");
+     if (!name) throw new Error("name is undefined");
 
     try {
         const cartContainsProductPrisma = await database.cartContainsProduct.delete({
@@ -143,6 +145,59 @@ const deleteCartItemByCartIdAndProductName = async (
         throw new Error("Database error. See server log for details.");
     }
 };
+
+const decrementProductQuantity = async (cartId: string, name: string): Promise<string | null> => {
+    if (!cartId) return null;
+
+    try {
+        const cartContainsProductPrisma = await database.cartContainsProduct.update({
+            where: {
+                cartId_productName: {
+                    cartId: cartId,
+                    productName: name
+                }
+            },
+            data: {
+                quantity: {
+                    decrement: 1
+                }
+            }
+        });
+
+        if (!cartContainsProductPrisma) return "Quantity was not updated";
+        return "Item quantity decremented by one.";
+    } catch (error) {
+        console.error(error);
+        throw new Error("Database error. See server log for details.");
+    }
+};
+
+const incrementProductQuantity = async (cartId: string, name: string): Promise<string | null> => {
+    if (!cartId) return null;
+
+    try {
+        const cartContainsProductPrisma = await database.cartContainsProduct.update({
+            where: {
+                cartId_productName: {
+                    cartId: cartId,
+                    productName: name
+                }
+            },
+            data: {
+                quantity: {
+                    increment: 1
+                }
+            }
+        });
+
+        if (!cartContainsProductPrisma) return "Quantity was not updated";
+        return "Item quantity incremented by one.";
+    } catch (error) {
+        console.error(error);
+        throw new Error("Database error. See server log for details.");
+    }
+};
+
 
 const deleteAllCartItems = async (cartId: string): Promise<string> => {
     try {
@@ -206,6 +261,7 @@ const updateProduct = async (cartId: string, name: string) => {
     try {
         if (!cartId || !name) return undefined;
 
+        
         // Update the cartContainsProduct record
         const increaseProductQuantity = await database.cartContainsProduct.update({
             where: {
@@ -247,7 +303,7 @@ const updateProduct = async (cartId: string, name: string) => {
     }
 };
 
-export { updateProduct };
+
 
 
 export default {
@@ -260,5 +316,7 @@ export default {
     addCartItem,
     deleteAllCartItems,
     updateProduct,
-    calculateTotalPrice
+    calculateTotalPrice,
+    decrementProductQuantity,
+    incrementProductQuantity
 };

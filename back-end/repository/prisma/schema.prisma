@@ -16,7 +16,7 @@ enum Role {
 
 model Customer {
   id               String    @id @default(uuid())
-  password         String    @unique
+  password         String    
   username         String    @unique
   firstName        String
   lastName         String
@@ -28,18 +28,19 @@ model Customer {
 
 model Cart {
   id         String       @id @default(uuid())
+  isActive    Boolean     @default(true)
   totalPrice Int
   customer   Customer?    @relation(fields: [customerId], references: [id])
-  customerId String?      @unique
+  customerId String?      
   order      Order?
   product    CartContainsProduct[]
 }
-
 model Order {
   id          Int       @id @default(autoincrement())
   date        DateTime 
   cart        Cart      @relation(fields: [cartId], references: [id])
   cartId      String    @unique
+  totalPrice  Int
   customer    Customer  @relation(fields: [customerId], references: [id])
   customerId  String 
 }

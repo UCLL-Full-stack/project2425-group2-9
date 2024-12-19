@@ -26,16 +26,59 @@ const addCartItem = async (customerId: string, productName: string) => {
     );
 };
 
-const fetchCartItemsByCustomerId = async(id: number) => {
-    return fetch(
-        process.env.NEXT_PUBLIC_API_URL + `/customers/${id}/cart`,
+
+const incrementQuantity = async ({customerId, productName} : {customerId: string, productName: string}) => {
+
+    const loggedInCustomer = sessionStorage.getItem("loggedInCustomer");
+    const token = loggedInCustomer ? JSON.parse(loggedInCustomer).token : null;
+     const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/customers/${customerId}/cart/${productName}/increment`,
         {
-            method:"GET",
+            method : "PUT",
+            body : JSON.stringify({
+                customerId,
+                productName
+            }),
             headers:{
-                "content-type":"application/json"
-            }
+                "content-type":"application/json",
+                Authorization: `Bearer ${token}`
+            },
+
         }
-    );
+     );
+
+     if (!response.ok) {
+        const errorData = await response.json(); 
+        throw new Error(errorData.message || "failed to increase item quantity");
+     } 
+    return response;
+
+}
+
+const decrementQuantity = async ({customerId, productName} : {customerId: string, productName: string}) => {
+
+    const loggedInCustomer = sessionStorage.getItem("loggedInCustomer");
+    const token = loggedInCustomer ? JSON.parse(loggedInCustomer).token : null;
+     const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/customers/${customerId}/cart/${productName}/decrement`,
+        {
+            method : "PUT",
+            body : JSON.stringify({
+                customerId,
+                productName
+            }),
+            headers:{
+                "content-type":"application/json",
+                Authorization: `Bearer ${token}`
+            },
+
+        }
+     );
+
+     if (!response.ok) {
+        const errorData = await response.json(); 
+        throw new Error(errorData.message || "failed to decrement item quantity");
+     } 
+    return response;
+
 }
 
 const register = async ( { password, firstName, lastName, username, phone, role }: CustomerInput  ) => {
@@ -52,7 +95,8 @@ const register = async ( { password, firstName, lastName, username, phone, role 
                 username
               }),
             headers:{
-                "content-type":"application/json"
+                "content-type":"application/json",
+                
             }
         }
     );
@@ -109,15 +153,68 @@ const fetchCustomers = async () => {
     return await response.json();
 };
 
+const deleteSingleItem = async ({customerId, productName} : {customerId : string, productName: string}) => {
+
+    const loggedInCustomer = sessionStorage.getItem("loggedInCustomer");
+    const token = loggedInCustomer ? JSON.parse(loggedInCustomer).token : null;
+    const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/customers/${customerId}/cart/${productName}`,
+        {
+            method: "DELETE",
+            headers: {
+                'Content-Type': 'application/json',
+                // "Accept": 'application/json',
+                Authorization: `Bearer ${token}`
+            },
+            body: JSON.stringify({ customerId, productName })
+        }
+    );
+
+    if (!response.ok) {
+        const errorData = await response.json(); 
+        throw new Error(errorData.message || "failed to delete item");
+     } 
+     return await response.json();
+}
+
+
+const placeAnOrder = async (customerId : string) => {
+    const loggedInCustomer = sessionStorage.getItem("loggedInCustomer");
+    const token = loggedInCustomer ? JSON.parse(loggedInCustomer).token : null;
+    const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/orders/${customerId}`,
+        {
+           method:"POST",
+           headers:{
+               "content-type":"application/json",
+               Authorization: `Bearer ${token}`
+           },
+           body: JSON.stringify({
+               customerId
+           }),
+        }
+   );
+
+   if (!response.ok) {
+       const errorData = await response.json(); 
+       throw new Error(errorData.message || "order failed.");
+    } 
+   return response;
+}
+
+
 
 const CustomerService = {
     clearCart,
     addCartItem,
-    fetchCartItemsByCustomerId,
     register,
     login,
     fetchCustomers,
-
+    decrementQuantity,
+    incrementQuantity,
+    deleteSingleItem,
+    placeAnOrder
+    
 };
 
 export default CustomerService;

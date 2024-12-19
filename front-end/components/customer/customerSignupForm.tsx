@@ -73,6 +73,7 @@ const UserSignUpForm: React.FC = () => {
                 fullName: customer.fullname,
                 username: customer.username,
                 role: customer.role,
+                id: customer.id
             })
           )
           setTimeout(() => {

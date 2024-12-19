@@ -1,30 +1,62 @@
 
+import { Order } from "../model/order"
 import { OrderInput } from "../types"
 import database from "../util/database"
 
-const newOrder = async ( {cartId, customerId} :OrderInput) : Promise<String | null> => {
+
+const newOrder = async ( {cartId, customerId} :OrderInput) : Promise<{order : Order, message :string} | null> => {
 
     if (!cartId || !customerId){
         throw new Error("order cannot be created")
     }
 
     try {
+        const cart = await database.cart.findUnique({
+            where: { id: cartId,
+                isActive : true
+             }
+        });
+
+        if (!cart) {
+            throw new Error("Cart not found");
+        }
         const newOrder = await database.order.create({
         
             data : {
-                cartId ,
+                cart : {
+                    connect :{
+                        id : cartId
+                    },
+                } ,
                 date : new Date(),
-                customerId 
+                customer : {
+                    connect : {
+                        id : customerId
+                    }
+                } ,
+                totalPrice: cart.totalPrice
+                
+            },
+            include : {
+                cart : {
+                    include : {
+                        product : true
+                    }
+                },
+                customer: true
             }
         })
     
-        if (!newOrder)
-            throw new Error("order was not created")
-        return 'order created successfully. thank you for shopping with us.'
+        if (!newOrder) return null
+           
+        return { order : Order.from(newOrder),
+            message : "Order placed successfully. Thank you for shopping with us."
+        }
+
     }
     catch(error){
         console.error(error)
-        throw new Error("application error. see server logs for details.")
+        throw new Error("application error. see server logs for details."+error)
     }
     
 

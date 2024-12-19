@@ -35,6 +35,7 @@ const UserLoginForm: React.FC = () => {
                         fullName: customer.fullname,
                         username: customer.username,
                         role: customer.role,
+                        id : customer.id
                     })
                 );
                 setStatusMessages([{ type: "success", message: "Login successful: redirecting to home page..." }]);

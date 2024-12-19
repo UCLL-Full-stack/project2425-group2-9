@@ -7,16 +7,28 @@ import { Customer as customerPrisma } from "@prisma/client";
 export class Order {
     private id!:number;
     private cartId!: string;
+    readonly customerId : string
     private date?: Date;
+    readonly totalPrice : number
     private cart!:Cart
     private customer!: Customer
 
-    constructor(order: { id:number, cartId: string, date?: Date, cart:Cart, customer: Customer }) {
+    constructor(order: { id:number, cartId: string, customerId : string, date?: Date,  totalPrice : number, cart:Cart, customer: Customer }) {
         this.setCartId(order.cartId);
         this.setDate(order.date);
         this.setId(order.id)
+        this.customerId = order.customerId
         this.setCart(order.cart)
         this.setCustomer(order.customer)
+        this.totalPrice = order.totalPrice
+    }
+
+    getTotalPrice () :number {
+        return this.totalPrice
+    }
+
+    getCustomerId () : string  {
+        return this.customerId
     }
 
     public getId():number {
@@ -71,7 +83,8 @@ export class Order {
             newOrder.cartId === this.cartId &&
             newOrder.date === this.date && 
             newOrder.cart === this.cart &&
-            newOrder.customer === this.customer
+            newOrder.customer === this.customer &&
+            newOrder.totalPrice === this.totalPrice
         )
     }
 
@@ -79,9 +92,12 @@ export class Order {
 
         id,
         cartId,
+        customerId,
         date,
+        totalPrice,
         cart,
-        customer
+        customer,
+        
         
     } : orderPrisma & { cart:cartPrisma; customer:customerPrisma} ) {
 
@@ -89,9 +105,12 @@ export class Order {
 
             id,
             cartId,
+            customerId,
             date,
+            totalPrice,
             cart:Cart.from({ ...cart,}),
-            customer:Customer.from(customer)
+            customer:Customer.from(customer),
+            
 
         })
     }

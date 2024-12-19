@@ -28,6 +28,7 @@
 
 import express, { NextFunction, Request, Response } from 'express';
 import orderService from '../service/order.service';
+import { Order } from '../model/order';
 
 const ordersRoutes = express.Router();
 
@@ -60,11 +61,10 @@ const ordersRoutes = express.Router();
 ordersRoutes.post('/:customerId', async (req:Request, res:Response, next:NextFunction) => {
 
     try {
-        const customerId: string | undefined = String(req.params.customerId)
+        const customerId: string  = req.params.customerId
 
-        const result : string | null = await orderService.createAnOrder(customerId)
-        if (res.status(200))
-        return res.json(result)
+        const result : {order : Order , message : string} | null = await orderService.createAnOrder(customerId)
+        return res.status(200).json(result)
     
     }
     catch(error){

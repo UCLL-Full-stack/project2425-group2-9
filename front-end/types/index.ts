@@ -32,8 +32,40 @@ export type CartItem = {
   productName: string,
   quantity: number
 }
-
+export type AddprodutToCar = {
+  customerId :string;
+  productName : string
+}
 export type StatusMessage = {
   message: string;
   type: "error" | "success";
 };
+
+
+export interface CartDetails {
+  product : CartItem[],
+  totalPrice: number
+}
+
+export interface shopping {
+  id: string;
+  totalPrice: number;
+  isActive: boolean;
+  customerId: string;
+  product: Product;
+}
+export interface Order {
+  id?: string;
+  cartId?: string;
+  date: Date;
+  customerId: string;
+  totalPrice: number;
+  cart : shopping
+}
+
+
+
+export interface OrderResponse {
+  order: Order;
+  message: string;
+}

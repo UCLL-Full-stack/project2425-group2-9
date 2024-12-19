@@ -12,7 +12,7 @@ const customerRouter = express.Router();
 
 /**
  * @swagger
- * /customers/{id}/cart/{productName}:
+ * /customers/{customerId}/cart/{productName}:
  *   delete:
  *     summary: Delete an item (product) from a cart using customer ID and product name.
  *     parameters:
@@ -37,12 +37,12 @@ const customerRouter = express.Router();
  *             schema:
  *               type: string
  */
-customerRouter.delete('/:id/cart/:productName', authMiddleware, async (req: Request, res: Response, next: NextFunction) => {
+customerRouter.delete('/:customerId/cart/:productName', authMiddleware, async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const customerId: string = String(req.params.id);
-        const productName: string = String(req.params.productName);
-        const result: string = await customerService.deleteCartItem({ customerId, productName });
-        res.status(200).json(result);
+        const customerId: string = req.params.id
+        const productName: string = req.params.productName
+        await customerService.deleteCartItem({ customerId, productName });
+        res.status(200).json( { message: 'Item deleted successfully' });
     } catch (error) {
         next(error);
     }
@@ -196,41 +196,25 @@ customerRouter.get('/', authMiddleware, async (req: Request, res: Response, next
     }
 });
 
-
- 
- 
-/**
- * @swagger
- * /customers/{id}/cart:
- *   get:
- *     summary: Get CartContainsProduct objects using customer ID. (Get cart items of a customer).
- *     parameters:
- *          - in: path
- *            name: id
- *            schema:
- *              type: number
- *              required: true
- *              description: Customer's ID.
- *              example: 1
- *     responses:
- *       200:
- *         description: A list of CartContainsProduct objects.
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/CartContainsProduct'
- */
-customerRouter.get("/:id/cart", async (req: Request, res: Response, next: NextFunction) => {
+customerRouter.put('/:customerId/cart/:productName/increment',  async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const customerId: string = String(req.params.id)
-        const cart: CartContainsProduct[] | null = await cartService.getCartItemsByCustomerId(customerId);
-        res.status(202).json(cart);
-    } catch (e) {
-        next(e);
+        const { customerId, productName } = req.params;
+        await customerService.incrementProductQuantity({customerId, productName});
+        return res.status(200).json({ message: 'Product quantity incremented successfully' });
+    } catch (error) {
+        next(error);
     }
+});
 
-
-})
+customerRouter.put('/:customerId/cart/:productName/decrement', authMiddleware, async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { customerId, productName } = req.params;
+        await customerService.decrementProductQuantity( {customerId, productName} );
+        return res.status(200).json({ message: 'Product quantity decremented successfully' });
+    } catch (error) {
+        next(error);
+    }
+});
 
 
 

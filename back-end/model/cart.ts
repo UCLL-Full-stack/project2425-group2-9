@@ -8,12 +8,14 @@ export class Cart {
     private totalPrice!: number;
     private customerId?: string;
     private customer?: Customer;
+    private isActive! : boolean
 
-    constructor(cart: { id?: string, totalPrice: number, customerId?: string, customer?: Customer }) {
+    constructor(cart: { id?: string, totalPrice: number, customerId?: string, customer?: Customer , isActive: boolean}) {
         this.id = cart.id
         this.setCustomerId(cart.customerId);
         this.setTotalPrice(cart.totalPrice);
         this.setCustomer(cart.customer);
+        this.setIsActive(cart.isActive)
     }
 
     getId(): string | undefined {
@@ -56,17 +58,28 @@ export class Cart {
         this.customer = customer;
     }
 
+    getIsActive() : boolean {
+        return this.isActive
+    }
+
+    setIsActive(value : boolean) : void {
+
+        this.isActive = value
+    }
+
     static from({
         id,
         totalPrice,
         customerId,
         customerPrisma,
+        isActive
     }: cartPrisma & { customerPrisma?: customerPrisma }) {
         return new Cart({
             id,
             totalPrice,
             customerId: customerId ? customerId : undefined,
             customer: customerPrisma ? Customer.from(customerPrisma) : undefined,
+            isActive
         });
     }
 }

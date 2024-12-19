@@ -20,7 +20,7 @@ const deleteCartItem = async ({ customerId, productName }: { customerId: string,
     if (!cart) throw new Error(`Customer ${customer.getUsername()} does not have a cart.`);
 
     // CONNECT & SAVE
-    cartContainsProductDb.deleteCartItemByCartIdAndProductName(cart.getId(), productName);
+    await cartContainsProductDb.deleteCartItemByCartIdAndProductName(cart.getId(), productName);
     return `Cart item '${productName}' deleted successfully.`;
 }
 
@@ -39,6 +39,33 @@ const deleteAllCartItems = async (customerId: string): Promise<string> => {
     if (!cartId)
         throw new Error("cart not found")
     return await cartContainsProductDb.deleteAllCartItems(cartId);
+};
+
+
+
+const incrementProductQuantity = async ({ customerId, productName }: { customerId: string, productName: string }) => {
+    const cart = await cartDb.getCartByCustomerId(customerId);
+    if (!cart) throw new Error('Cart not found');
+
+    const cartId = cart.getId();
+    if (!cartId) throw new Error('Cart ID not found');
+    await cartContainsProductDb.updateProduct(cartId, productName);
+
+    const newTotalPrice = await cartContainsProductDb.calculateTotalPrice({ cartId });
+    await cartDb.updateCartTotalPrice(cartId, newTotalPrice);
+};
+
+
+const decrementProductQuantity = async ({ customerId, productName }: { customerId: string, productName: string }) => {
+    const cart = await cartDb.getCartByCustomerId(customerId);
+    if (!cart) throw new Error('Cart not found');
+
+    const cartId = cart.getId();
+    if (!cartId) throw new Error('Cart ID not found');
+    await cartContainsProductDb.updateProduct(cartId, productName);
+
+    const newTotalPrice = await cartContainsProductDb.calculateTotalPrice({ cartId });
+    await cartDb.updateCartTotalPrice(cartId, newTotalPrice);
 };
 
 
@@ -133,4 +160,13 @@ const getAllCustomers = async ({ username, role }: CustomerInput): Promise<Custo
     }
 };
 
-export default { deleteCartItem, deleteAllCartItems, registerCustomer, getAllCustomers, authenticate };
+export default { 
+    deleteCartItem, 
+    deleteAllCartItems, 
+    registerCustomer,
+    getAllCustomers,
+    authenticate,
+    incrementProductQuantity,
+    decrementProductQuantity
+
+ };
