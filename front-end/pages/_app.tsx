@@ -3,6 +3,7 @@ import '@/styles/globals.css';
 import type { AppProps } from 'next/app';
 import { CartProvider } from '../components/cartComponentProps';
 import { appWithTranslation } from 'next-i18next';
+import nextI18nextConfig from '../next-i18next.config';
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
@@ -12,4 +13,4 @@ function MyApp({ Component, pageProps }: AppProps) {
   );
 }
 
-export default appWithTranslation(MyApp);
+export default appWithTranslation(MyApp, nextI18nextConfig);

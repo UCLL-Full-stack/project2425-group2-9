@@ -1,34 +1,37 @@
 import React from 'react';
 import styles from '../styles/footer.module.css';
+import { useTranslation } from 'next-i18next';
 
 const Footer: React.FC = () => {
+  const { t } = useTranslation('common');
+
   return (
     <footer className={styles.footer}>
       <div className={styles.container}>
         <div className={styles.row}>
           <div className={styles.column}>
-            <h3>About Us</h3>
-            <p>Learn more about our company and values.</p>
+            <h3>{t('aboutUs')}</h3>
+            <p>{t('learnMore')}</p>
           </div>
           <div className={styles.column}>
-            <h3>Customer Service</h3>
+            <h3>{t('customerService')}</h3>
             <ul>
-              <li><a href="/contact">Contact Us</a></li>
-              <li><a href="/faq">FAQ</a></li>
-              <li><a href="/returns">Returns</a></li>
+              <li><a href="/contact">{t('contactUs')}</a></li>
+              <li><a href="/faq">{t('faq')}</a></li>
+              <li><a href="/returns">{t('returns')}</a></li>
             </ul>
           </div>
           <div className={styles.column}>
-            <h3>Follow Us</h3>
+            <h3>{t('followUs')}</h3>
             <ul className={styles.socialMedia}>
-              <li><a href="https://facebook.com" target="_blank" rel="noopener noreferrer">Facebook</a></li>
-              <li><a href="https://twitter.com" target="_blank" rel="noopener noreferrer">Twitter</a></li>
-              <li><a href="https://instagram.com" target="_blank" rel="noopener noreferrer">Instagram</a></li>
+              <li><a href="https://facebook.com" target="_blank" rel="noopener noreferrer">{t('facebook')}</a></li>
+              <li><a href="https://twitter.com" target="_blank" rel="noopener noreferrer">{t('twitter')}</a></li>
+              <li><a href="https://instagram.com" target="_blank" rel="noopener noreferrer">{t('instagram')}</a></li>
             </ul>
           </div>
         </div>
         <div className={styles.row}>
-          <p>&copy; {new Date().getFullYear()} VESO. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} VESO. {t('allRightsReserved')}</p>
         </div>
       </div>
     </footer>

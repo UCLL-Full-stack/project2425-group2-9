@@ -10,9 +10,10 @@ type Props = {
     decrementQuantity: (productName: string) => void;
     products: Array<Product>;
     clearCart: () => void;
+    totalPrice : number
 };
 
-const AddToCart: React.FC<Props> = ({ products, clearCart, cartItems = [], getProduct, incrementQuantity, decrementQuantity }: Props) => {
+const AddToCart: React.FC<Props> = ({totalPrice, cartItems = [], getProduct, incrementQuantity, decrementQuantity }: Props) => {
     const { t } = useTranslation('common');
 
     return (
@@ -46,6 +47,7 @@ const AddToCart: React.FC<Props> = ({ products, clearCart, cartItems = [], getPr
                                 <td className="px-4 py-2 border-b">{product.price} $</td>
                                 <td className="px-4 py-2 border-b">{product.unit}</td>
                                 <td className="px-4 py-2 border-b">{item.quantity}</td>
+                                <td className="py-2 px-4">${(product.price * item.quantity).toFixed(2)}</td>
                                 <td className="px-4 py-2 border-b">
                                     <button
                                         onClick={() => incrementQuantity(item.productName)}
@@ -65,6 +67,10 @@ const AddToCart: React.FC<Props> = ({ products, clearCart, cartItems = [], getPr
                     })}
                 </tbody>
             </table>
+
+            {/* <section className="mt-4">
+                <h2 className="text-xl font-bold">Total Price: ${totalPrice.toFixed(2)}</h2>
+            </section> */}
         </div>
     );
 };

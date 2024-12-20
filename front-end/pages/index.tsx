@@ -46,18 +46,11 @@ const Home: React.FC = () => {
       </Head>
       <Header />
       <main className={styles.main}>
-
-
         {welcomeMessage  && <p className={styles.guest}>{welcomeMessage}</p>}
-
         <section>
-
           <PredefinedCustomers />
-
         </section>
-        
       </main>
-
       <Footer />
     </>
   );
