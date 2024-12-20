@@ -123,6 +123,28 @@ const main = async () => {
         }
     });
 
+    const productW = await prisma.product.create({
+        data: {
+            name: "Watch",
+            price: 5,
+            unit: "piece",
+            stock: 50,
+            description: "A very nice watch.",
+            imagePath: `${resourceImagePath}watch.jpg`
+        }
+    });
+
+    const productB = await prisma.product.create({
+        data: {
+            name: "Cap",
+            price: 5,
+            unit: "piece",
+            stock: 25,
+            description: "A good cap to wear for the summer.",
+            imagePath: `${resourceImagePath}cap.jpg`
+        }
+    });
+
     const productMy = await prisma.product.create({
         data: {
             name: "Mayonnaise",

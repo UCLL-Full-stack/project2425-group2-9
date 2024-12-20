@@ -1,0 +1,16 @@
+{
+    "home": "Inicio",
+    "cart": "Carrito",
+    "products": "Productos",
+    "profile": "Perfil",
+    "login": "Iniciar sesión",
+    "logout": "Cerrar sesión",
+    "welcome": "Bienvenido, {{username}}",
+    "loginSuccess": "Inicio de sesión exitoso",
+    "loginPage": "Página de inicio de sesión",
+    "username": "Nombre de usuario",
+    "password": "Contraseña",
+    "adminAccess": "Puedes acceder a todas las partes de la aplicación.",
+    "evaluationPurpose": "¡La tabla que ves es para fines de evaluación!",
+    "guestWelcome": "¡Bienvenido, invitado! Estás limitado a solo ver los productos en nuestra tienda. Si deseas comprar con nosotros, por favor regístrate o inicia sesión."
+}

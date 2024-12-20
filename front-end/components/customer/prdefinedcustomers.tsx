@@ -1,7 +1,4 @@
-import CustomerService from "@/services/CustomerSevice"
-import { CustomerInput } from "@/types"
-import { useEffect, useState } from "react"
-import useSWR from "swr";
+import React from 'react';
 const PredefinedCustomers : React.FC = () => {
 
     // const [customers, setCustomers] = useState<CustomerInput[]| []>([])

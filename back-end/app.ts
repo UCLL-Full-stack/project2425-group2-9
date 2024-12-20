@@ -9,6 +9,7 @@ import { customerRouter } from './controller/customer.routes';
 import { cartRouter } from './controller/cart.routes';
 import { ordersRoutes } from './controller/order.routes';
 import { expressjwt } from 'express-jwt';
+import helmet from 'helmet';
 const app = express();
 dotenv.config();
 const port = process.env.APP_PORT || 3000;
@@ -16,6 +17,38 @@ const port = process.env.APP_PORT || 3000;
 app.use(cors({ origin: 'http://localhost:8080' }));
 app.use(bodyParser.json());
 
+app.use(helmet.contentSecurityPolicy({
+    directives : {
+        connectSrc :  ["self" , "https://api.ucll.be"],
+        objectSrc: ["'none'"], upgradeInsecureRequests: [],
+        scriptSrc: ["self"]
+    }
+}))
+
+app.use(helmet.frameguard()); // Prevent clickjacking
+app.use(helmet.xssFilter()); // Prevent XSS attacks
+app.use(helmet.noSniff()); // Prevent MIME type sniffing
+app.use(
+    helmet({
+        contentSecurityPolicy: false, // Disable CSP
+        xDownloadOptions: false, // Disable X-Download-Options
+    })
+);
+
+app.use(
+    helmet.hsts({
+      // 60 days
+      maxAge: 86400,
+      // removing the "includeSubDomains" option
+      includeSubDomains: false,
+    })
+   )
+   // setting "Referrer-Policy" to "no-referrer"
+app.use(
+    helmet.referrerPolicy({
+      policy: "no-referrer",
+    })
+  )
 //add express-jwt middleware function here
 app.use(
     expressjwt({

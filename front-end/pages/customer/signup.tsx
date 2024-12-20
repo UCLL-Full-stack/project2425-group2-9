@@ -2,6 +2,7 @@ import UserSignUpForm from "@/components/customer/customerSignupForm";
 import Head from "next/head";
 import Header from '@/components/header';
 import Footer from "@/components/footer";
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 
 const signup: React.FC = () => {
     return (
@@ -20,5 +21,15 @@ const signup: React.FC = () => {
         </>
     );
 };
+
+export const getServerSideProps = async (context: { locale: any; }) => {
+    const { locale } = context;
+  
+    return {
+      props: {
+        ...(await serverSideTranslations(locale ?? "en", ["common"])),
+      },
+    };
+  };
 
 export default signup;

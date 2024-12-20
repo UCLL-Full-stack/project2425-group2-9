@@ -39,8 +39,7 @@ interface CustomerInput {
 interface OrderInput {
     cartId? : string;
     date?: Date;
-    customerId? : string,
-    totalPrice : number
+    customerId? : string
 }
 interface CartContainsProductInput {
     cartId: string; // Foreign key to Cart

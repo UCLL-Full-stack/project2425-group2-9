@@ -5,6 +5,7 @@ import Product from "@/components/products/product";
 import { useState, useEffect } from "react";
 import ProductService from "@/services/ProductService";
 import Footer from "@/components/footer";
+import React from 'react';
 
 const Home: React.FC = () => {
   const [products, setProducts] = useState<Array<Product>>([]);
@@ -36,7 +37,7 @@ const Home: React.FC = () => {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         {/* <link rel="icon" href="/logo.ico" /> */}
       </Head>
-      <Header />
+      <Header  />
       <main className={styles.main}>
         <section className={styles.products}>
           {

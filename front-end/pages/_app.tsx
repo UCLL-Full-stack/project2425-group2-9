@@ -1,8 +1,15 @@
+import React from 'react';
+import '@/styles/globals.css';
+import type { AppProps } from 'next/app';
+import { CartProvider } from '../components/cartComponentProps';
+import { appWithTranslation } from 'next-i18next';
 
-// These styles apply to every route in the application
-import '@/styles/globals.css'
-import type { AppProps } from 'next/app'
-
-export default function App({ Component, pageProps }: AppProps) {
-  return <Component {...pageProps} />;
+function MyApp({ Component, pageProps }: AppProps) {
+  return (
+    <CartProvider>
+      <Component {...pageProps} />
+    </CartProvider>
+  );
 }
+
+export default appWithTranslation(MyApp);

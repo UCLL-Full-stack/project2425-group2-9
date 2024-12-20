@@ -4,7 +4,7 @@ import { OrderInput } from "../types"
 import database from "../util/database"
 
 
-const newOrder = async ( {cartId, customerId} :OrderInput) : Promise<{order : Order, message :string} | null> => {
+const newOrder = async ( {cartId, customerId} :OrderInput) : Promise<string| null> => {
 
     if (!cartId || !customerId){
         throw new Error("order cannot be created")
@@ -49,14 +49,12 @@ const newOrder = async ( {cartId, customerId} :OrderInput) : Promise<{order : Or
     
         if (!newOrder) return null
            
-        return { order : Order.from(newOrder),
-            message : "Order placed successfully. Thank you for shopping with us."
-        }
+        return "Order placed successfully. Thank you for shopping with us."
 
     }
     catch(error){
         console.error(error)
-        throw new Error("application error. see server logs for details."+error)
+        throw new Error(`${error}`)
     }
     
 

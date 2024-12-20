@@ -47,25 +47,7 @@ export interface CartDetails {
   totalPrice: number
 }
 
-export interface shopping {
-  id: string;
-  totalPrice: number;
-  isActive: boolean;
-  customerId: string;
-  product: Product;
-}
-export interface Order {
-  id?: string;
-  cartId?: string;
-  date: Date;
-  customerId: string;
-  totalPrice: number;
-  cart : shopping
-}
 
 
 
-export interface OrderResponse {
-  order: Order;
-  message: string;
-}
+

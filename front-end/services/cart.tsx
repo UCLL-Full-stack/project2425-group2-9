@@ -50,6 +50,10 @@ export const fetchCartDetailsByCustomerId = async ({customerId} : {customerId: s
 };
 
 
+
+
+
+
 const CartService = {
     addProductToCart, 
     fetchCartDetailsByCustomerId,

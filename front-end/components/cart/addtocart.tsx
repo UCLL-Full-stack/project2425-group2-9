@@ -1,6 +1,7 @@
 import React from 'react';
 import Image from 'next/image';
 import type { CartItem, Product } from '../../types';
+import { useTranslation } from 'next-i18next';
 
 type Props = {
     cartItems: Array<CartItem>;
@@ -9,22 +10,22 @@ type Props = {
     decrementQuantity: (productName: string) => void;
     products: Array<Product>;
     clearCart: () => void;
-    deleteCartItem : (productName : string) => void
-    
 };
 
-const AddToCart: React.FC<Props> = ({cartItems = [], getProduct, incrementQuantity, decrementQuantity , deleteCartItem,}: Props) => {
+const AddToCart: React.FC<Props> = ({ products, clearCart, cartItems = [], getProduct, incrementQuantity, decrementQuantity }: Props) => {
+    const { t } = useTranslation('common');
+
     return (
         <div className="overflow-x-auto">
             <table className="min-w-full bg-white border border-gray-200">
                 <thead>
                     <tr>
-                        <th className="px-4 py-2 border-b">Image</th>
-                        <th className="px-4 py-2 border-b">Product Name</th>
-                        <th className="px-4 py-2 border-b">Price</th>
-                        <th className="px-4 py-2 border-b">Unit</th>
-                        <th className="px-4 py-2 border-b">Quantity</th>
-                        <th className="px-4 py-2 border-b">Actions</th>
+                        <th className="px-4 py-2 border-b">{t('image')}</th>
+                        <th className="px-4 py-2 border-b">{t('productName')}</th>
+                        <th className="px-4 py-2 border-b">{t('price')}</th>
+                        <th className="px-4 py-2 border-b">{t('unit')}</th>
+                        <th className="px-4 py-2 border-b">{t('quantity')}</th>
+                        <th className="px-4 py-2 border-b">{t('actions')}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -58,21 +59,12 @@ const AddToCart: React.FC<Props> = ({cartItems = [], getProduct, incrementQuanti
                                     >
                                         -
                                     </button>
-
-                                    <button
-                                        onClick={() => deleteCartItem(item.productName)}
-                                        className="px-2 py-1 ml-2 bg-gray-500 text-white rounded hover:bg-gray-600"
-                                    >
-                                        Delete
-                                    </button>
                                 </td>
                             </tr>
                         ) : null;
                     })}
                 </tbody>
             </table>
-
-            
         </div>
     );
 };

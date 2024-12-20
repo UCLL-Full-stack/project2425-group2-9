@@ -5,7 +5,7 @@ import { Customer } from "../model/customer";
 import { Order } from "../model/order";
 import { Cart } from "../model/cart";
 
-const createAnOrder = async (customerId: string): Promise<{ order: Order, message: string } | null> => {
+const createAnOrder = async (customerId: string): Promise<string | null> => {
     if (!customerId) {
         throw new Error("Customer ID is required");
     }
@@ -21,11 +21,11 @@ const createAnOrder = async (customerId: string): Promise<{ order: Order, messag
             throw new Error("No carts found for customer");
         }
 
-        if (cart.getIsActive() === false) {
-            throw new Error("Order cannot be placed to inactive cart");
+        if (cart.getIsActive() === false || cart.getTotalPrice() < 1) {
+            throw new Error("Order cannot be placed on an empty cart. please add product to able to order.");
         }
 
-        const placeOrder: { order: Order, message: string } | null = await orderDb.newOrder({ cartId: cart.getId(), customerId });
+        const placeOrder: string | null = await orderDb.newOrder({ cartId: cart.getId(), customerId });
 
         if (!placeOrder) {
             throw new Error('Failed to place an order. Please check and try again.');
@@ -42,13 +42,10 @@ const createAnOrder = async (customerId: string): Promise<{ order: Order, messag
             throw new Error("Failed to assign a new cart for customer");
         }
 
-        return {
-            order: placeOrder.order,
-            message: "Order placed successfully. Thank you for shopping with us."
-        };
+        return "Order placed successfully. Thank you for shopping with us."
     } catch (error) {
         console.error(error);
-        throw new Error("Application error: " + error);
+        throw new Error(`${error}`);
     }
 };
 

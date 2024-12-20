@@ -2,6 +2,7 @@ import ProductService from "@/services/ProductService";
 import { Product } from "@/types";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import React from 'react';
 
 const ProductInfo: React.FC = () => {
     const [product, setProduct] = useState<Product | null>(null);

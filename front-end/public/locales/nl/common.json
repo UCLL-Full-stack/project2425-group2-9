@@ -1,0 +1,16 @@
+{
+    "home": "Home",
+    "cart": "Winkelwagen",
+    "products": "Producten",
+    "profile": "Profiel",
+    "login": "Inloggen",
+    "logout": "Uitloggen",
+    "welcome": "Welkom, {{username}}",
+    "loginSuccess": "Succesvol ingelogd",
+    "loginPage": "Inlogpagina",
+    "username": "Gebruikersnaam",
+    "password": "Wachtwoord",
+    "adminAccess": "Je hebt toegang tot alle delen van de applicatie.",
+    "evaluationPurpose": "De tabel die je ziet is voor evaluatiedoeleinden!",
+    "guestWelcome": "Welkom, gast! Je bent beperkt tot het bekijken van de producten in onze winkel. Als je bij ons wilt winkelen, registreer je dan of log in."
+}

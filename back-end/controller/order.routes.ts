@@ -61,9 +61,9 @@ const ordersRoutes = express.Router();
 ordersRoutes.post('/:customerId', async (req:Request, res:Response, next:NextFunction) => {
 
     try {
-        const customerId: string  = req.params.customerId
+        const customerId: string  = String(req.params.customerId)
 
-        const result : {order : Order , message : string} | null = await orderService.createAnOrder(customerId)
+        const result : string | null = await orderService.createAnOrder(customerId)
         return res.status(200).json(result)
     
     }

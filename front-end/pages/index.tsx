@@ -1,12 +1,21 @@
+import React from 'react';
 import Head from 'next/head';
-import Image from 'next/image';
 import styles from '@styles/home.module.css';
 import Header from '@/components/header';
 import Footer from '@/components/footer';
 import { useEffect, useState } from 'react';
 import PredefinedCustomers from '@/components/customer/prdefinedcustomers';
+import { useTranslation } from 'next-i18next';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+
+export const getStaticProps = async ({ locale }: { locale: string }) => ({
+    props: {
+        ...(await serverSideTranslations(locale, ['common'])),
+    },
+});
 
 const Home: React.FC = () => {
+  const { t } = useTranslation('common');
   const [role, setRole] = useState('GUEST');
   const [welcomeMessage, setWelcomeMessage] = useState<string>("")
   useEffect(() => {
@@ -15,20 +24,18 @@ const Home: React.FC = () => {
       const customer = JSON.parse(loggedInCustomer);
       setRole(customer.role);
       if (customer.role === "CUSTOMER"){
-        setWelcomeMessage(`Welcome back, ${customer.role}!`);
+        setWelcomeMessage(t('welcome', { username: customer.role }));
       } else if (customer.role === "ADMIN") {
-        setWelcomeMessage(`Welcome ${customer.role}! You can access all parts of the application.`);
+        setWelcomeMessage(t('welcome', { username: customer.role }) + " " + t('adminAccess'));
       }else {
-        const text = 'The table you see is for Evaluation Purpose!'
-        setWelcomeMessage(`Welcome, guest! You are limited to just seeing the products in our shop. 
-          If you wish to shop with us, please go ahead and signup or login.
-           ${text}`);
+        const text = t('evaluationPurpose');
+        setWelcomeMessage(t('guestWelcome') + " " + text);
       }
     } else {
       sessionStorage.setItem('loggedInCustomer', JSON.stringify({ role: 'GUEST' }));
       loggedInCustomer = 'GUEST';
     }
-  }, []);
+  }, [t]);
   return (
     <>
       <Head>

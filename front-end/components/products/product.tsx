@@ -5,13 +5,17 @@ import styles from '@styles/products.module.css';
 import { useRouter } from 'next/router';
 import ProductService from '@/services/ProductService';
 import CartService from '@/services/cart';
+import React from 'react';
+import { useTranslation } from 'next-i18next';
 
 type Props = {
     products: Array<Product>;
 };
 
 const Product: React.FC<Props> = ({ products }: Props) => {
+    const { t } = useTranslation('common');
     const [cartItems, setCartItems] = useState<Array<CartItem>>([]);
+    const [statusMessage, setStatusMessage] = useState<string | null>(null);
     const router = useRouter();
 
     const dynamicRoute = (productName: string) => {
@@ -36,7 +40,13 @@ const Product: React.FC<Props> = ({ products }: Props) => {
         e.preventDefault();
         const productName = e.currentTarget.getAttribute('data-product-name');
         if (!productName) {
-            alert('Product name not found');
+            setStatusMessage(t('productNameNotFound'));
+            return;
+        }
+
+        const loggedInCustomer = sessionStorage.getItem('loggedInCustomer');
+        if (!loggedInCustomer) {
+            setStatusMessage(t('pleaseSignInToAddProductsToTheCart'));
             return;
         }
 
@@ -50,45 +60,33 @@ const Product: React.FC<Props> = ({ products }: Props) => {
             // Call the backend service to add the product to the cart
             const customerId = sessionStorage.getItem('loggedInCustomer') ? JSON.parse(sessionStorage.getItem('loggedInCustomer')!).id : null;
             if (!customerId) {
-                alert('Please log in to add products to your cart');
+                alert(t('pleaseLogInToAddProductsToYourCart'));
                 return;
             }
 
             const cartResponse = await CartService.addProductToCart({ customerId, productName });
             if (cartResponse.ok) {
-                alert('Product added to cart successfully');
+                setStatusMessage(t('productAddedToCartSuccessfully'));
                 addToCart(product);
             } else {
-                alert('Failed to add product to cart');
+                alert(t('failedToAddProductToCart'));
             }
         } catch (error) {
-            console.error("Failed to fetch product:", error);
-            alert('Failed to add product to cart');
+            
+            if (error instanceof Error) {
+                setStatusMessage(`${error}`);
+            } else {
+                setStatusMessage(t('anUnknownErrorOccurred'));
+            }
         }
     };
 
-    const incrementQuantity = (productName: string) => {
-        setCartItems(prevItems =>
-            prevItems.map(item =>
-                item.productName === productName ? { ...item, quantity: (item.quantity ?? 0) + 1 } : item
-            )
-        );
-    };
-
-    const decrementQuantity = (productName: string) => {
-        setCartItems(prevItems =>
-            prevItems.map(item =>
-                item.productName === productName ? { ...item, quantity: Math.max((item.quantity ?? 1) - 1, 0) } : item
-            )
-        );
-    };
-
-    const clearCart = () => {
-        setCartItems([]);
-    };
 
     return (
         <>
+         <section>
+         {statusMessage && <div className="mb-4 p-4 bg-blue-100 text-blue-700 border border-blue-400 rounded">{statusMessage}</div>}
+         </section>
             {products.map((product, index) => (
                 <article key={index}>
                     <Image
@@ -102,9 +100,14 @@ const Product: React.FC<Props> = ({ products }: Props) => {
                     <div>
                         <p>{product.name}</p>
                         <p>{product.price} $ / {product.unit}</p>
-                        <button data-product-name={product.name} onClick={addToCartBtn}>Add to cart</button>
-                        <p hidden>Stock: {product.stock}</p>
-                        <p hidden>Quantity: <span>0</span></p>
+                        <button data-product-name={product.name} 
+                        onClick={addToCartBtn}
+                        className='px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600'
+                        >
+                            {t('addToCart')}
+                        </button>
+                        <p hidden>{t('stock')}: {product.stock}</p>
+                        <p hidden>{t('quantity')}: <span>0</span></p>
                     </div>
                 </article>
             ))}
