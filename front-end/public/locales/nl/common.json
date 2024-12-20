@@ -6,7 +6,7 @@
     "login": "Inloggen",
     "logout": "Uitloggen",
     "welcome": "Welkom, {{username}}",
-    "loginSuccess": "Inloggen succesvol",
+    "loginSuccess": "Inloggen succesvol. Doorverwijzen naar de startpagina.",
     "loginPage": "Inlogpagina",
     "username": "Gebruikersnaam",
     "password": "Wachtwoord",
@@ -41,5 +41,10 @@
   "facebook": "Facebook",
   "twitter": "Twitter",
   "instagram": "Instagram",
-  "allRightsReserved": "Alle rechten voorbehouden."
+  "allRightsReserved": "Alle rechten voorbehouden.",
+  "cart" :{
+    "clearCart": "Winkelwagen leegmaken",
+    "yourCartIsEmpty": "Je winkelwagen is leeg",
+    "placeOrder": "Bestelling plaatsen"
+  }
   }

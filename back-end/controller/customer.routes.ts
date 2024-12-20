@@ -37,7 +37,7 @@ const customerRouter = express.Router();
  *             schema:
  *               type: string
  */
-customerRouter.delete('/:customerId/cart/:productName', authMiddleware, async (req: Request, res: Response, next: NextFunction) => {
+customerRouter.delete('/:customerId/cart/:productName', async (req: Request, res: Response, next: NextFunction) => {
     try {
         const customerId: string = req.params.id
         const productName: string = req.params.productName

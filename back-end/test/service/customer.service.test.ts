@@ -28,7 +28,8 @@ const cart: Cart = new Cart({
     id: "cart-id",
     totalPrice: 100,
     customerId: "some-id",
-    customer: customer
+    customer: customer,
+    isActive : true
 });
 
 // SETUP -----------------------------------

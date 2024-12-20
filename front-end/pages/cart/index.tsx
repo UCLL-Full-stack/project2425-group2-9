@@ -10,13 +10,18 @@ import CustomerService from "@/services/CustomerSevice";
 import { useRouter } from "next/router";
 import { useCart } from '../../components/cartComponentProps';
 import { useTranslation } from 'next-i18next';
+import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 
 const Cart: React.FC = () => {
-    const { t } = useTranslation('common');
+    const { t } = useTranslation();
     const { cartItems, setCartItems, updateTotalItems } = useCart();
     const [products, setProducts] = useState<Array<Product>>([]);
     const [customerId, setCustomerId] = useState<string | null>(null);
     const [orderMessage, setOrderMessage] = useState<string | null>(null);
+    const [isPlacingOrder, setIsPlacingOrder] = useState<boolean>(false);
+    const [totalPrice, setTotalPrice] = useState<number>(0);
+    const [error, setError] = useState<string | null>(null)
+
 
     const router = useRouter();
 
@@ -40,10 +45,11 @@ const Cart: React.FC = () => {
             const cartDetails: CartDetails[] = await CartService.fetchCartDetailsByCustomerId({ customerId: customerId! });
             if (cartDetails.length > 0) {
                 setCartItems(cartDetails[0].product);
+                setTotalPrice(cartDetails[0].totalPrice);
                 updateTotalItems();
             }
         } catch (error) {
-            console.error('Failed to fetch cart details:', error);
+            setError(`${error}`);
         }
     };
 
@@ -60,20 +66,31 @@ const Cart: React.FC = () => {
     const placeAnOrder = async () => {
         if (!customerId) return;
 
+        setIsPlacingOrder(true);
+
         try {
             const res = await CustomerService.placeAnOrder(customerId);
             const message = await res.text();
             if (res.ok) {
+                clearCart()
                 router.push({
                     pathname: '/cart/order',
                     query: { orderMessage: message }
                 });
             } else {
                 setOrderMessage(message);
+                setTimeout(() => {
+                    setOrderMessage(null);
+                    setIsPlacingOrder(false);
+                }, 4000); 
             }
         } catch (error) {
             console.error(error);
             setOrderMessage(`${error}`);
+            setTimeout(() => {
+                setOrderMessage(null);
+                setIsPlacingOrder(false);
+            }, 4000); 
         }
     };
 
@@ -107,45 +124,53 @@ const Cart: React.FC = () => {
     };
 
     const decrementQuantity = (productName: string) => {
+
         setCartItems(prevItems =>
             prevItems.map(item =>
                 item.productName === productName ? { ...item, quantity: Math.max((item.quantity ?? 0) - 1, 0) } : item
             )
         );
+
         updateTotalItems();
     };
 
+
     const clearCart = async () => {
+
         if (!customerId) return;
         try {
-            await CustomerService.clearCart(customerId);
+            
+            if (cartItems.length === 0)
+                setOrderMessage('you can not clear an empty cart');
+                setTimeout(() => setOrderMessage(null), 2000);
+            // await CustomerService.clearCart(customerId);
             setCartItems([]);
             updateTotalItems();
+
         } catch (error) {
-            console.error('Failed to clear cart:', error);
+            setOrderMessage(`${error}`)
+            setTimeout(() => setOrderMessage(null), 2000)
         }
     };
 
     const deleteProduct = async (productName: string) => {
+
         if (!customerId) return;
         try {
+            
             await CustomerService.deleteSingleItem({ customerId, productName });
             setCartItems(prevItems => prevItems.filter(item => item.productName !== productName));
             updateTotalItems();
+
         } catch (error) {
             console.error('Failed to delete product from cart:', error);
         }
     };
 
-    // Highlight current tab in header.
-    const highlightCurrentTabInMenu = () => {
-        const cartTabElement = document.querySelector("header nav a:nth-child(2)");
-        if (cartTabElement) cartTabElement.setAttribute("style", "background-color: green;");
-    };
+    
 
     useEffect(() => {
         getProducts();
-        highlightCurrentTabInMenu();
     }, []);
 
     return (
@@ -153,7 +178,7 @@ const Cart: React.FC = () => {
             <Header />
 
             <main className={styles.main}>
-                <button onClick={clearCart}>{t('clearCart')}</button>
+                {error && <p className="text-red-800">{error}</p>}
                 <section className={styles.products}>
                     {cartItems.length > 0 ? (
                         <AddToCart
@@ -164,13 +189,18 @@ const Cart: React.FC = () => {
                             products={products}
                             clearCart={clearCart}
                             deleteCartItem={deleteProduct}
+                            totalPrice={totalPrice}
                         />
-                    ) : <p>{t('yourCartIsEmpty')}</p>}
+                    ) : <p>Your Cart  is currently empty. Add items to fill your cart</p>}
                 </section>
-                <section>
-                    <div className="px-2 py-1 ml-2 bg-green-300 text-white rounded hover:bg-gray-600">
-                        <button onClick={placeAnOrder}>{t('placeOrder')}</button>
-                        {orderMessage && <p>{orderMessage}</p>}
+                <section className={`${styles.flex} mt-4`}>
+                <div className="flex space-x-4">
+                        <button onClick={clearCart} className="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600">
+                            {t('clearCart')}
+                        </button>
+                        <button onClick={placeAnOrder} disabled={isPlacingOrder} className="px-2 py-1 bg-green-500 text-white rounded hover:bg-green-600">
+                            {isPlacingOrder ? t('placingOrder') : t('placeOrder')}
+                        </button>
                     </div>
                 </section>
             </main>
@@ -178,5 +208,15 @@ const Cart: React.FC = () => {
         </>
     );
 };
+
+export const getServerSideProps = async (context: { locale: any; }) => {
+    const { locale } = context;
+  
+    return {
+      props: {
+        ...(await serverSideTranslations(locale ?? "en", ["common"])),
+      },
+    };
+  };
 
 export default Cart;

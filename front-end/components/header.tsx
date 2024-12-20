@@ -6,21 +6,23 @@ import { useCart } from '../components/cartComponentProps';
 import styles from '../styles/header.module.css';
 import { useTranslation } from 'next-i18next';
 import Language from './language/langage';
-
 const Header: React.FC = () => {
     const router = useRouter();
     const { totalItems } = useCart();
-    const [loggedInUser, setLoggedInUser] = useState<{ username: string; role: string } | null>(null);
     const { t } = useTranslation();
+    const [role, setRole] = useState<string>('GUEST');
+
+
+    const [loggedInUser, setLoggedInUser] = useState<{ username: string; role: string } | null>(null);
+   
 
     useEffect(() => {
         const user = sessionStorage.getItem("loggedInCustomer");
         setLoggedInUser(user ? JSON.parse(user) : null);
-    }, []);
+    }, [t]);
 
     const handleClick = () => {
         sessionStorage.removeItem('loggedInCustomer');
-        setLoggedInUser({ username: '', role: 'GUEST' });
         router.push('/customer');
     };
 
@@ -60,8 +62,7 @@ const Header: React.FC = () => {
                             {t('welcome', { username: loggedInUser.username })}
                         </div>
                     )}
-
-                    <Language />
+                         <Language />
                 </nav>
             </header>
         </>

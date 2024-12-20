@@ -6,7 +6,7 @@
   "login": "Login",
   "logout": "Logout",
   "welcome": "Welcome, {{username}}",
-  "loginSuccess": "Login successful",
+  "loginSuccess": "Login successful Redirecting to home page",
   "loginPage": "Login page",
   "username": "Username",
   "password": "Password",
@@ -42,5 +42,12 @@
   "facebook": "Facebook",
   "twitter": "Twitter",
   "instagram": "Instagram",
-  "allRightsReserved": "All rights reserved."
+  "allRightsReserved": "All rights reserved.",
+ "cart" :
+  {
+    "clearCart": "Clear Cart",
+    "yourCartIsEmpty": "Your cart is empty",
+    "placeOrder": "Place Order"
+  }
 }
+

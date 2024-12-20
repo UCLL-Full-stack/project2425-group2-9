@@ -9,6 +9,7 @@ import { useTranslation } from 'next-i18next';
 const Redirect: React.FC = () => {
     const { t } = useTranslation('common');
     const router = useRouter();
+   
 
     const handleSignUpClick = () => {
         router.push('/customer/signup');
@@ -18,6 +19,7 @@ const Redirect: React.FC = () => {
         router.push('/customer/login');
     };
 
+   
     return (
         <>
             <Head>
@@ -34,15 +36,24 @@ const Redirect: React.FC = () => {
                             {t('signUp')}
                         </button>
                     </div>
+                    <div>
+                        <p>
+                            Do you already have an account?
+                        </p>
+                    </div>
                     <div className={styles.login}>
+                        
                         <button
-                            className="text-white bg-blue-700 hover:bg-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+                            className="text-white bg-green-400 hover:bg-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
                             onClick={handleLoginClick}
                         >
                             {t('login')}
                         </button>
                     </div>
+                    
                 </div>
+                
+                    
             </main>
             <Footer />
         </>

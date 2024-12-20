@@ -53,13 +53,13 @@ const addProductToCart = async ({ customerId, productName }: AddToCartInput): Pr
         return cart;
     } catch (error) {
         console.error(error);
-        throw new Error("Application error. See server logs." + error);
+        throw new Error(`${error}`);
     }
 };
 
 
 //admin
-const getAllCartsAvailable = async ({}): Promise<Cart[] | null> => {
+const getAllCartsAvailable = async (): Promise<Cart[] | null> => {
     try {
         const returnAllCartsCreated = await cartDb.returnAllCartsAvailable()
     // const singleCart = await cartDb.returnAllCartsAvailable().then((carts)=> carts?.find((cart) => cart))
@@ -119,7 +119,7 @@ const getCartContainsProductByCartId = async ( {cartId}: {cartId :string} ): Pro
                 totalPrice
             }];
         } catch (error) {
-            throw new Error('cart has no products');
+            throw new Error(`${error}`);
         }
     };
     

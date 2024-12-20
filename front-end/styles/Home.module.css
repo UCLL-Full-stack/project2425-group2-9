@@ -6,8 +6,6 @@
   min-height: 100vh;
 }
 
-
-
 .main h1 {
   display: inline-block;
   margin-left: 1rem;
@@ -22,11 +20,11 @@
 .login {
   margin: 1rem;
 }
-.guest {
+ .guest {
   margin: 3rem;
   color: blue;
-  font-size: larger;
-}
+  /* font-size: larger; */
+} 
 .description {
   /* margin-top: 2rem; */
   margin: 0;
@@ -36,6 +34,7 @@
   z-index: 2;
   font-family: var(--font-mono);
 }
+
 
 .description a {
   display: flex;
@@ -58,6 +57,12 @@
 .code {
   font-weight: 700;
   font-family: var(--font-mono);
+}
+
+.flex{
+  display: flex;
+  flex-direction: row;
+  justify-self:center;
 }
 
 .grid {

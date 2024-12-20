@@ -5,7 +5,7 @@ import { Product } from "../../model/product";
 const cartId: string = "some-string";
 const productName: string = "Bananas";
 const quantity: number = 0;
-const cart: Cart = new Cart({ id: "some-string", totalPrice: 0 });
+const cart: Cart = new Cart({ id: "some-string", totalPrice: 0 , isActive : true});
 const product: Product = new Product({
     name: "bananas",
     price: 1.0,

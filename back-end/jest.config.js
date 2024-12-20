@@ -1,13 +1,7 @@
 /** @type {import('ts-jest').JestConfigWithTsJest} **/
 module.exports = {
-  testEnvironment: "jest-environment-jsdom",
+  testEnvironment: "node",
   transform: {
-    "^.+\\.(ts|tsx)$": "babel-jest"
+    "^.+.tsx?$": ["ts-jest",{}],
   },
-  moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json", "node"],
-  setupFilesAfterEnv: ["<rootDir>/node_modules/@testing-library/jest-dom/extend-expect"],
-  moduleNameMapper: {
-    "\\.(css|less|scss|sass)$": "identity-obj-proxy"
-  }
-  
 };

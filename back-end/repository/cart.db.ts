@@ -55,7 +55,7 @@ const returnAllCartsAvailable = async (): Promise<Cart[] | null> => {
    }
 }
 
-const createNewCartForCustomer = async (cart : Cart) : Promise<Cart> =>{
+const createNewCartForCustomer = async (cart : Cart) : Promise<Cart | null> =>{
 
     try {
         //creating a new cart for an existing customer.
@@ -68,7 +68,7 @@ const createNewCartForCustomer = async (cart : Cart) : Promise<Cart> =>{
             
         })
 
-        if (!cartPrisma) throw new Error("cart was not created.")
+        if (!cartPrisma) return null
 
         return Cart.from(cartPrisma)
     }

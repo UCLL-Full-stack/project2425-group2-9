@@ -6,7 +6,7 @@
   "login": "Connexion",
   "logout": "Déconnexion",
   "welcome": "Bienvenue, {{username}}",
-  "loginSuccess": "Connexion réussie",
+  "loginSuccess": "Connexion réussie. Redirection vers la page d'accueil.",
   "loginPage": "Page de connexion",
   "username": "Nom d'utilisateur",
   "password": "Mot de passe",
@@ -41,5 +41,8 @@
   "facebook": "Facebook",
   "twitter": "Twitter",
   "instagram": "Instagram",
-  "allRightsReserved": "Tous droits réservés."
+  "allRightsReserved": "Tous droits réservés.",
+  "clearCart": "Vider le panier",
+  "yourCartIsEmpty": "Votre panier est vide",
+  "placeOrder": "Passer la commande"
 }

@@ -6,7 +6,7 @@
     "login": "Iniciar sesión",
     "logout": "Cerrar sesión",
     "welcome": "Bienvenido, {{username}}",
-    "loginSuccess": "Inicio de sesión exitoso",
+    "loginSuccess": "Inicio de sesión exitoso. Redirigiendo a la página de inicio.",
     "loginPage": "Página de inicio de sesión",
     "username": "Nombre de usuario",
     "password": "Contraseña",
@@ -41,5 +41,11 @@
   "facebook": "Facebook",
   "twitter": "Twitter",
   "instagram": "Instagram",
-  "allRightsReserved": "Todos los derechos reservados."
+  "allRightsReserved": "Todos los derechos reservados.",
+  "cart":{
+    "clearCart": "Vaciar carrito",
+    "yourCartIsEmpty": "Tu carrito está vacío",
+    "placeOrder": "Realizar pedido"
+  }
+  
   }

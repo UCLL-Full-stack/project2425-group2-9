@@ -11,9 +11,21 @@
 // //   // }
 
 // // };
+// module.exports = {
+//     testEnvironment: 'jsdom',
+//     transform: {
+//         '\\.[jt]sx?$': 'esbuild-jest',
+//     },
+//     // testMatch: [
+//     //     // '<rootDir>/src/**/*.test.js',
+//     //     // '<rootDir>/src/**/*.test.jsx',
+//     //     '<rootDir>/tests/*.tsx'
+//     // ],
+// }
+
 module.exports = {
     testEnvironment: 'jsdom',
     transform: {
-        '\\.[jt]sx?$': 'esbuild-jest',
+    '\\.[jt]sx?$': 'esbuild-jest',
     },
-}
+  }
