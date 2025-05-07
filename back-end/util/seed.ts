@@ -1,19 +1,20 @@
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcrypt';
 import dotenv from 'dotenv';
+dotenv.config({ path: '../../.env' });
 
-dotenv.config();
-
+// dotenv.config();
+console.log('DATABASE_URL:', process.env.DATABASE_URL);
 const prisma = new PrismaClient();
 const resourceImagePath: string = "/images/";
 
 const main = async () => {
     // Delete existing records
-    await prisma.cartContainsProduct.deleteMany();
-    await prisma.product.deleteMany();
-    await prisma.order.deleteMany();
-    await prisma.cart.deleteMany();
-    await prisma.customer.deleteMany();
+    // await prisma.cartContainsProduct.deleteMany();
+    // await prisma.product.deleteMany();
+    // await prisma.order.deleteMany();
+    // await prisma.cart.deleteMany();
+    // await prisma.customer.deleteMany();
 
     const returnAllItemsInCart = async (cartId: string) => {
         return await prisma.cartContainsProduct.findMany({

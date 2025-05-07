@@ -6,7 +6,8 @@
     "license": "ISC",
     "main": "app.ts",
     "prisma": {
-        "schema": "repository/prisma/schema.prisma"
+        "schema": "repository/prisma/schema.prisma",
+        "seed": "ts-node ./util/seed.ts"
     },
     "scripts": {
         "test": "jest",
@@ -21,6 +22,7 @@
     },
     "dependencies": {
         "@prisma/client": "^6.1.0",
+        "axios": "^1.9.0",
         "bcrypt": "^5.1.1",
         "bcryptjs": "^2.4.3",
         "body-parser": "^1.20.1",
@@ -35,7 +37,8 @@
         "multer": "^1.4.5-lts.1",
         "swagger-jsdoc": "^6.2.0",
         "swagger-ui-express": "^4.6.0",
-        "uuid": "^11.0.3"
+        "uuid": "^11.0.3",
+        "winston": "^3.17.0"
     },
     "devDependencies": {
         "@babel/core": "^7.26.0",
@@ -47,14 +50,16 @@
         "@types/jest": "^29.5.14",
         "@types/jsonwebtoken": "^9.0.1",
         "@types/multer": "^1.4.12",
-        "@types/node": "^18.0.0",
+        "@types/node": "^18.19.97",
         "@types/swagger-jsdoc": "^6.0.4",
         "@types/swagger-ui-express": "^4.1.6",
+        "eslint": "^9.26.0",
+        "eslint-plugin-security": "^3.0.1",
         "jest": "^29.7.0",
         "nodemon": "^2.0.0",
         "prisma": "^6.1.0",
         "ts-jest": "^29.2.5",
-        "ts-node": "^10.9.0",
-        "typescript": "^4.9.0"
+        "ts-node": "^10.9.2",
+        "typescript": "^4.9.5"
     }
 }

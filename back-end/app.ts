@@ -10,6 +10,11 @@ import { cartRouter } from './controller/cart.routes';
 import { ordersRoutes } from './controller/order.routes';
 import { expressjwt } from 'express-jwt';
 import helmet from 'helmet';
+import * as fs from 'fs';
+import * as path from 'path';
+import logger from './util/logger';
+
+const publicKey = fs.readFileSync(path.resolve(process.cwd(), process.env.JWT_PUBLIC_KEY || './keys/public.key'), 'utf8');
 const app = express();
 dotenv.config();
 const port = process.env.APP_PORT || 3000;
@@ -52,8 +57,8 @@ app.use(
 //add express-jwt middleware function here
 app.use(
     expressjwt({
-        secret: process.env.JWT_SECRET || 'default_secret',
-        algorithms: ['HS256'],
+        secret: publicKey,
+        algorithms: ['RS256'],
         requestProperty: 'customer'
     }).unless({
         path: [
@@ -94,18 +99,23 @@ const swaggerOpts = {
 const swaggerSpec = swaggerJSDoc(swaggerOpts);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
-//generically handles all applications correctly => no need to explicitly write this in each controller
+
+
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
     if (err.name === 'UnauthorizedError') {
-        res.status(400).json({ status: 'unauthorized', message: err.message });
+        logger.error(`UnauthorizedError: ${err.message}`);
+        res.status(401).json({ status: 'unauthorized', message: 'Invalid or missing token.' });
     } else if (err.name === 'ApplicationError') {
+        logger.error(`ApplicationError: ${err.message}`);
         res.status(400).json({ status: 'domain error', message: err.message });
+    } else if (err.name === 'ValidationError') {
+        logger.error(`ValidationError: ${err.message}`);
+        res.status(422).json({ status: 'validation error', message: err.message });
     } else {
-        res.status(400).json({ status: 'application error', message: err.message });
+        logger.error(`Unexpected error: ${err.message}`, { stack: err.stack });
+        res.status(500).json({ status: 'error', message: 'An unexpected error occurred. Please try again later.' });
     }
 });
-
-
 app.listen(port || 3000, () => {
     console.log(`Back-end is running on port ${port}.`);
 });

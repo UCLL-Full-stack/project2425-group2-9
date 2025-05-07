@@ -82,8 +82,13 @@ const registerCustomer = async ({password, firstName, lastName, username, phone,
         if (singleCustomer) {
             throw new Error (` customer with username ${username} already exist.`)
         }
+
+        if (!/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(password)) {
+            throw new Error('Password must be at least 8 characters long and include uppercase, lowercase, number, and special character.');
+        }
     
-        const hashedPassword = await bcrypt.hash(password, 12)
+        const saltRounds = parseInt(process.env.BCRYPT_SALT_ROUNDS || '12', 10);
+        const hashedPassword = await bcrypt.hash(password, saltRounds);
         const newCustomer = new Customer({password : hashedPassword,  username, firstName ,lastName, phone , role})
 
         await customerDb.registerCustomer(newCustomer);

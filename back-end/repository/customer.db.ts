@@ -16,7 +16,7 @@ const getAllCustomers = async () :  Promise <Customer[] | null> => {
     }
     catch (error) {
         console.error(error)
-        throw new Error("Database error. See server log for details.")
+        throw error
     }
 }
 
@@ -28,7 +28,7 @@ const getCustomerById = async (customerId: string | undefined): Promise< Custome
 
     const customerPrisma = await database.customer.findFirst({
         where : {
-            id : customerId
+            id : customerId,
         },
         include : { cart : false, order :false }
     })
@@ -39,7 +39,7 @@ const getCustomerById = async (customerId: string | undefined): Promise< Custome
    }
     catch (error) {
         console.log(error)
-        throw new Error("Database error. See server log for details.")
+        throw error
     }
 }
 
@@ -64,7 +64,7 @@ try {
 }
 catch (error) {
     console.error(error)
-    throw new Error("application error:"+error)
+    throw error
 }
 }
 
@@ -72,10 +72,14 @@ const findCustomerByUserName = async ( {username} : {username : string}) : Promi
 
     try {
 
+        if (!/^[a-zA-Z0-9_]+$/.test(username)) {
+            throw new Error('Invalid username format.');
+        }
+
         const customerPrisma = await database.customer.findMany({
             where : {
-                username : username
-            }
+                username : username,
+            },
         })
 
          if (!customerPrisma) {
@@ -85,7 +89,7 @@ const findCustomerByUserName = async ( {username} : {username : string}) : Promi
     }
     catch(error){
         console.error(error)
-        throw new Error ("application error. see server log for more info.")
+        throw error
     }
 }
 
