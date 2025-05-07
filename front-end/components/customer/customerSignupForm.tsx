@@ -6,7 +6,7 @@ import classNames from "classnames";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { useTranslation } from 'next-i18next';
-
+import DOMPurify from 'dompurify';
 const UserSignUpForm: React.FC = () => {
   const { t } = useTranslation('common');
   const [showPassword, setShowPassword] = useState(false);
@@ -93,7 +93,7 @@ const UserSignUpForm: React.FC = () => {
                   "text-green-800": type === "success",
                 })}
               >
-                {message}
+                {DOMPurify.sanitize(message)}
               </li>
             ))}
           </ul>

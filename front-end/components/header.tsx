@@ -31,7 +31,7 @@ const Header: React.FC = () => {
             <header className={styles.header}>
                 <p className={styles.veso}>VESO</p>
                 <nav className={styles.nav}>
-                    <Link href="/">{t('home')}</Link>
+                    <Link href="/">{t('Home')}</Link>
                     {loggedInUser && (loggedInUser.role === "ADMIN" || loggedInUser.role === "CUSTOMER") &&
                         <Link href="/cart" className={styles.anchor}>
                             {t('cart')} ({totalItems})

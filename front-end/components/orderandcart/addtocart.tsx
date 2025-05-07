@@ -1,7 +1,7 @@
 import React from 'react';
 import Image from 'next/image';
 import type { CartItem, Product } from '../../types';
-
+import DOMPurify from 'dompurify';
 type Props = {
     cartItems: Array<CartItem>;
     getProduct: (productName: string) => Product | undefined;
@@ -41,7 +41,8 @@ const AddToCart: React.FC<Props> = ({totalPrice, cartItems = [], getProduct, inc
                                         className="rounded"
                                     />
                                 </td>
-                                <td className="px-4 py-2 border-b">{product.name}</td>
+
+                                <td className="px-4 py-2 border-b">{DOMPurify.sanitize(product.name)}</td>
                                 <td className="px-4 py-2 border-b">{product.price} $</td>
                                 <td className="px-4 py-2 border-b">{product.unit}</td>
                                 <td className="px-4 py-2 border-b">{item.quantity}</td>
